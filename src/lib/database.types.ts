@@ -14,6 +14,7 @@ export interface Database {
                     id: string;
                     full_name: string | null;
                     avatar_url: string | null;
+                    role: 'admin' | 'user';
                     created_at: string;
                     updated_at: string;
                 };
@@ -21,6 +22,7 @@ export interface Database {
                     id: string;
                     full_name?: string | null;
                     avatar_url?: string | null;
+                    role?: 'admin' | 'user';
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -28,6 +30,7 @@ export interface Database {
                     id?: string;
                     full_name?: string | null;
                     avatar_url?: string | null;
+                    role?: 'admin' | 'user';
                     updated_at?: string;
                 };
             };
@@ -127,6 +130,25 @@ export interface Database {
                     updated_at?: string;
                 };
             };
+            ai_messages: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    role: 'assistant' | 'user';
+                    content: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    role: 'assistant' | 'user';
+                    content: string;
+                    created_at?: string;
+                };
+                Update: {
+                    content?: string;
+                };
+            };
         };
         Views: Record<string, never>;
         Functions: Record<string, never>;
@@ -145,3 +167,5 @@ export type TransactionUpdate = Database['public']['Tables']['transactions']['Up
 export type GoalInsert = Database['public']['Tables']['goals']['Insert'];
 export type GoalUpdate = Database['public']['Tables']['goals']['Update'];
 export type CategoryInsert = Database['public']['Tables']['categories']['Insert'];
+export type AiMessage = Database['public']['Tables']['ai_messages']['Row'];
+export type AiMessageInsert = Database['public']['Tables']['ai_messages']['Insert'];

@@ -13,6 +13,7 @@ create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text,
   avatar_url text,
+  role text default 'user' not null check (role in ('user', 'admin')),
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
@@ -21,11 +22,11 @@ alter table public.profiles enable row level security;
 
 create policy "Users can view their own profile"
   on public.profiles for select
-  using (auth.uid() = id);
+  using (auth.uid() = id or (select role from public.profiles where id = auth.uid()) = 'admin');
 
 create policy "Users can update their own profile"
   on public.profiles for update
-  using (auth.uid() = id);
+  using (auth.uid() = id or (select role from public.profiles where id = auth.uid()) = 'admin');
 
 create policy "Users can insert their own profile"
   on public.profiles for insert
@@ -38,11 +39,12 @@ language plpgsql
 security definer set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, full_name, avatar_url)
+  insert into public.profiles (id, full_name, avatar_url, role)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', ''),
-    coalesce(new.raw_user_meta_data ->> 'avatar_url', new.raw_user_meta_data ->> 'picture', '')
+    coalesce(new.raw_user_meta_data ->> 'avatar_url', new.raw_user_meta_data ->> 'picture', ''),
+    coalesce(new.raw_user_meta_data ->> 'role', 'user')
   );
   return new;
 end;
@@ -69,7 +71,7 @@ alter table public.categories enable row level security;
 
 create policy "Users can manage their own categories"
   on public.categories for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id or (select role from public.profiles where id = auth.uid()) = 'admin');
 
 -- Default categories (inserted per user via function)
 create or replace function public.create_default_categories()
@@ -118,7 +120,7 @@ alter table public.transactions enable row level security;
 
 create policy "Users can manage their own transactions"
   on public.transactions for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id or (select role from public.profiles where id = auth.uid()) = 'admin');
 
 -- Index for performance
 create index idx_transactions_user_date on public.transactions (user_id, date desc);
@@ -145,4 +147,21 @@ alter table public.goals enable row level security;
 
 create policy "Users can manage their own goals"
   on public.goals for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id or (select role from public.profiles where id = auth.uid()) = 'admin');
+
+-- ============================================
+-- AI MESSAGES
+-- ============================================
+create table public.ai_messages (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  role text not null check (role in ('user', 'assistant')),
+  content text not null,
+  created_at timestamptz default now() not null
+);
+
+alter table public.ai_messages enable row level security;
+
+create policy "Users can manage their own ai messages"
+  on public.ai_messages for all
+  using (auth.uid() = user_id or (select role from public.profiles where id = auth.uid()) = 'admin');

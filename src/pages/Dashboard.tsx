@@ -2,7 +2,7 @@ import { useState } from "react";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X
+  Menu, X, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -59,6 +59,18 @@ export default function Dashboard() {
             </Link>
           );
         })}
+
+        {user?.user_metadata?.role === 'admin' && (
+          <div className="pt-4 mt-4 border-t border-sidebar-border">
+            <Link
+              to="/admin"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+            >
+              <Shield className="w-4 h-4 text-primary" />
+              Painel Admin
+            </Link>
+          </div>
+        )}
       </nav>
 
       <button

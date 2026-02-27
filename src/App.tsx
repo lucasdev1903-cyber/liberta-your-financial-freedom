@@ -15,6 +15,7 @@ import { GoalsPage } from "./pages/dashboard/GoalsPage";
 import { InvestmentsPage } from "./pages/dashboard/InvestmentsPage";
 import { AssistantPage } from "./pages/dashboard/AssistantPage";
 import { SettingsPage } from "./pages/dashboard/SettingsPage";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="assistant" element={<AssistantPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
