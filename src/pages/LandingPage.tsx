@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
+import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -61,7 +62,10 @@ export default function LandingPage() {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
-        <img src={logoWhite} alt="Liberta" className="h-8" />
+        <div>
+          <img src={logoWhite} alt="Liberta" className="h-8 hidden dark:block" />
+          <img src={logoColor} alt="Liberta" className="h-8 block dark:hidden" />
+        </div>
         <div className="flex items-center gap-3">
           <ModeToggle />
           <Link to="/dashboard">
@@ -393,7 +397,8 @@ export default function LandingPage() {
       <footer className="relative z-10 border-t border-border/50 pt-16 pb-8 bg-background/50">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
-            <img src={logoWhite} alt="Liberta" className="h-6 mb-4" />
+            <img src={logoWhite} alt="Liberta" className="h-6 mb-4 hidden dark:block" />
+            <img src={logoColor} alt="Liberta" className="h-6 mb-4 block dark:hidden" />
             <p className="text-sm text-muted-foreground">O ecossistema definitivo para a sua evolução financeira.</p>
           </div>
           <div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import logoWhite from "@/assets/liberta-logo-white.png";
+import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
@@ -38,7 +39,8 @@ export default function Dashboard() {
   const SidebarContent = () => (
     <>
       <Link to="/" className="flex items-center gap-2 mb-10 px-2" onClick={() => setMobileOpen(false)}>
-        <img src={logoWhite} alt="Liberta" className="h-7" />
+        <img src={logoWhite} alt="Liberta" className="h-7 hidden dark:block" />
+        <img src={logoColor} alt="Liberta" className="h-7 block dark:hidden" />
       </Link>
 
       <nav className="flex-1 space-y-1">
@@ -124,7 +126,8 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground">Aqui está o resumo das suas finanças</p>
             </div>
             <div className="sm:hidden">
-              <img src={logoWhite} alt="Liberta" className="h-6" />
+              <img src={logoWhite} alt="Liberta" className="h-6 hidden dark:block" />
+              <img src={logoColor} alt="Liberta" className="h-6 block dark:hidden" />
             </div>
           </div>
           <div className="flex items-center gap-3">
