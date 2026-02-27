@@ -15,6 +15,9 @@ export interface Database {
                     full_name: string | null;
                     avatar_url: string | null;
                     role: 'admin' | 'user';
+                    current_streak: number;
+                    longest_streak: number;
+                    last_activity_date: string | null;
                     created_at: string;
                     updated_at: string;
                 };
@@ -23,6 +26,9 @@ export interface Database {
                     full_name?: string | null;
                     avatar_url?: string | null;
                     role?: 'admin' | 'user';
+                    current_streak?: number;
+                    longest_streak?: number;
+                    last_activity_date?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -31,6 +37,9 @@ export interface Database {
                     full_name?: string | null;
                     avatar_url?: string | null;
                     role?: 'admin' | 'user';
+                    current_streak?: number;
+                    longest_streak?: number;
+                    last_activity_date?: string | null;
                     updated_at?: string;
                 };
             };
@@ -227,6 +236,23 @@ export interface Database {
                     snapshot_date?: string;
                 };
             };
+            user_badges: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    badge_type: string;
+                    achieved_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    badge_type: string;
+                    achieved_at?: string;
+                };
+                Update: {
+                    badge_type?: string;
+                };
+            };
         };
         Views: Record<string, never>;
         Functions: Record<string, never>;
@@ -256,3 +282,6 @@ export type AssetInsert = Database['public']['Tables']['assets']['Insert'];
 export type AssetUpdate = Database['public']['Tables']['assets']['Update'];
 export type LiabilityInsert = Database['public']['Tables']['liabilities']['Insert'];
 export type LiabilityUpdate = Database['public']['Tables']['liabilities']['Update'];
+
+export type Badge = Database['public']['Tables']['user_badges']['Row'];
+export type BadgeInsert = Database['public']['Tables']['user_badges']['Insert'];

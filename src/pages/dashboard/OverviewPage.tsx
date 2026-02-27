@@ -4,12 +4,16 @@ import {
     ArrowDownRight,
     DollarSign,
     Target,
-    Bot
+    Bot,
+    Trophy,
+    Flame
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useGamification } from "@/hooks/useGamification";
 import { useAuth } from "@/contexts/AuthContext";
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
+import { cn } from "@/lib/utils";
 import {
     BarChart,
     Bar,
@@ -25,7 +29,10 @@ import {
 
 export function OverviewPage() {
     const { user } = useAuth();
-    const { data: stats, isLoading } = useDashboardStats();
+    const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
+    const { profile, badges, isLoading: isGamificationLoading } = useGamification();
+
+    const isLoading = isStatsLoading || isGamificationLoading;
 
     if (isLoading || !stats) {
         return (
@@ -268,19 +275,58 @@ export function OverviewPage() {
                                 Ótimo mês! Você economizou {formatCurrency(stats.balance)}. Que tal investir parte desse valor? 🎯
                             </div>
                         )}
-                        {stats.categoryBreakdown.length > 0 && (
-                            <div className="bg-secondary/50 rounded-lg p-4 text-sm text-foreground leading-relaxed">
-                                A categoria <strong>{stats.categoryBreakdown[0].name}</strong> representa a maior parte dos seus gastos atuais ({formatCurrency(stats.categoryBreakdown[0].amount)}).
-                            </div>
-                        )}
-                        {stats.transactionCount === 0 && (
-                            <div className="bg-secondary/50 rounded-lg p-4 text-sm text-foreground leading-relaxed">
-                                Olá {user?.user_metadata?.full_name?.split(' ')[0]}! Comece adicionando seus primeiros lançamentos para receber insights personalizados da IA.
-                            </div>
-                        )}
                     </div>
                 </motion.div>
             </div>
+
+            {/* Achievements Section */}
+            <motion.div
+                className="glass rounded-xl p-6 border-border/50"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+            >
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                        <Trophy className="w-5 h-5 text-yellow-500" />
+                        <h2 className="font-semibold">Minhas Conquistas</h2>
+                    </div>
+                    {profile?.longest_streak && (
+                        <span className="text-xs text-muted-foreground">
+                            Recorde de Ofensiva: <strong>{profile.longest_streak} dias</strong> 🔥
+                        </span>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                    {badges.map((badge) => {
+                        const details = {
+                            streak_3: { label: "3 Dias Seguidos", icon: Flame, color: "text-orange-500" },
+                            streak_7: { label: "1 Semana de Foco", icon: Flame, color: "text-orange-600" },
+                            streak_30: { label: "Mês Imbatível", icon: Flame, color: "text-orange-700" },
+                            first_entry: { label: "Primeiro Passo", icon: Target, color: "text-blue-500" },
+                            saving_master: { label: "Mestre da Economia", icon: Trophy, color: "text-yellow-500" },
+                        }[badge.badge_type] || { label: badge.badge_type, icon: Trophy, color: "text-muted-foreground" };
+
+                        return (
+                            <div key={badge.id} className="flex flex-col items-center p-4 rounded-2xl bg-secondary/20 border border-border/50 hover:border-primary/30 transition-all group">
+                                <div className={cn("w-12 h-12 rounded-full mb-3 flex items-center justify-center bg-background shadow-glow-sm group-hover:scale-110 transition-transform", details.color)}>
+                                    <details.icon className="w-6 h-6" />
+                                </div>
+                                <span className="text-[10px] font-bold text-center uppercase tracking-wider">{details.label}</span>
+                                <span className="text-[8px] text-muted-foreground mt-1">
+                                    {new Date(badge.achieved_at).toLocaleDateString('pt-BR')}
+                                </span>
+                            </div>
+                        );
+                    })}
+                    {badges.length === 0 && (
+                        <div className="col-span-full py-8 text-center text-muted-foreground text-sm border border-dashed rounded-xl border-border/50">
+                            Continue usando o Liberta para desbloquear novas medalhas! 🚀
+                        </div>
+                    )}
+                </div>
+            </motion.div>
         </div>
     );
 }

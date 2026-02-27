@@ -14,6 +14,9 @@ create table public.profiles (
   full_name text,
   avatar_url text,
   role text default 'user' not null check (role in ('user', 'admin')),
+  current_streak int default 0 not null,
+  longest_streak int default 0 not null,
+  last_activity_date date,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
@@ -236,3 +239,24 @@ create policy "Users can view their own net worth history"
   using (auth.uid() = user_id or public.is_admin());
 
 create index idx_net_worth_history_user_date on public.net_worth_history (user_id, snapshot_date desc);
+
+-- ============================================
+-- USER ACHIEVEMENTS (BADGES)
+-- ============================================
+create table public.user_badges (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  badge_type text not null,
+  achieved_at timestamptz default now() not null,
+  unique(user_id, badge_type)
+);
+
+alter table public.user_badges enable row level security;
+
+create policy "Users can view their own badges"
+  on public.user_badges for select
+  using (auth.uid() = user_id or public.is_admin());
+
+create policy "Users can insert their own badges"
+  on public.user_badges for insert
+  with check (auth.uid() = user_id);

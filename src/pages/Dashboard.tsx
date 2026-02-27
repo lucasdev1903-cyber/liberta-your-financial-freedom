@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -123,7 +124,10 @@ export default function Dashboard() {
               <Menu className="w-5 h-5" />
             </Button>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold">Olá, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold">Olá, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
+                <StreakDisplay />
+              </div>
               <p className="text-sm text-muted-foreground">Aqui está o resumo das suas finanças</p>
             </div>
             <div className="sm:hidden">
