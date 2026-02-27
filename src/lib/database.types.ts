@@ -149,6 +149,84 @@ export interface Database {
                     content?: string;
                 };
             };
+            assets: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    name: string;
+                    type: 'cash' | 'investment' | 'property' | 'vehicle' | 'other';
+                    value: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    name: string;
+                    type: 'cash' | 'investment' | 'property' | 'vehicle' | 'other';
+                    value: number;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    name?: string;
+                    type?: 'cash' | 'investment' | 'property' | 'vehicle' | 'other';
+                    value?: number;
+                    updated_at?: string;
+                };
+            };
+            liabilities: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    name: string;
+                    type: 'credit_card' | 'loan' | 'mortgage' | 'other';
+                    value: number;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    name: string;
+                    type: 'credit_card' | 'loan' | 'mortgage' | 'other';
+                    value: number;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    name?: string;
+                    type?: 'credit_card' | 'loan' | 'mortgage' | 'other';
+                    value?: number;
+                    updated_at?: string;
+                };
+            };
+            net_worth_history: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    total_assets: number;
+                    total_liabilities: number;
+                    net_worth: number;
+                    snapshot_date: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    total_assets: number;
+                    total_liabilities: number;
+                    net_worth: number;
+                    snapshot_date: string;
+                    created_at?: string;
+                };
+                Update: {
+                    total_assets?: number;
+                    total_liabilities?: number;
+                    net_worth?: number;
+                    snapshot_date?: string;
+                };
+            };
         };
         Views: Record<string, never>;
         Functions: Record<string, never>;
@@ -169,3 +247,12 @@ export type GoalUpdate = Database['public']['Tables']['goals']['Update'];
 export type CategoryInsert = Database['public']['Tables']['categories']['Insert'];
 export type AiMessage = Database['public']['Tables']['ai_messages']['Row'];
 export type AiMessageInsert = Database['public']['Tables']['ai_messages']['Insert'];
+
+export type Asset = Database['public']['Tables']['assets']['Row'];
+export type Liability = Database['public']['Tables']['liabilities']['Row'];
+export type NetWorthHistory = Database['public']['Tables']['net_worth_history']['Row'];
+
+export type AssetInsert = Database['public']['Tables']['assets']['Insert'];
+export type AssetUpdate = Database['public']['Tables']['assets']['Update'];
+export type LiabilityInsert = Database['public']['Tables']['liabilities']['Insert'];
+export type LiabilityUpdate = Database['public']['Tables']['liabilities']['Update'];

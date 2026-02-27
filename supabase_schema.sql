@@ -179,3 +179,60 @@ alter table public.ai_messages enable row level security;
 create policy "Users can manage their own ai messages"
   on public.ai_messages for all
   using (auth.uid() = user_id or public.is_admin());
+
+-- ============================================
+-- ASSETS & LIABILITIES (NET WORTH)
+-- ============================================
+
+-- Assets Table
+create table public.assets (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  name text not null,
+  type text not null check (type in ('cash', 'investment', 'property', 'vehicle', 'other')),
+  value numeric(12, 2) not null default 0,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table public.assets enable row level security;
+
+create policy "Users can manage their own assets"
+  on public.assets for all
+  using (auth.uid() = user_id or public.is_admin());
+
+-- Liabilities Table
+create table public.liabilities (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  name text not null,
+  type text not null check (type in ('credit_card', 'loan', 'mortgage', 'other')),
+  value numeric(12, 2) not null default 0,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table public.liabilities enable row level security;
+
+create policy "Users can manage their own liabilities"
+  on public.liabilities for all
+  using (auth.uid() = user_id or public.is_admin());
+
+-- Net Worth History (for charts)
+create table public.net_worth_history (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  total_assets numeric(12, 2) not null,
+  total_liabilities numeric(12, 2) not null,
+  net_worth numeric(12, 2) not null,
+  snapshot_date date default current_date not null,
+  created_at timestamptz default now() not null
+);
+
+alter table public.net_worth_history enable row level security;
+
+create policy "Users can view their own net worth history"
+  on public.net_worth_history for select
+  using (auth.uid() = user_id or public.is_admin());
+
+create index idx_net_worth_history_user_date on public.net_worth_history (user_id, snapshot_date desc);

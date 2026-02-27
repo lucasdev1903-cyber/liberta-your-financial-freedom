@@ -16,6 +16,7 @@ import { InvestmentsPage } from "./pages/dashboard/InvestmentsPage";
 import { AssistantPage } from "./pages/dashboard/AssistantPage";
 import { SettingsPage } from "./pages/dashboard/SettingsPage";
 import { BankConnectionsPage } from "./pages/dashboard/BankConnectionsPage";
+import { NetWorthPage } from "./pages/dashboard/NetWorthPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "./pages/NotFound";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="investments" element={<InvestmentsPage />} />
               <Route path="connections" element={<BankConnectionsPage />} />
               <Route path="assistant" element={<AssistantPage />} />
+              <Route path="net-worth" element={<NetWorthPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="/admin" element={<AdminDashboard />} />
