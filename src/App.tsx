@@ -15,7 +15,9 @@ import { GoalsPage } from "./pages/dashboard/GoalsPage";
 import { InvestmentsPage } from "./pages/dashboard/InvestmentsPage";
 import { AssistantPage } from "./pages/dashboard/AssistantPage";
 import { SettingsPage } from "./pages/dashboard/SettingsPage";
+import { BankConnectionsPage } from "./pages/dashboard/BankConnectionsPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,7 @@ const App = () => (
               <Route path="transactions" element={<TransactionsPage />} />
               <Route path="goals" element={<GoalsPage />} />
               <Route path="investments" element={<InvestmentsPage />} />
+              <Route path="connections" element={<BankConnectionsPage />} />
               <Route path="assistant" element={<AssistantPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

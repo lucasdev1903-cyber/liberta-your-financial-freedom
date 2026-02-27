@@ -1,8 +1,9 @@
 import { useState } from "react";
 import logoWhite from "@/assets/liberta-logo-white.png";
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X, Shield
+  Menu, X, Shield, SmartphoneNfc
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
   { icon: Wallet, label: "Lançamentos", href: "/dashboard/transactions" },
+  { icon: SmartphoneNfc, label: "Contas Bancárias", href: "/dashboard/connections" },
   { icon: Target, label: "Metas", href: "/dashboard/goals" },
   { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
   { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant" },
@@ -126,6 +128,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ModeToggle />
             <Button variant="ghost" size="icon" className="relative hidden sm:flex">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />

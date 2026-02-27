@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   Accordion,
   AccordionContent,
@@ -62,6 +63,7 @@ export default function LandingPage() {
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
         <img src={logoWhite} alt="Liberta" className="h-8" />
         <div className="flex items-center gap-3">
+          <ModeToggle />
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">Entrar</Button>
           </Link>

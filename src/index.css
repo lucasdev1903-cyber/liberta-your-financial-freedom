@@ -6,6 +6,55 @@
 
 @layer base {
   :root {
+    --background: 210 20% 98%;
+    --foreground: 216 50% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 216 50% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 50% 10%;
+
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 216 50% 10%;
+
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 16 90% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 16 100% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 216 50% 10%;
+    --sidebar-primary: 16 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 94%;
+    --sidebar-accent-foreground: 216 50% 10%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 16 100% 60%;
+
+    /* Custom tokens for Light Mode */
+    --gradient-primary: linear-gradient(135deg, hsl(16, 100%, 60%), hsl(24, 100%, 65%));
+    --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(210, 20%, 94%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsl(0, 0%, 98%));
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.1) 0%, transparent 60%);
+    --shadow-glow: 0 0 40px -10px hsl(16, 100%, 60%, 0.2);
+    --shadow-card: 0 8px 32px -8px rgba(0,0,0,0.05);
+  }
+
+  .dark {
     --background: 216 50% 7%;
     --foreground: 210 40% 96%;
 
@@ -34,8 +83,6 @@
     --input: 216 30% 18%;
     --ring: 16 100% 60%;
 
-    --radius: 0.75rem;
-
     --sidebar-background: 216 48% 8%;
     --sidebar-foreground: 210 20% 80%;
     --sidebar-primary: 16 100% 60%;
@@ -45,17 +92,13 @@
     --sidebar-border: 216 30% 16%;
     --sidebar-ring: 16 100% 60%;
 
-    /* Custom tokens */
+    /* Custom tokens for Dark Mode */
     --gradient-primary: linear-gradient(135deg, hsl(16, 100%, 60%), hsl(24, 100%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(216, 50%, 9%) 0%, hsl(216, 50%, 5%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(216, 45%, 12%), hsl(216, 45%, 8%));
     --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.15) 0%, transparent 60%);
     --shadow-glow: 0 0 40px -10px hsl(16, 100%, 60%, 0.3);
     --shadow-card: 0 8px 32px -8px hsl(216, 50%, 3%, 0.5);
-  }
-
-  .dark {
-    /* Same as root since dark is default */
   }
 }
 
@@ -101,7 +144,7 @@
   }
 
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-card;
   }
 
   .glass-strong {

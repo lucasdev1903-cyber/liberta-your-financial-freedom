@@ -11,7 +11,7 @@ import {
     TableRow
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { MoreHorizontal, Trash, ArrowUpRight, ArrowDownRight, Wallet } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,8 +38,14 @@ export function TransactionTable({ limit }: { limit?: number }) {
 
     if (displayTransactions.length === 0) {
         return (
-            <div className="text-center py-10 text-muted-foreground border border-dashed rounded-lg">
-                Nenhum lançamento encontrado.
+            <div className="flex flex-col items-center justify-center py-16 text-center glass rounded-xl border-dashed">
+                <div className="w-12 h-12 bg-secondary/50 rounded-full flex items-center justify-center mb-4 text-muted-foreground">
+                    <Wallet className="w-6 h-6 opacity-50" />
+                </div>
+                <h3 className="text-lg font-medium mb-1">Nenhum lançamento no período</h3>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                    Suas transações registradas aparecerão aqui. Clique no botão de nova transação para começar.
+                </p>
             </div>
         );
     }
