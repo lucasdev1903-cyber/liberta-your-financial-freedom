@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import logoColor from "@/assets/logo_liberta_colorido.png";
-import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown } from "lucide-react";
+import heroMockup from "@/assets/hero-mockup.png";
+import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
@@ -24,33 +25,33 @@ const fadeUp = {
 const features = [
   {
     icon: BarChart3,
-    title: "Dashboard de BI",
-    desc: "Gráficos interativos e relatórios avançados do seu fluxo financeiro.",
+    title: "Dashboard Multi-Projetos",
+    desc: "Use Tags e Centros de Custo para separar finanças Pessoais e da Empresa.",
+  },
+  {
+    icon: Star,
+    title: "Gestão Avançada de Cartões",
+    desc: "Acompanhe faturas futuras e saiba o melhor dia para compra com controle de Limite.",
   },
   {
     icon: Bot,
-    title: "Assistente com IA",
-    desc: "Insights inteligentes e lançamentos por texto ou voz.",
+    title: "IA Conselheira Integrada",
+    desc: "Agente que analisa seus gastos e alerta sobre tendências antes do fim do mês.",
   },
   {
     icon: Target,
-    title: "Metas Financeiras",
-    desc: "Defina, acompanhe e conquiste seus objetivos de economia.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Simulador de Investimentos",
-    desc: "Projete rendimentos e compare estratégias em tempo real.",
+    title: "Engajamento e Metas",
+    desc: "Desbloqueie conquistas e ofensivas (streaks) financeiras ao bater alvos de economia.",
   },
   {
     icon: Smartphone,
     title: "Lançamentos via WhatsApp",
-    desc: "Registre despesas enviando uma simples mensagem.",
+    desc: "Mande um áudio no zap e nossa bot-inteligente categoriza a despesa sozinha.",
   },
   {
     icon: Shield,
-    title: "Conexão Bancária Segura",
-    desc: "Sincronize transações automaticamente com Open Finance.",
+    title: "Open Finance Ativo",
+    desc: "Foque em viver. Nós puxamos seus extratos e nubank automaticamente.",
   },
 ];
 
@@ -97,8 +98,8 @@ export default function LandingPage() {
           variants={fadeUp}
           custom={1}
         >
-          Sua liberdade financeira{" "}
-          <span className="text-gradient">começa aqui.</span>
+          Seu dinheiro sob o comando <br className="hidden md:block" />
+          <span className="text-gradient">da Inteligência Artificial.</span>
         </motion.h1>
 
         <motion.p
@@ -108,7 +109,7 @@ export default function LandingPage() {
           variants={fadeUp}
           custom={2}
         >
-          Controle gastos, invista melhor e receba insights inteligentes — tudo em um só lugar, com a ajuda da IA.
+          Esqueça as planilhas. Gerencie cartões, conecte bancos via Open Finance e converse com seu Patrimônio em tempo real pelo WhatsApp.
         </motion.p>
 
         <motion.div
@@ -130,41 +131,24 @@ export default function LandingPage() {
 
         {/* Dashboard preview mockup */}
         <motion.div
-          className="mt-20 relative mx-auto max-w-5xl"
+          className="mt-20 relative mx-auto max-w-5xl px-4 sm:px-0"
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
         >
-          <div className="glass rounded-2xl p-1 shadow-glow">
-            <div className="bg-gradient-card rounded-xl p-6 sm:p-10">
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                {[
-                  { label: "Saldo", value: "R$ 12.450,00", color: "text-green-400" },
-                  { label: "Receitas", value: "R$ 8.200,00", color: "text-primary" },
-                  { label: "Despesas", value: "R$ 3.750,00", color: "text-red-400" },
-                ].map((item) => (
-                  <div key={item.label} className="glass rounded-lg p-4 text-left">
-                    <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
-                    <p className={`text-lg sm:text-2xl font-bold ${item.color}`}>{item.value}</p>
-                  </div>
-                ))}
-              </div>
-              {/* Chart placeholder bars */}
-              <div className="flex items-end gap-2 h-32 px-4">
-                {[40, 65, 50, 80, 55, 90, 70, 85, 60, 75, 95, 68].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex-1 bg-gradient-primary rounded-t-sm opacity-70"
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: 1 + i * 0.05, duration: 0.5, ease: "easeOut" }}
-                  />
-                ))}
-              </div>
+          <div className="glass-strong rounded-[2rem] p-2 sm:p-4 shadow-2xl relative z-10 border-border/80">
+            <div className="rounded-xl overflow-hidden relative">
+              <img
+                src={heroMockup}
+                alt="Liberta Dashboard Preview"
+                className="w-full h-auto object-cover transform hover:scale-[1.01] transition-transform duration-700"
+              />
+              {/* Shiny reflection overlay */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none mix-blend-overlay" />
             </div>
           </div>
-          {/* Glow behind card */}
-          <div className="absolute -inset-4 bg-primary/5 rounded-3xl blur-3xl -z-10 animate-pulse-glow" />
+          {/* Intense Glow behind card */}
+          <div className="absolute -inset-4 bg-gradient-primary opacity-20 rounded-[3rem] blur-3xl -z-10 animate-pulse-glow" />
         </motion.div>
       </section>
 
@@ -240,12 +224,13 @@ export default function LandingPage() {
 
           <ul className="text-left max-w-sm mx-auto space-y-3 mb-10">
             {[
-              "Dashboard de BI completo",
-              "Assistente financeiro com IA",
-              "Simulador de investimentos",
-              "Lançamentos via WhatsApp",
-              "Metas e planejamento",
-              "Conexão bancária segura",
+              "Acesso Multi-Contas e Projetos",
+              "Agente de IA e WhatsApp Integrados",
+              "Gestor de Cartões e Limites",
+              "Cálculo de Patrimônio Líquido Real",
+              "Conexão Bancária (Open Finance)",
+              "Exportação Fiscal (PDF/Excel)",
+              "Modo Gamificação com Badges",
             ].map((item) => (
               <li key={item} className="flex items-center gap-3 text-sm">
                 <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
@@ -286,18 +271,18 @@ export default function LandingPage() {
           {[
             {
               name: "Mariana Silva",
-              role: "Empreendedora",
-              content: "O Liberta mudou completamente como eu vejo meu dinheiro. A IA me ajudou a cortar gastos que eu nem percebia!",
+              role: "Freelancer & Empreendedora",
+              content: "Finalmente algo que separa as minhas contas de casa das da PJ. O gráfico de Patrimônio Líquido me deu noção real de riqueza.",
             },
             {
               name: "Carlos Eduardo",
-              role: "Desenvolvedor",
-              content: "Interface incrível, super rápida. Finalmente um app de finanças que não parece ter sido feito nos anos 90.",
+              role: "Desenvolvedor de Software",
+              content: "Eu lançava gastos no Excel. Agora só mando um áudio pro bot do WhatsApp saindo do restaurante e a IA cataloga tudo na nuvem.",
             },
             {
               name: "Juliana Santos",
               role: "Médica",
-              content: "Atingi minha meta da reserva de emergência 3 meses antes do previsto graças ao acompanhamento visual das metas.",
+              content: "O sistema de Ofensivas acabou com o meu consumismo. Não perder meu 'streak' virou um jogo divertido, e minha reserva duplicou.",
             },
           ].map((testimonial, i) => (
             <motion.div
