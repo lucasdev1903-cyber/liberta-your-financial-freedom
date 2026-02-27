@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGamification } from './useGamification';
 import type { Goal, GoalInsert, GoalUpdate } from '@/lib/database.types';
 
 export function useGoals() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
+    const { updateActivity } = useGamification();
 
     const query = useQuery({
         queryKey: ['goals', user?.id],

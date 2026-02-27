@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import logoColor from "@/assets/logo_liberta_colorido.png";
-import heroMockup from "@/assets/hero-mockup-devices.png";
 import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown, CheckCircle2, Heart, Bell, MessageSquare, Sparkles, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -152,29 +151,8 @@ export default function LandingPage() {
             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Transações/mês</span>
           </div>
         </motion.div>
-
-        {/* Dashboard preview mockup */}
-        <motion.div
-          className="mt-24 relative mx-auto max-w-5xl px-4 sm:px-0"
-          initial={{ opacity: 0, scale: 0.95, y: 40 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 1, ease: "easeOut" }}
-        >
-          <div className="glass-strong rounded-[2.5rem] p-2 sm:p-5 shadow-2xl relative z-10 border-border/80">
-            <div className="rounded-[1.5rem] overflow-hidden relative shadow-inner">
-              <img
-                src={heroMockup}
-                alt="Liberta Dashboard Preview"
-                className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-1000"
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none mix-blend-overlay" />
-            </div>
-          </div>
-          <div className="absolute -inset-10 bg-gradient-primary opacity-[0.08] rounded-[4rem] blur-[100px] -z-10 animate-pulse-glow" />
-        </motion.div>
       </section>
 
-      {/* Features */}
       <section id="recursos" className="relative z-10 max-w-7xl mx-auto px-6 py-24">
         <motion.div
           className="text-center mb-16"
@@ -213,7 +191,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Lia AI Assistant Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 overflow-hidden border-t border-border/50">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <motion.div
@@ -298,7 +275,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it Works Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-border/50">
         <motion.div
           className="text-center mb-20"
@@ -343,100 +319,78 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
       <section id="planos" className="relative z-10 max-w-7xl mx-auto px-6 py-24 text-center border-t border-border/50">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0}>
-          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Escolha seu plano ideal</h2>
+          <h2 className="text-3xl sm:text-5xl font-extrabold mb-4 italic tracking-tight">Um investimento na sua <span className="text-gradient">liberdade.</span></h2>
           <p className="text-muted-foreground text-lg mb-16 max-w-2xl mx-auto">
-            Invista na sua liberdade financeira com planos que cabem no seu momento atual.
+            Acesso completo a todas as ferramentas premium por um valor justo e transparente.
           </p>
         </motion.div>
 
-        <div className="flex justify-center items-center gap-6 mb-20">
-          <span className={`text-sm font-bold tracking-tight ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Assinatura Mensal</span>
-          <button
-            onClick={() => setIsAnnual(!isAnnual)}
-            className="group relative w-16 h-8 rounded-full bg-secondary border border-border/50 flex items-center px-1.5 transition-all hover:bg-secondary/80 shadow-inner"
+        <div className="max-w-xl mx-auto">
+          <div className="flex justify-center items-center gap-6 mb-12">
+            <span className={`text-sm font-bold tracking-tight ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensal</span>
+            <button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className="group relative w-16 h-8 rounded-full bg-secondary border border-border/50 flex items-center px-1.5 transition-all hover:bg-secondary/80 shadow-inner"
+            >
+              <div className={`w-5.5 h-5.5 rounded-full bg-primary transition-all duration-500 shadow-glow ${isAnnual ? 'translate-x-[2.15rem]' : 'translate-x-0'}`} />
+            </button>
+            <span className={`text-sm font-bold tracking-tight ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Anual <span className="text-primary text-[10px] ml-2 font-black border border-primary/20 px-2 py-0.5 rounded-full bg-primary/5 uppercase">Desconto Especial</span>
+            </span>
+          </div>
+
+          <motion.div
+            className="glass-strong rounded-[3rem] p-12 border-primary/30 relative shadow-glow overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
           >
-            <div className={`w-5.5 h-5.5 rounded-full bg-primary transition-all duration-500 shadow-glow ${isAnnual ? 'translate-x-[2.15rem]' : 'translate-x-0'}`} />
-          </button>
-          <span className={`text-sm font-bold tracking-tight ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
-            Plano Anual <span className="text-primary text-[10px] ml-2 font-black border border-primary/20 px-2 py-0.5 rounded-full bg-primary/5 uppercase">Top Desconto (-20%)</span>
-          </span>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8 text-left items-stretch">
-          {/* Starter */}
-          <div className="glass rounded-[2.5rem] p-10 border-border/50 flex flex-col hover:border-border transition-all duration-300">
-            <h3 className="text-xl font-bold mb-3 text-foreground/80 lowercase italic">starter</h3>
-            <div className="flex items-baseline gap-1 mb-8">
-              <span className="text-4xl font-black text-foreground">{isAnnual ? "R$ 7,90" : "R$ 9,90"}</span>
-              <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">/mês</span>
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+              <Sparkles className="w-32 h-32 text-primary" />
             </div>
-            <ul className="space-y-5 mb-12 flex-1 text-sm">
-              {["Até 3 metas financeiras", "5 categorias personalizadas", "Histórico de 90 dias", "Gráficos básicos", "Suporte por email"].map(item => (
-                <li key={item} className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-primary opacity-60" /> <span className="text-muted-foreground">{item}</span></li>
-              ))}
-            </ul>
-            <Link to="/register"><Button variant="outline" className="w-full h-14 rounded-2xl font-bold hover:bg-secondary transition-all">Começar Grátis</Button></Link>
-          </div>
 
-          {/* Liberta+ */}
-          <div className="glass-strong rounded-[2.5rem] p-10 border-primary/30 relative shadow-glow scale-100 md:scale-105 z-10 flex flex-col">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-primary text-white text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-[0.2em] shadow-glow animate-pulse">Recomendado</div>
-            <h3 className="text-xl font-bold mb-3 text-primary lowercase italic">liberta+</h3>
-            <div className="flex items-baseline gap-1 mb-8">
-              <span className="text-5xl font-black text-gradient">{isAnnual ? "R$ 19,90" : "R$ 24,90"}</span>
-              <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">/mês</span>
-            </div>
-            <ul className="space-y-5 mb-12 flex-1 text-sm">
-              {["Metas ilimitadas", "Todas as categorias", "Histórico completo", "Insights da Lia por IA", "Agente 24/7 (Chat Lia) 🤖", "Relatórios avançados (Exclusivo)", "Exportação PDF e Excel"].map(item => (
-                <li key={item} className="flex items-center gap-3 font-bold text-foreground/90"><CheckCircle2 className="w-5 h-5 text-primary" /> {item}</li>
-              ))}
-            </ul>
-            <Link to="/register"><Button variant="hero" className="w-full h-14 rounded-2xl text-lg font-black shadow-glow hover:scale-105 transition-all">Quero este plano</Button></Link>
-          </div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-2 text-primary lowercase italic">plano liberta</h3>
+              <p className="text-muted-foreground text-sm mb-8">Tudo o que você precisa para dominar suas finanças.</p>
 
-          {/* Família */}
-          <div className="glass rounded-[2.5rem] p-10 border-border/50 flex flex-col hover:border-border transition-all duration-300">
-            <h3 className="text-xl font-bold mb-3 text-foreground/80 lowercase italic">família</h3>
-            <div className="flex items-baseline gap-1 mb-8">
-              <span className="text-4xl font-black text-foreground">{isAnnual ? "R$ 39,90" : "R$ 49,90"}</span>
-              <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">/mês</span>
-            </div>
-            <ul className="space-y-5 mb-12 flex-1 text-sm">
-              {["Até 5 membros", "Dashboard familiar completo", "Metas compartilhadas", "Todos os recursos Liberta+", "Agente de IA Lia 🤖", "Controle parental", "Suporte prioritário VIP"].map(item => (
-                <li key={item} className="flex items-center gap-3"><CheckCircle2 className="w-5 h-5 text-primary opacity-60" /> <span className="text-muted-foreground">{item}</span></li>
-              ))}
-            </ul>
-            <Link to="/register"><Button variant="outline" className="w-full h-14 rounded-2xl font-bold hover:bg-secondary transition-all">Assinar Família</Button></Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-border/50">
-        <div className="text-center mb-20">
-          <h2 className="text-3xl sm:text-5xl font-black mb-6 text-gradient uppercase tracking-tight">Quem usa, recomenda.</h2>
-          <p className="text-muted-foreground text-lg">Junte-se a milhares de Brasileiros que já conquistaram a liberdade financeira com o Liberta.</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-10">
-          {[
-            { name: "Mariana Silva", role: "Empreendedora", content: "Finalmente algo que separa as minhas contas de casa das da PJ. O gráfico de Patrimônio me deu noção real de riqueza." },
-            { name: "Carlos Eduardo", role: "Desenvolvedor", content: "Eu lançava gastos no Excel. Agora só converso com a Lia e ela cataloga tudo na nuvem sem esforço algum." },
-            { name: "Juliana Santos", role: "Médica", content: "O sistema de Metas Visuais me ajudou a atingir minha reserva de emergência 3 meses antes do previsto. Incrível!" }
-          ].map((t, i) => (
-            <motion.div key={i} className="glass p-10 rounded-[2.5rem] relative group hover:border-primary/20 transition-all duration-500" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
-              <div className="flex gap-1.5 text-yellow-500 mb-6">{[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-current" />)}</div>
-              <p className="italic text-base mb-8 leading-relaxed text-foreground/80">"{t.content}"</p>
-              <div>
-                <p className="font-extrabold text-lg text-foreground">{t.name}</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{t.role}</p>
+              <div className="flex items-baseline justify-center gap-1 mb-10">
+                <span className="text-6xl font-black text-gradient">
+                  {isAnnual ? "R$ 17,90" : "R$ 21,90"}
+                </span>
+                <span className="text-muted-foreground text-sm font-bold uppercase tracking-widest">/mês</span>
               </div>
-            </motion.div>
-          ))}
+
+              <ul className="space-y-4 mb-12 text-left max-w-md mx-auto">
+                {[
+                  "Metas financeiras ilimitadas",
+                  "Categorias totalmente personalizáveis",
+                  "Histórico de transações completo",
+                  "Consolidação de Patrimônio (Ativos/Passivos)",
+                  "Inteligência Artificial Lia 🤖 (Chat 24/7)",
+                  "Relatórios e Gráficos Avançados",
+                  "Exportação PDF e Excel",
+                  "Sincronização em múltiplos dispositivos"
+                ].map(item => (
+                  <li key={item} className="flex items-center gap-4 text-foreground/90 font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link to="/register">
+                <Button variant="hero" className="w-full h-16 rounded-2xl text-xl font-black shadow-glow hover:scale-[1.02] transition-all">
+                  Começar meu Teste Grátis
+                </Button>
+              </Link>
+              <p className="mt-4 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Cancele quando quiser • 7 dias grátis</p>
+            </div>
+          </motion.div>
         </div>
       </section>
+
 
       {/* FAQ */}
       <section className="relative z-10 max-w-3xl mx-auto px-6 py-24 border-t border-border/50">
@@ -499,10 +453,9 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 pt-12 border-t border-zinc-800/50 text-center">
-          <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.2em] mb-4">Feito com ❤️ no Brasil para o mundo</p>
           <p className="text-[10px] text-zinc-600">© 2026 Liberta Finanças LTDA. Todos os direitos reservados.</p>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }
