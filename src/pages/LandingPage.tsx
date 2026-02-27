@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
@@ -56,6 +57,8 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const [isAnnual, setIsAnnual] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-hero overflow-hidden">
       {/* Glow effect */}
@@ -209,18 +212,39 @@ export default function LandingPage() {
         </motion.div>
 
         <motion.div
-          className="glass rounded-2xl p-8 sm:p-10 shadow-glow border-primary/20"
+          className="glass rounded-2xl p-8 sm:p-10 shadow-glow border-primary/20 relative"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeUp}
           custom={1}
         >
+          {isAnnual && (
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-primary text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+              Economia de R$ 72 no ano!
+            </div>
+          )}
+
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensal</span>
+            <button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className="relative w-14 h-7 rounded-full bg-secondary border border-border/50 flex items-center px-1 transition-colors hover:bg-secondary/80 focus:outline-none"
+            >
+              <div className={`w-5 h-5 rounded-full bg-primary transition-transform duration-300 shadow-sm ${isAnnual ? 'translate-x-7' : 'translate-x-0'}`} />
+            </button>
+            <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Anual <span className="text-primary text-xs ml-1 font-bold">(-27%)</span>
+            </span>
+          </div>
+
           <div className="flex items-baseline justify-center gap-1 mb-2">
-            <span className="text-5xl font-extrabold text-gradient">R$ 21,90</span>
+            <span className="text-5xl font-extrabold text-gradient">{isAnnual ? "R$ 15,90" : "R$ 21,90"}</span>
             <span className="text-muted-foreground">/mês</span>
           </div>
-          <p className="text-muted-foreground mb-8">Acesso completo a todas as funcionalidades</p>
+          <p className="text-muted-foreground mb-8 text-sm">
+            {isAnnual ? "Cobrado anualmente (R$ 190,80/ano)" : "Cobrado mensalmente. Cancele quando quiser."}
+          </p>
 
           <ul className="text-left max-w-sm mx-auto space-y-3 mb-10">
             {[
