@@ -28,10 +28,12 @@ export function useNetWorth() {
                 .from('assets')
                 .select('*')
                 .eq('user_id', user.id);
-            if (error) throw error;
+            if (error) return [];
             return data || [];
         },
         enabled: !!user,
+        retry: false,
+        staleTime: 1000 * 60 * 5,
     });
 
     const liabilitiesQuery = useQuery({
@@ -42,16 +44,18 @@ export function useNetWorth() {
                 .from('liabilities')
                 .select('*')
                 .eq('user_id', user.id);
-            if (error) throw error;
+            if (error) return [];
             return data || [];
         },
         enabled: !!user,
+        retry: false,
+        staleTime: 1000 * 60 * 5,
     });
 
     const addAsset = useMutation({
         mutationFn: async (asset: Omit<Asset, 'id'>) => {
-            const { data, error } = await supabase
-                .from('assets')
+            const { data, error } = await (supabase
+                .from('assets') as any)
                 .insert({ ...asset, user_id: user?.id })
                 .select()
                 .single();
@@ -63,8 +67,8 @@ export function useNetWorth() {
 
     const addLiability = useMutation({
         mutationFn: async (liability: Omit<Liability, 'id'>) => {
-            const { data, error } = await supabase
-                .from('liabilities')
+            const { data, error } = await (supabase
+                .from('liabilities') as any)
                 .insert({ ...liability, user_id: user?.id })
                 .select()
                 .single();

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import logoColor from "@/assets/logo_liberta_colorido.png";
-import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown, CheckCircle2, Heart, Bell, MessageSquare, Sparkles, ClipboardList } from "lucide-react";
+import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown, CheckCircle2, Heart, Bell, MessageSquare, Sparkles, ClipboardList, Zap, PieChart, Landmark } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
@@ -66,8 +66,8 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
         <div>
-          <img src={logoWhite} alt="Liberta" className="h-8 hidden dark:block" />
-          <img src={logoColor} alt="Liberta" className="h-8 block dark:hidden" />
+          <img src={logoWhite} alt="Liberta" className="h-10 hidden dark:block" />
+          <img src={logoColor} alt="Liberta" className="h-10 block dark:hidden" />
         </div>
         <div className="flex items-center gap-3">
           <ModeToggle />
@@ -149,6 +149,44 @@ export default function LandingPage() {
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <span className="font-extrabold text-2xl text-foreground">26mil+</span>
             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Transações/mês</span>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Dashboard Preview */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 -mt-12 mb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="glass-strong rounded-[2rem] p-6 sm:p-8 shadow-2xl border-primary/20 relative overflow-hidden"
+        >
+          <div className="absolute -inset-8 bg-primary/5 blur-[80px] rounded-full -z-10" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            {[
+              { label: "Saldo Total", value: "R$ 12.450", color: "text-primary", icon: Landmark },
+              { label: "Receitas", value: "R$ 8.200", color: "text-green-500", icon: TrendingUp },
+              { label: "Despesas", value: "R$ 3.750", color: "text-red-500", icon: PieChart },
+              { label: "Economia", value: "54%", color: "text-primary", icon: Target },
+            ].map((card, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 + i * 0.1 }} className="glass rounded-xl p-3 sm:p-4 text-center">
+                <card.icon className={`w-5 h-5 mx-auto mb-2 ${card.color}`} />
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{card.label}</p>
+                <p className={`text-base sm:text-lg font-black ${card.color}`}>{card.value}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="col-span-2 glass rounded-xl p-4 h-32 flex items-end gap-1.5">
+              {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
+                <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: 1 + i * 0.05, duration: 0.5 }} className="flex-1 bg-gradient-to-t from-primary to-orange-400 rounded-t-md" />
+              ))}
+            </div>
+            <div className="glass rounded-xl p-4 flex flex-col items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary mb-2" />
+              <p className="text-xs font-bold">Lia IA</p>
+              <p className="text-[10px] text-green-500 flex items-center gap-1 mt-1"><span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> Online</p>
+            </div>
           </div>
         </motion.div>
       </section>
