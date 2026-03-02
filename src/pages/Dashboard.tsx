@@ -4,7 +4,7 @@ import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart
+  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ const navItems = [
   { icon: PieChart, label: "Orçamentos", href: "/dashboard/budgets" },
   { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
   { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant" },
+  { icon: CreditCard, label: "Assinatura", href: "/dashboard/subscription" },
   { icon: Settings, label: "Configurações", href: "/dashboard/settings" },
 ];
 

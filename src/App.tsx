@@ -18,6 +18,7 @@ import { SettingsPage } from "./pages/dashboard/SettingsPage";
 import { BankConnectionsPage } from "./pages/dashboard/BankConnectionsPage";
 import { NetWorthPage } from "./pages/dashboard/NetWorthPage";
 import { BudgetsPage } from "./pages/dashboard/BudgetsPage";
+import { SubscriptionPage } from "./pages/dashboard/SubscriptionPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "./pages/NotFound";
@@ -51,6 +52,7 @@ const App = () => (
               <Route path="assistant" element={<AssistantPage />} />
               <Route path="net-worth" element={<NetWorthPage />} />
               <Route path="budgets" element={<BudgetsPage />} />
+              <Route path="subscription" element={<SubscriptionPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="/admin" element={<AdminDashboard />} />
