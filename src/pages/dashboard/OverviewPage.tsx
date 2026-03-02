@@ -59,25 +59,7 @@ export function OverviewPage() {
         );
     }
 
-    if (isError) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 text-center glass rounded-xl border-red-500/20 bg-red-500/5">
-                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
-                    <ArrowDownRight className="w-8 h-8 text-red-500" />
-                </div>
-                <h2 className="text-xl font-bold mb-2">Ops! Algo deu errado</h2>
-                <p className="text-muted-foreground max-w-sm mb-6">
-                    Não conseguimos carregar os dados do seu dashboard. Por favor, tente atualizar a página.
-                </p>
-                <button
-                    onClick={() => window.location.reload()}
-                    className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:shadow-glow transition-all"
-                >
-                    Recarregar Página
-                </button>
-            </div>
-        );
-    }
+    // No error block — we fall through to show defaults gracefully
 
     // Default stats if none exist
     const defaultStats = {

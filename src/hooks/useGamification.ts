@@ -18,10 +18,11 @@ export function useGamification() {
                 .select('*')
                 .eq('id', user.id)
                 .single();
-            if (error) throw error;
+            if (error) return null;
             return data as Profile;
         },
         enabled: !!user,
+        retry: false,
     });
 
     // Fetch user badges
@@ -33,10 +34,11 @@ export function useGamification() {
                 .from('user_badges')
                 .select('*')
                 .eq('user_id', user.id);
-            if (error) throw error;
-            return data as Badge[];
+            if (error) return [];
+            return (data as Badge[]) || [];
         },
         enabled: !!user,
+        retry: false,
     });
 
     // Update streak logic

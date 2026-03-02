@@ -11,6 +11,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
 import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
+import { LiaFloatingButton } from "@/components/dashboard/LiaFloatingButton";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -159,6 +160,7 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+      <LiaFloatingButton />
     </div>
   );
 }
