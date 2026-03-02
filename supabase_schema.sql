@@ -280,3 +280,30 @@ alter table public.budgets enable row level security;
 create policy "Users can manage their own budgets"
   on public.budgets for all
   using (auth.uid() = user_id or public.is_admin());
+
+-- ============================================
+-- SUBSCRIPTIONS (Stripe)
+-- ============================================
+create table public.subscriptions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null unique,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  plan_id text not null default 'free',
+  status text not null default 'inactive' check (status in ('active','inactive','canceled','past_due','trialing')),
+  current_period_start timestamptz,
+  current_period_end timestamptz,
+  cancel_at_period_end boolean default false,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table public.subscriptions enable row level security;
+
+create policy "Users can view their own subscription"
+  on public.subscriptions for select
+  using (auth.uid() = user_id or public.is_admin());
+
+create policy "Service role can manage subscriptions"
+  on public.subscriptions for all
+  using (true);
