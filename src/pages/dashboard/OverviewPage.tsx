@@ -6,7 +6,8 @@ import {
     Target,
     Bot,
     Trophy,
-    Flame
+    Flame,
+    Wallet
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
@@ -34,7 +35,7 @@ export function OverviewPage() {
 
     const isLoading = isStatsLoading || isGamificationLoading;
 
-    if (isLoading || !stats) {
+    if (isLoading) {
         return (
             <div className="space-y-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -50,31 +51,45 @@ export function OverviewPage() {
         );
     }
 
+    // Default stats if none exist
+    const defaultStats = {
+        balance: 0,
+        totalIncome: 0,
+        totalExpenses: 0,
+        transactionCount: 0,
+        incomeChange: 0,
+        expenseChange: 0,
+        monthlyData: [],
+        categoryBreakdown: []
+    };
+
+    const displayStats = stats || defaultStats;
+
     const statCards = [
         {
             label: "Saldo Atual",
-            value: stats.balance,
+            value: displayStats.balance,
             icon: DollarSign,
-            change: `${stats.incomeChange >= 0 ? '+' : ''}${stats.incomeChange}%`,
-            positive: stats.balance >= 0
+            change: `${displayStats.incomeChange >= 0 ? '+' : ''}${displayStats.incomeChange}%`,
+            positive: displayStats.balance >= 0
         },
         {
             label: "Receitas (Mês)",
-            value: stats.totalIncome,
+            value: displayStats.totalIncome,
             icon: ArrowUpRight,
-            change: `${stats.incomeChange >= 0 ? '+' : ''}${stats.incomeChange}%`,
+            change: `${displayStats.incomeChange >= 0 ? '+' : ''}${displayStats.incomeChange}%`,
             positive: true
         },
         {
             label: "Despesas (Mês)",
-            value: stats.totalExpenses,
+            value: displayStats.totalExpenses,
             icon: ArrowDownRight,
-            change: `${stats.expenseChange >= 0 ? '+' : ''}${stats.expenseChange}%`,
+            change: `${displayStats.expenseChange >= 0 ? '+' : ''}${displayStats.expenseChange}%`,
             positive: false
         },
         {
             label: "Lançamentos (Mês)",
-            value: stats.transactionCount,
+            value: displayStats.transactionCount,
             icon: Target,
             change: "transações",
             positive: true,
@@ -160,7 +175,7 @@ export function OverviewPage() {
                     </div>
                     <div className="h-64 mt-4 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={stats.monthlyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                            <BarChart data={displayStats.monthlyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
                                 <XAxis
                                     dataKey="month"
@@ -191,13 +206,13 @@ export function OverviewPage() {
                     transition={{ delay: 0.5 }}
                 >
                     <h2 className="font-semibold mb-4">Despesas por Categoria</h2>
-                    {stats.categoryBreakdown.length > 0 ? (
+                    {displayStats.categoryBreakdown.length > 0 ? (
                         <div className="flex-1 flex flex-col justify-center items-center relative">
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
-                                            data={stats.categoryBreakdown}
+                                            data={displayStats.categoryBreakdown}
                                             cx="50%"
                                             cy="50%"
                                             innerRadius={60}
@@ -206,7 +221,7 @@ export function OverviewPage() {
                                             dataKey="amount"
                                             stroke="none"
                                         >
-                                            {stats.categoryBreakdown.map((entry, index) => (
+                                            {displayStats.categoryBreakdown.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.color} />
                                             ))}
                                         </Pie>
@@ -215,7 +230,7 @@ export function OverviewPage() {
                                 </ResponsiveContainer>
                             </div>
                             <div className="w-full mt-4 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                                {stats.categoryBreakdown.map((cat, i) => (
+                                {displayStats.categoryBreakdown.map((cat, i) => (
                                     <div key={i} className="flex items-center justify-between text-sm">
                                         <div className="flex items-center gap-2">
                                             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
@@ -227,8 +242,11 @@ export function OverviewPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm border border-dashed rounded-lg border-border/50">
-                            Sem despesas registradas no mês.
+                        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm border border-dashed rounded-lg border-border/50 p-8 text-center bg-secondary/10">
+                            <div>
+                                <Wallet className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                                <p>Sem despesas registradas no mês.</p>
+                            </div>
                         </div>
                     )}
                 </motion.div>
@@ -265,14 +283,18 @@ export function OverviewPage() {
                         <h2 className="font-semibold">Insights da IA</h2>
                     </div>
                     <div className="space-y-4 flex-1">
-                        {stats.expenseChange > 10 && (
+                        {displayStats.expenseChange > 10 && (
                             <div className="bg-secondary/50 rounded-lg p-4 text-sm text-foreground leading-relaxed border border-red-500/20">
-                                Seus gastos estão {stats.expenseChange}% maiores que o mês passado. Considere rever suas despesas.
+                                Seus gastos estão {displayStats.expenseChange}% maiores que o mês passado. Considere rever suas despesas.
                             </div>
                         )}
-                        {stats.balance > 0 && stats.totalIncome > 0 && (
+                        {displayStats.balance > 0 && displayStats.totalIncome > 0 ? (
                             <div className="bg-secondary/50 rounded-lg p-4 text-sm text-foreground leading-relaxed border border-green-500/20">
-                                Ótimo mês! Você economizou {formatCurrency(stats.balance)}. Que tal investir parte desse valor? 🎯
+                                Ótimo mês! Você economizou {formatCurrency(displayStats.balance)}. Que tal investir parte desse valor? 🎯
+                            </div>
+                        ) : (
+                            <div className="bg-secondary/50 rounded-lg p-4 text-sm text-muted-foreground leading-relaxed italic">
+                                Adicione seus primeiros lançamentos para receber insights personalizados da Lia.
                             </div>
                         )}
                     </div>

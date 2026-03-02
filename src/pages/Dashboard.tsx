@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
+import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -41,8 +42,8 @@ export default function Dashboard() {
   const SidebarContent = () => (
     <>
       <Link to="/" className="flex items-center gap-2 mb-10 px-2" onClick={() => setMobileOpen(false)}>
-        <img src={logoWhite} alt="Liberta" className="h-7 hidden dark:block" />
-        <img src={logoColor} alt="Liberta" className="h-7 block dark:hidden" />
+        <img src={logoWhite} alt="Liberta" className="h-10 hidden dark:block" />
+        <img src={logoColor} alt="Liberta" className="h-10 block dark:hidden" />
       </Link>
 
       <nav className="flex-1 space-y-1">
@@ -56,7 +57,7 @@ export default function Dashboard() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-sidebar-accent text-primary"
+                  ? "bg-primary text-primary-foreground shadow-glow-sm"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50"
               )}
             >
@@ -137,17 +138,16 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <ModeToggle />
-            <Button variant="ghost" size="icon" className="relative hidden sm:flex">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
-            </Button>
-            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-sm font-semibold text-primary overflow-hidden">
-              {user?.user_metadata?.avatar_url ? (
-                <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                getFirstName(user?.user_metadata?.full_name).charAt(0).toUpperCase()
-              )}
-            </div>
+            <NotificationDropdown />
+            <Link to="/dashboard/settings" title="Configurações">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary overflow-hidden hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-glow-sm">
+                {user?.user_metadata?.avatar_url ? (
+                  <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  getFirstName(user?.user_metadata?.full_name).charAt(0).toUpperCase()
+                )}
+              </div>
+            </Link>
           </div>
         </header>
 

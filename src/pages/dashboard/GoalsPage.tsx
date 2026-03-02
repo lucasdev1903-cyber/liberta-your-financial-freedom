@@ -10,7 +10,8 @@ import {
     Target,
     Trash,
     TrendingUp,
-    CalendarIcon
+    CalendarIcon,
+    Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,10 +46,22 @@ const goalSchema = z.object({
     title: z.string().min(2, 'O título é muito curto'),
     target_amount: z.coerce.number().positive('O valor deve ser maior que zero'),
     current_amount: z.coerce.number().min(0).default(0),
-    deadline: z.date().optional(),
+    deadline: z.date({
+        required_error: "A data limite é obrigatória",
+    }),
+    category: z.string().min(1, 'Selecione uma categoria'),
 });
 
 type GoalFormValues = z.infer<typeof goalSchema>;
+
+const goalCategories = [
+    { label: "Viagem", value: "travel", icon: "✈️" },
+    { label: "Carro", value: "car", icon: "🚗" },
+    { label: "Reserva", value: "savings", icon: "💰" },
+    { label: "Casa", value: "home", icon: "🏠" },
+    { label: "Estudos", value: "study", icon: "📚" },
+    { label: "Outros", value: "other", icon: "🎯" },
+];
 
 export function GoalsPage() {
     const [open, setOpen] = useState(false);
@@ -62,6 +75,7 @@ export function GoalsPage() {
             title: "",
             target_amount: 0,
             current_amount: 0,
+            category: "other",
         },
     });
 
@@ -72,8 +86,9 @@ export function GoalsPage() {
                 title: data.title,
                 target_amount: data.target_amount,
                 current_amount: data.current_amount,
-                deadline: data.deadline ? format(data.deadline, "yyyy-MM-dd") : undefined,
-            });
+                deadline: format(data.deadline, "yyyy-MM-dd"),
+                icon: goalCategories.find(c => c.value === data.category)?.icon || "🎯",
+            } as any);
             toast({ title: "Meta criada com sucesso!" });
             setOpen(false);
             form.reset();
@@ -83,6 +98,7 @@ export function GoalsPage() {
             setIsSubmitting(false);
         }
     };
+    // ... (rest of the component logic)
 
     const handleAddFunds = async (goalId: string, current: number, addition: number) => {
         try {
@@ -127,7 +143,7 @@ export function GoalsPage() {
                             <DialogTitle>Criar Nova Meta</DialogTitle>
                         </DialogHeader>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 mt-4">
                                 <FormField
                                     control={form.control}
                                     name="title"
@@ -135,8 +151,37 @@ export function GoalsPage() {
                                         <FormItem>
                                             <FormLabel>Nome da Meta</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Ex: Viagem, Carro Novo..." className="bg-secondary/30" {...field} />
+                                                <Input placeholder="Ex: Viagem para o Japão..." className="bg-secondary/20 border-border/50 h-11" {...field} />
                                             </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Tipo de Meta</FormLabel>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {goalCategories.map((cat) => (
+                                                    <button
+                                                        key={cat.value}
+                                                        type="button"
+                                                        onClick={() => field.onChange(cat.value)}
+                                                        className={cn(
+                                                            "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all gap-1 hover:bg-primary/5",
+                                                            field.value === cat.value
+                                                                ? "border-primary bg-primary/10 shadow-glow-sm scale-105"
+                                                                : "border-border/30 bg-secondary/10 opacity-70"
+                                                        )}
+                                                    >
+                                                        <span className="text-xl">{cat.icon}</span>
+                                                        <span className="text-[10px] font-medium uppercase tracking-tighter">{cat.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -150,7 +195,10 @@ export function GoalsPage() {
                                             <FormItem>
                                                 <FormLabel>Objetivo (R$)</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" step="0.01" className="bg-secondary/30" {...field} />
+                                                    <div className="relative">
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                                                        <Input type="number" step="0.01" className="bg-secondary/20 border-border/50 h-11 pl-9" {...field} />
+                                                    </div>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -164,7 +212,10 @@ export function GoalsPage() {
                                             <FormItem>
                                                 <FormLabel>Já guardou (R$)</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" step="0.01" className="bg-secondary/30" {...field} />
+                                                    <div className="relative">
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                                                        <Input type="number" step="0.01" className="bg-secondary/20 border-border/50 h-11 pl-9" {...field} />
+                                                    </div>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -177,14 +228,14 @@ export function GoalsPage() {
                                     name="deadline"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Data Limite (Opcional)</FormLabel>
+                                            <FormLabel className="mb-2">Data Limite</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-full pl-3 text-left font-normal bg-secondary/30",
+                                                                "w-full h-11 pl-3 text-left font-normal bg-secondary/20 border-border/50 hover:bg-secondary/30",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
                                                         >
@@ -208,8 +259,9 @@ export function GoalsPage() {
                                     )}
                                 />
 
-                                <Button type="submit" variant="hero" className="w-full mt-4" disabled={isSubmitting}>
-                                    {isSubmitting ? 'Salvando...' : 'Criar Meta'}
+                                <Button type="submit" variant="hero" className="w-full h-12 text-base shadow-glow mt-2" disabled={isSubmitting}>
+                                    {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                                    Criar Meta Financeira
                                 </Button>
                             </form>
                         </Form>

@@ -58,8 +58,9 @@ export function useDashboardStats() {
                 .gte('date', sixMonthsAgo)
                 .lte('date', endOfMonth);
 
-            const transactions = currentData || [];
-            const prevTransactions = prevData || [];
+            const transactions = (currentData || []) as any[];
+            const prevTransactions = (prevData || []) as any[];
+            const chartTransactions = (chartData || []) as any[];
 
             const totalIncome = transactions
                 .filter((t) => t.type === 'income')
@@ -109,7 +110,7 @@ export function useDashboardStats() {
                 monthlyMap.set(key, { income: 0, expense: 0 });
             }
 
-            (chartData || []).forEach((t) => {
+            chartTransactions.forEach((t) => {
                 const d = new Date(t.date);
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                 const entry = monthlyMap.get(key);

@@ -2,6 +2,7 @@ import { Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function ModeToggle() {
     const { theme, setTheme } = useTheme()
@@ -11,11 +12,32 @@ export function ModeToggle() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="rounded-full w-10 h-10 border border-border/50 bg-background/50 hover:bg-secondary/50"
+            className="w-10 h-10 rounded-xl hover:bg-primary/10 relative overflow-hidden group transition-all duration-300"
         >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <AnimatePresence mode="wait">
+                {theme === "light" ? (
+                    <motion.div
+                        key="sun"
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Sun className="h-5 w-5 text-amber-500" />
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="moon"
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Moon className="h-5 w-5 text-indigo-400" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <span className="sr-only">Alternar tema</span>
         </Button>
     )
 }
