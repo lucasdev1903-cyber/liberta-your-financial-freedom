@@ -30,23 +30,51 @@ import {
 
 export function OverviewPage() {
     const { user } = useAuth();
-    const { data: stats, isLoading: isStatsLoading } = useDashboardStats();
-    const { profile, badges, isLoading: isGamificationLoading } = useGamification();
+    const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats();
+    const { profile, badges, isLoading: isGamificationLoading, isError: isGamificationError } = useGamification();
 
     const isLoading = isStatsLoading || isGamificationLoading;
+    const isError = isStatsError || isGamificationError;
 
     if (isLoading) {
         return (
             <div className="space-y-6">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="h-32 bg-secondary/20 rounded-xl animate-pulse" />
+                        <div key={i} className="h-32 bg-secondary/10 rounded-xl animate-pulse flex flex-col p-5 gap-3">
+                            <div className="flex justify-between">
+                                <div className="w-20 h-3 bg-secondary/20 rounded-full" />
+                                <div className="w-8 h-8 bg-secondary/20 rounded-lg" />
+                            </div>
+                            <div className="w-24 h-6 bg-secondary/20 rounded-full" />
+                            <div className="w-12 h-3 bg-secondary/20 rounded-full" />
+                        </div>
                     ))}
                 </div>
                 <div className="grid lg:grid-cols-5 gap-6">
-                    <div className="lg:col-span-3 h-80 bg-secondary/20 rounded-xl animate-pulse" />
-                    <div className="lg:col-span-2 h-80 bg-secondary/20 rounded-xl animate-pulse" />
+                    <div className="lg:col-span-3 h-80 bg-secondary/10 rounded-xl animate-pulse" />
+                    <div className="lg:col-span-2 h-80 bg-secondary/10 rounded-xl animate-pulse" />
                 </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center glass rounded-xl border-red-500/20 bg-red-500/5">
+                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+                    <ArrowDownRight className="w-8 h-8 text-red-500" />
+                </div>
+                <h2 className="text-xl font-bold mb-2">Ops! Algo deu errado</h2>
+                <p className="text-muted-foreground max-w-sm mb-6">
+                    Não conseguimos carregar os dados do seu dashboard. Por favor, tente atualizar a página.
+                </p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:shadow-glow transition-all"
+                >
+                    Recarregar Página
+                </button>
             </div>
         );
     }

@@ -25,42 +25,36 @@ export function useDashboardStats() {
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
 
-            // Current month range
             const startOfMonth = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
             const endOfMonth = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
-
-            // Previous month range
             const startOfPrevMonth = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
             const endOfPrevMonth = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
-
-            // Current month transactions
-            const { data: currentData } = await supabase
-                .from('transactions')
-                .select('amount, type, category_id, categories(name, color)')
-                .eq('user_id', user.id)
-                .gte('date', startOfMonth)
-                .lte('date', endOfMonth);
-
-            // Previous month transactions
-            const { data: prevData } = await supabase
-                .from('transactions')
-                .select('amount, type')
-                .eq('user_id', user.id)
-                .gte('date', startOfPrevMonth)
-                .lte('date', endOfPrevMonth);
-
-            // Last 6 months for chart
             const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1).toISOString().split('T')[0];
-            const { data: chartData } = await supabase
-                .from('transactions')
-                .select('amount, type, date')
-                .eq('user_id', user.id)
-                .gte('date', sixMonthsAgo)
-                .lte('date', endOfMonth);
 
-            const transactions = (currentData || []) as any[];
-            const prevTransactions = (prevData || []) as any[];
-            const chartTransactions = (chartData || []) as any[];
+            const [currentRes, prevRes, chartRes] = await Promise.all([
+                supabase
+                    .from('transactions')
+                    .select('amount, type, category_id, categories(name, color)')
+                    .eq('user_id', user.id)
+                    .gte('date', startOfMonth)
+                    .lte('date', endOfMonth),
+                supabase
+                    .from('transactions')
+                    .select('amount, type')
+                    .eq('user_id', user.id)
+                    .gte('date', startOfPrevMonth)
+                    .lte('date', endOfPrevMonth),
+                supabase
+                    .from('transactions')
+                    .select('amount, type, date')
+                    .eq('user_id', user.id)
+                    .gte('date', sixMonthsAgo)
+                    .lte('date', endOfMonth)
+            ]);
+
+            const transactions = (currentRes.data || []) as any[];
+            const prevTransactions = (prevRes.data || []) as any[];
+            const chartTransactions = (chartRes.data || []) as any[];
 
             const totalIncome = transactions
                 .filter((t) => t.type === 'income')

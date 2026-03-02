@@ -260,3 +260,23 @@ create policy "Users can view their own badges"
 create policy "Users can insert their own badges"
   on public.user_badges for insert
   with check (auth.uid() = user_id);
+
+-- ============================================
+-- BUDGETS (per-category spending limits)
+-- ============================================
+create table public.budgets (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  category_id uuid references public.categories on delete cascade not null,
+  amount_limit numeric(12, 2) not null,
+  period text default 'monthly' not null check (period in ('monthly', 'weekly')),
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null,
+  unique(user_id, category_id)
+);
+
+alter table public.budgets enable row level security;
+
+create policy "Users can manage their own budgets"
+  on public.budgets for all
+  using (auth.uid() = user_id or public.is_admin());

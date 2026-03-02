@@ -64,14 +64,14 @@ export function useGamification() {
 
             const longestStreak = Math.max(profile.longest_streak || 0, newStreak);
 
-            const { error } = await supabase
-                .from('profiles')
+            const { error } = await (supabase
+                .from('profiles') as any)
                 .update({
                     current_streak: newStreak,
                     longest_streak: longestStreak,
                     last_activity_date: today,
                     updated_at: new Date().toISOString()
-                } as any)
+                })
                 .eq('id', user.id);
 
             if (error) throw error;
@@ -92,8 +92,8 @@ export function useGamification() {
         if (!user) return;
 
         // Check if user already has this badge
-        const { data: existing } = await supabase
-            .from('user_badges')
+        const { data: existing } = await (supabase
+            .from('user_badges') as any)
             .select('id')
             .eq('user_id', user.id)
             .eq('badge_type', badgeType)
@@ -101,12 +101,12 @@ export function useGamification() {
 
         if (existing) return;
 
-        const { error } = await supabase
-            .from('user_badges')
+        const { error } = await (supabase
+            .from('user_badges') as any)
             .insert({
                 user_id: user.id,
                 badge_type: badgeType
-            } as BadgeInsert);
+            });
 
         if (!error) {
             queryClient.invalidateQueries({ queryKey: ['user-badges', user?.id] });
@@ -121,6 +121,7 @@ export function useGamification() {
         profile: profileQuery.data,
         badges: badgesQuery.data || [],
         isLoading: profileQuery.isLoading || badgesQuery.isLoading,
+        isError: profileQuery.isError || badgesQuery.isError,
         updateActivity,
         awardBadge: checkAndAwardBadge
     };
