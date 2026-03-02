@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, Sparkles } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import liaAvatar from "@/assets/lia-avatar.png";
 
 const LIA_TIPS = [
     "💡 Dica: Defina orçamentos para controlar seus gastos!",
@@ -33,7 +34,7 @@ export function LiaFloatingButton() {
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-                {isOpen ? <X className="w-5 h-5" /> : <Bot className="w-6 h-6" />}
+                {isOpen ? <X className="w-5 h-5" /> : <img src={liaAvatar} alt="Lia" className="w-full h-full object-cover rounded-full" />}
             </motion.button>
 
             {/* Popup */}
@@ -49,8 +50,8 @@ export function LiaFloatingButton() {
                         {/* Header */}
                         <div className="bg-gradient-to-r from-primary to-orange-500 p-4 text-white">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <Sparkles className="w-5 h-5" />
+                                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30">
+                                    <img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-sm">Lia — Assistente IA</h3>

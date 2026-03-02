@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { Bot, Send, Sparkles, User, Trash2, Zap, TrendingUp, Target, PiggyBank } from "lucide-react";
+import liaAvatar from "@/assets/lia-avatar.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -108,8 +109,8 @@ export function AssistantPage() {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-glow">
-                        <Sparkles className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-glow border-2 border-primary/30">
+                        <img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold">Lia — Assistente Financeira</h1>
@@ -133,9 +134,9 @@ export function AssistantPage() {
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ type: "spring", stiffness: 200 }}
-                                className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center mb-6 shadow-glow"
+                                className="w-20 h-20 rounded-3xl overflow-hidden shadow-glow border-2 border-primary/30 mb-6"
                             >
-                                <Sparkles className="w-10 h-10 text-white" />
+                                <img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" />
                             </motion.div>
                             <h3 className="text-xl font-bold mb-2">Olá, {firstName}! 💙</h3>
                             <p className="text-sm text-muted-foreground max-w-md mb-8">

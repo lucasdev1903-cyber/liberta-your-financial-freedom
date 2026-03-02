@@ -6,6 +6,7 @@ import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, ChevronDown, CheckCircle2, Heart, Bell, MessageSquare, Sparkles, ClipboardList, Zap, PieChart, Landmark } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
+import liaAvatar from "@/assets/lia-avatar.png";
 import {
   Accordion,
   AccordionContent,
@@ -278,7 +279,7 @@ export default function LandingPage() {
           >
             <div className="glass-strong rounded-[2.5rem] p-8 shadow-2xl relative z-10 border-border/80 max-w-md mx-auto shadow-glow">
               <div className="flex items-center gap-4 mb-8 border-b border-border/50 pb-6">
-                <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-black text-xl shadow-glow">L</div>
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30 shadow-glow"><img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" /></div>
                 <div>
                   <h4 className="font-bold text-base">Lia</h4>
                   <p className="text-[10px] text-green-500 flex items-center gap-1.5 font-bold uppercase tracking-widest">
