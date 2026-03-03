@@ -112,12 +112,12 @@ export function OverviewPage() {
         return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     };
 
-    const CustomTooltipLine = ({ active, payload, label }: any) => {
+    const CustomTooltipLine = ({ active, payload, label }: { active?: boolean, payload?: any[], label?: string }) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-background/90 border border-border p-3 rounded-lg shadow-xl backdrop-blur-md">
                     <p className="font-semibold mb-2">{label}</p>
-                    {payload.map((entry: any, index: number) => (
+                    {payload.map((entry: { color: string, name: string, value: number }, index: number) => (
                         <p key={index} className="text-sm flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                             <span className="text-muted-foreground">{entry.name}:</span>
@@ -130,7 +130,7 @@ export function OverviewPage() {
         return null;
     };
 
-    const CustomTooltipPie = ({ active, payload }: any) => {
+    const CustomTooltipPie = ({ active, payload }: { active?: boolean, payload?: any[] }) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-background/90 border border-border p-3 rounded-lg shadow-xl backdrop-blur-md">

@@ -4,12 +4,12 @@ import { Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function InstallPWAPrompt() {
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+    const [deferredPrompt, setDeferredPrompt] = useState<unknown>(null);
     const [showPrompt, setShowPrompt] = useState(false);
 
     useEffect(() => {
         // Escutar o evento que o navegador dispara quando o app pode ser instalado
-        const handler = (e: any) => {
+        const handler = (e: Event) => {
             e.preventDefault();
             setDeferredPrompt(e);
             setShowPrompt(true);
@@ -32,10 +32,10 @@ export function InstallPWAPrompt() {
         if (!deferredPrompt) return;
 
         // Mostrar o prompt nativo
-        deferredPrompt.prompt();
+        (deferredPrompt as { prompt: () => void }).prompt();
 
         // Esperar a resposta do usuário
-        const { outcome } = await deferredPrompt.userChoice;
+        const { outcome } = await (deferredPrompt as { userChoice: Promise<{ outcome: string }> }).userChoice;
 
         if (outcome === 'accepted') {
             setShowPrompt(false);

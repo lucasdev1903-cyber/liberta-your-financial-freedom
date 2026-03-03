@@ -16,13 +16,13 @@ export function TransactionsPage() {
     const { toast } = useToast();
 
     const handleExcelExport = () => {
-        exportToExcel(transactions as any);
+        exportToExcel(transactions as unknown as Parameters<typeof exportToExcel>[0]);
         toast({ title: "📊 Excel exportado com sucesso!" });
     };
 
     const handlePdfExport = () => {
         exportToPDF(
-            transactions as any,
+            transactions as unknown as Parameters<typeof exportToPDF>[0],
             { totalIncome: stats?.totalIncome || 0, totalExpenses: stats?.totalExpenses || 0, balance: stats?.balance || 0 }
         );
         toast({ title: "📄 PDF gerado com sucesso!" });
