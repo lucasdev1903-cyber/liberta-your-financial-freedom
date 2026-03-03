@@ -1,7 +1,6 @@
 import { loadStripe } from '@stripe/stripe-js';
 
-// Replace with your actual Stripe publishable key
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder';
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
 
 export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
@@ -11,7 +10,7 @@ export const PLANS = {
         name: 'Plano Mensal',
         price: 21.90,
         interval: 'month' as const,
-        stripePriceId: import.meta.env.VITE_STRIPE_PRICE_MONTHLY || 'price_monthly_placeholder',
+        stripePriceId: import.meta.env.VITE_STRIPE_PRICE_MONTHLY || '',
     },
     annual: {
         id: 'annual',
@@ -19,7 +18,7 @@ export const PLANS = {
         price: 197.10,
         pricePerMonth: 16.43,
         interval: 'year' as const,
-        stripePriceId: import.meta.env.VITE_STRIPE_PRICE_ANNUAL || 'price_annual_placeholder',
+        stripePriceId: import.meta.env.VITE_STRIPE_PRICE_ANNUAL || '',
         discount: '25%',
     },
 };
