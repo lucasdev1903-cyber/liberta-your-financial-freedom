@@ -2,49 +2,28 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { usePwaInstall } from '@/hooks/usePwaInstall';
 
 export function InstallPWAPrompt() {
-    const [deferredPrompt, setDeferredPrompt] = useState<unknown>(null);
+    const { isInstallable, install } = usePwaInstall();
     const [showPrompt, setShowPrompt] = useState(false);
+    const [dismissed, setDismissed] = useState(false);
 
     useEffect(() => {
-        // Escutar o evento que o navegador dispara quando o app pode ser instalado
-        const handler = (e: Event) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
+        if (isInstallable && !dismissed) {
             setShowPrompt(true);
-        };
-
-        window.addEventListener('beforeinstallprompt', handler);
-
-        // Se já foi instalado, não mostrar
-        window.addEventListener('appinstalled', () => {
-            setShowPrompt(false);
-            setDeferredPrompt(null);
-        });
-
-        return () => {
-            window.removeEventListener('beforeinstallprompt', handler);
-        };
-    }, []);
-
-    const handleInstallClick = async () => {
-        if (!deferredPrompt) return;
-
-        // Mostrar o prompt nativo
-        (deferredPrompt as { prompt: () => void }).prompt();
-
-        // Esperar a resposta do usuário
-        const { outcome } = await (deferredPrompt as { userChoice: Promise<{ outcome: string }> }).userChoice;
-
-        if (outcome === 'accepted') {
+        } else {
             setShowPrompt(false);
         }
+    }, [isInstallable, dismissed]);
 
-        setDeferredPrompt(null);
+    const handleInstallClick = async () => {
+        await install();
+        setShowPrompt(false);
     };
 
     const handleDismiss = () => {
+        setDismissed(true);
         setShowPrompt(false);
     };
 

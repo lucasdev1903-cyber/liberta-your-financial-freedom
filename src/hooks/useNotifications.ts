@@ -21,46 +21,47 @@ export function useNotifications() {
         queryFn: async (): Promise<Notification[]> => {
             if (!user) return [];
 
-            // For now, we'll use a mix of real data (if table exists) and smart mocks
-            // In a real app, you'd have a 'notifications' table
-            // We'll try to fetch from 'notifications' but fallback to mock for this demo
-            try {
-                const { data, error } = await supabase
-                    .from('notifications')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                return data as Notification[];
-            } catch (e) {
-                // Mock notifications for "Premium" experience if table doesn't exist yet
-                return [
-                    {
-                        id: '1',
-                        title: 'Bem-vindo ao Liberta!',
-                        message: 'Comece organizando suas finanças hoje mesmo.',
-                        type: 'success',
-                        read: false,
-                        created_at: new Date().toISOString()
-                    },
-                    {
-                        id: '2',
-                        title: 'Dica do Mês',
-                        message: 'Você sabia que economizar 10% do seu salário pode mudar seu futuro?',
-                        type: 'info',
-                        read: true,
-                        created_at: new Date(Date.now() - 86400000).toISOString()
-                    }
-                ] as Notification[];
+            const localKey = `liberta_notifications_${user.id}`;
+            const stored = localStorage.getItem(localKey);
+            if (stored) {
+                return JSON.parse(stored);
             }
+
+            // Initial Mock
+            const mock: Notification[] = [
+                {
+                    id: '1',
+                    title: 'Bem-vindo ao Liberta!',
+                    message: 'Comece organizando suas finanças hoje mesmo.',
+                    type: 'success',
+                    read: false,
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: '2',
+                    title: 'Dica do Mês',
+                    message: 'Você sabia que economizar 10% do seu salário pode mudar seu futuro?',
+                    type: 'info',
+                    read: true,
+                    created_at: new Date(Date.now() - 86400000).toISOString()
+                }
+            ];
+            localStorage.setItem(localKey, JSON.stringify(mock));
+            return mock;
         },
         enabled: !!user,
     });
 
     const markAsRead = useMutation({
         mutationFn: async (id: string) => {
-            // Update in DB if we had the table
+            if (!user) return id;
+            const localKey = `liberta_notifications_${user.id}`;
+            const stored = localStorage.getItem(localKey);
+            if (stored) {
+                const arr: Notification[] = JSON.parse(stored);
+                const updated = arr.map(n => n.id === id ? { ...n, read: true } : n);
+                localStorage.setItem(localKey, JSON.stringify(updated));
+            }
             return id;
         },
         onSuccess: () => {

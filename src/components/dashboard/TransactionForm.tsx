@@ -28,6 +28,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -52,8 +59,11 @@ interface TransactionFormProps {
 
 export function TransactionForm({ onSuccess, defaultType = 'expense' }: TransactionFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+
     const { addTransaction } = useTransactions();
-    const { categories } = useCategories();
+    const { categories, addCategory } = useCategories();
     const { toast } = useToast();
 
     const form = useForm<TransactionFormValues>({
@@ -93,6 +103,23 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
             setIsSubmitting(false);
         }
     }
+
+    const handleCreateCategory = async () => {
+        if (!newCategoryName.trim()) return;
+        try {
+            await addCategory.mutateAsync({
+                name: newCategoryName.trim(),
+                type: selectedType,
+                icon: 'wallet',
+                color: selectedType === 'income' ? '#22c55e' : '#ef4444'
+            } as any);
+            toast({ title: 'Categoria criada com sucesso' });
+            setNewCategoryName('');
+            setIsCreateCategoryOpen(false);
+        } catch (error: any) {
+            toast({ title: 'Erro ao criar', description: error.message, variant: 'destructive' });
+        }
+    };
 
     return (
         <Form {...form}>
@@ -184,7 +211,33 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                         name="category_id"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Categoria</FormLabel>
+                                <div className="flex items-center justify-between">
+                                    <FormLabel>Categoria</FormLabel>
+                                    <Dialog open={isCreateCategoryOpen} onOpenChange={setIsCreateCategoryOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-primary hover:bg-primary/10">
+                                                + Nova
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[350px] border-border/50 bg-card/95 backdrop-blur-xl">
+                                            <DialogHeader>
+                                                <DialogTitle>Nova {selectedType === 'income' ? 'Receita' : 'Despesa'}</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="flex flex-col gap-4 py-4">
+                                                <Input
+                                                    placeholder="Nome da categoria"
+                                                    value={newCategoryName}
+                                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                                    className="bg-secondary/20 h-11"
+                                                />
+                                                <Button variant="hero" onClick={handleCreateCategory} disabled={!newCategoryName.trim() || addCategory.isPending}>
+                                                    {addCategory.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                                                    Salvar Categoria
+                                                </Button>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="bg-secondary/20 border-border/50 h-11">

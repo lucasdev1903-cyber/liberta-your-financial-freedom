@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Settings, User, Bell, Shield, Palette, Camera, Loader2, LogOut, CheckCircle2 } from "lucide-react";
+import { Settings, User, Bell, Shield, Palette, Camera, Loader2, LogOut, CheckCircle2, FolderHeart, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,13 +14,14 @@ import { cn } from "@/lib/utils";
 export function SettingsPage() {
     const { signOut } = useAuth();
     const { profile, isLoading, isUploading, updateProfile, uploadAvatar } = useProfile();
+    const { categories, deleteCategory } = useCategories();
     const { theme, setTheme } = useTheme();
     const [fullName, setFullName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        if (profile?.full_name) {
-            setFullName(profile.full_name);
+        if (profile) {
+            setFullName((profile as any).full_name || "");
         }
     }, [profile]);
 
@@ -67,11 +69,11 @@ export function SettingsPage() {
                     <TabsTrigger value="appearance" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         <Palette className="w-4 h-4" /> Aparência
                     </TabsTrigger>
+                    <TabsTrigger value="categories" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <FolderHeart className="w-4 h-4" /> Categorias
+                    </TabsTrigger>
                     <TabsTrigger value="notifications" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         <Bell className="w-4 h-4" /> Notificações
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                        <Shield className="w-4 h-4" /> Segurança
                     </TabsTrigger>
                 </TabsList>
 
@@ -85,8 +87,8 @@ export function SettingsPage() {
                             <div className="flex flex-col sm:flex-row items-center gap-8">
                                 <div className="relative group">
                                     <div className="w-28 h-28 rounded-3xl bg-primary/10 border-2 border-border/50 overflow-hidden flex items-center justify-center shadow-glow-sm relative">
-                                        {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                        {(profile as any)?.avatar_url ? (
+                                            <img src={(profile as any).avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                         ) : (
                                             <span className="text-4xl font-bold text-primary">
                                                 {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
@@ -112,7 +114,7 @@ export function SettingsPage() {
                                 </div>
                                 <div className="space-y-1 text-center sm:text-left">
                                     <h3 className="font-bold text-lg">{fullName || 'Seu Nome'}</h3>
-                                    <p className="text-sm text-muted-foreground">{profile?.role === 'admin' ? 'Administrador' : 'Membro Liberta'}</p>
+                                    <p className="text-sm text-muted-foreground">{(profile as any)?.role === 'admin' ? 'Administrador' : 'Membro Liberta'}</p>
                                     <p className="text-xs text-muted-foreground/60 mt-1">Recomendado: JPG ou PNG, máx. 2MB</p>
                                 </div>
                             </div>
@@ -140,7 +142,7 @@ export function SettingsPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="bg-secondary/5 border-t border-border/50 py-4 flex justify-between items-center px-6">
-                            <p className="text-xs text-muted-foreground">Última atualização: {new Date(profile?.updated_at || "").toLocaleDateString('pt-BR')}</p>
+                            <p className="text-xs text-muted-foreground">Última atualização: {new Date((profile as any)?.updated_at || "").toLocaleDateString('pt-BR')}</p>
                             <Button
                                 onClick={handleSaveProfile}
                                 disabled={isSaving || isUploading || !fullName}
@@ -209,6 +211,54 @@ export function SettingsPage() {
                                     <p className="text-xs text-muted-foreground">Elegante e descansa a visão</p>
                                 </div>
                             </button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="categories">
+                    <Card className="glass border-border/50">
+                        <CardHeader className="bg-secondary/5">
+                            <CardTitle>Minhas Categorias</CardTitle>
+                            <CardDescription>Gerencie as categorias de receitas e despesas que você criou.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                            {categories.length === 0 ? (
+                                <div className="text-center py-12 text-muted-foreground bg-secondary/10 rounded-2xl border border-dashed border-border/50">
+                                    <FolderHeart className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                                    <p>Você ainda não criou nenhuma categoria personalizada.</p>
+                                    <p className="text-sm">Você pode criar novas ao fazer um lançamento!</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {categories.map((cat) => (
+                                        <div key={cat.id} className="flex items-center justify-between p-4 rounded-xl bg-secondary/20 border border-border/50 group hover:border-primary/20 transition-all card-hover">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: cat.color ? `${cat.color}20` : '#ffffff20' }}>
+                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color || '#fff' }} />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold">{cat.name}</span>
+                                                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                                                        {cat.type === 'income' ? 'Receita' : 'Despesa'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={async () => {
+                                                    if (confirm('Tem certeza? Isso so apagará a categoria, os lançamentos serão mantidos sem categoria.')) {
+                                                        await deleteCategory.mutateAsync(cat.id);
+                                                    }
+                                                }}
+                                                className="text-muted-foreground hover:text-red-400 hover:bg-red-400/10 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>

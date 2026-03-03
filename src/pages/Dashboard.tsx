@@ -12,6 +12,7 @@ import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
 import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { LiaFloatingButton } from "@/components/dashboard/LiaFloatingButton";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isInstallable, install } = usePwaInstall();
 
   const handleSignOut = async () => {
     await signOut();
@@ -80,6 +82,21 @@ export default function Dashboard() {
               <Shield className="w-4 h-4 text-primary" />
               Painel Admin
             </Link>
+          </div>
+        )}
+
+        {isInstallable && (
+          <div className="pt-4 mt-4 border-t border-sidebar-border">
+            <button
+              onClick={() => {
+                install();
+                setMobileOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 text-left transition-colors drop-shadow-glow shadow-glow-sm"
+            >
+              <SmartphoneNfc className="w-4 h-4" />
+              Instalar App
+            </button>
           </div>
         )}
       </nav>

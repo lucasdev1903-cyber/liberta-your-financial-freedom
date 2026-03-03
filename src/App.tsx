@@ -28,44 +28,46 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <InstallPWAPrompt />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<OverviewPage />} />
-              <Route path="transactions" element={<TransactionsPage />} />
-              <Route path="goals" element={<GoalsPage />} />
-              <Route path="investments" element={<InvestmentsPage />} />
-              <Route path="connections" element={<BankConnectionsPage />} />
-              <Route path="assistant" element={<AssistantPage />} />
-              <Route path="net-worth" element={<NetWorthPage />} />
-              <Route path="budgets" element={<BudgetsPage />} />
-              <Route path="subscription" element={<SubscriptionPage />} />
-              <Route path="recurring" element={<RecurringPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <InstallPWAPrompt />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<OverviewPage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="goals" element={<GoalsPage />} />
+                <Route path="investments" element={<InvestmentsPage />} />
+                <Route path="connections" element={<BankConnectionsPage />} />
+                <Route path="assistant" element={<AssistantPage />} />
+                <Route path="net-worth" element={<NetWorthPage />} />
+                <Route path="budgets" element={<BudgetsPage />} />
+                <Route path="subscription" element={<SubscriptionPage />} />
+                <Route path="recurring" element={<RecurringPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

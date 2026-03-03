@@ -76,16 +76,26 @@ export function TransactionTable({ limit }: { limit?: number }) {
                 <TableBody>
                     {displayTransactions.map((t) => (
                         <TableRow key={t.id} className="border-border/50">
-                            <TableCell className="font-medium">{t.description}</TableCell>
+                            <TableCell className="font-medium">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm ${t.type === 'income' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                                        {t.type === 'income' ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-semibold">{t.description}</span>
+                                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.type === 'income' ? 'Receita' : 'Despesa'}</span>
+                                    </div>
+                                </div>
+                            </TableCell>
                             <TableCell>
                                 {t.categories ? (
                                     <div className="flex items-center gap-2">
                                         <div
                                             className="w-2 h-2 rounded-full"
-                                            style={{ backgroundColor: (t.categories as any).color || '#fff' }}
+                                            style={{ backgroundColor: t.categories.color || '#fff' }}
                                         />
                                         <span className="text-xs text-muted-foreground">
-                                            {(t.categories as any).name}
+                                            {t.categories.name}
                                         </span>
                                     </div>
                                 ) : (

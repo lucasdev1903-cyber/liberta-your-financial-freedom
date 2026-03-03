@@ -7,6 +7,7 @@ import liaAvatar from "@/assets/lia-avatar.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useTransactions } from "@/hooks/useTransactions";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -38,6 +39,7 @@ const LIA_RESPONSES: Record<string, string> = {
 export function AssistantPage() {
     const { user } = useAuth();
     const { toast } = useToast();
+    const { addTransaction } = useTransactions();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
@@ -69,18 +71,42 @@ export function AssistantPage() {
         await (supabase.from('ai_messages') as any).insert([{ user_id: user.id, role, content }]);
     };
 
-    const generateResponse = (userMsg: string): string => {
+    const generateResponse = async (userMsg: string): Promise<string> => {
         const lower = userMsg.toLowerCase();
+
+        // AI Transaction Intent Matching
+        const txMatch = lower.match(/(gastei|comprei|paguei|recebi|ganhei|adicione|lance)\s+(?:r\$\s*)?(\d+(?:[.,]\d+)?)\s+(?:em|com|de|no|na)\s+(.+)/i);
+
+        if (txMatch) {
+            const action = txMatch[1];
+            const amountStr = txMatch[2].replace(',', '.');
+            const amount = parseFloat(amountStr);
+            const description = txMatch[3].trim().replace(/[?!.]$/, '');
+            const type = ['recebi', 'ganhei'].includes(action) ? 'income' : 'expense';
+
+            try {
+                await addTransaction.mutateAsync({
+                    amount,
+                    description: description.charAt(0).toUpperCase() + description.slice(1),
+                    type,
+                    date: new Date().toISOString().split('T')[0],
+                } as any);
+                return `✅ Feito! Acabei de registrar ${type === 'income' ? 'a receita' : 'o gasto'} de **R$ ${amount.toFixed(2).replace('.', ',')}** (${description}) no seu painel.`;
+            } catch (e) {
+                return "❌ Ops, tentei anotar isso mas algo deu errado no sistema. Pode tentar fazer isso na aba Lançamentos?";
+            }
+        }
+
         for (const [keyword, response] of Object.entries(LIA_RESPONSES)) {
             if (lower.includes(keyword)) return response;
         }
         if (lower.includes("oi") || lower.includes("olá") || lower.includes("ola")) {
-            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira. Estou aqui para te ajudar a organizar suas finanças e alcançar seus objetivos. O que gostaria de saber hoje?`;
+            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira. Estou aqui para te ajudar a organizar suas finanças. Você pode inclusive me pedir para lançar algo, por exemplo: "gastei 50 no mercado hoje". O que gostaria de fazer?`;
         }
         if (lower.includes("obrigad")) {
             return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Lembre-se: consistência é a chave da liberdade financeira! 🔑`;
         }
-        return `Entendi, ${firstName}! 🤔 Essa é uma ótima pergunta. Por enquanto, posso te ajudar com:\n\n• **Análise de gastos** e despesas\n• **Metas** e como atingi-las\n• **Dicas** de economia e investimentos\n• **Lançamentos** rápidos\n• **Relatórios** em PDF/Excel\n\nMe diga mais sobre o que precisa!`;
+        return `Entendi, ${firstName}! 🤔 Essa é uma ótima pergunta. Por enquanto, posso te ajudar com:\n\n• **Lançamentos por voz/texto** (ex: "gastei 45 na padaria")\n• **Análise de gastos** e despesas\n• **Metas** e dicas de economia\n\nMe diga mais sobre o que precisa!`;
     };
 
     const handleSend = async (text?: string) => {
@@ -90,7 +116,7 @@ export function AssistantPage() {
         await saveMessage('user', userMsg);
         setIsTyping(true);
         await new Promise(r => setTimeout(r, 1200 + Math.random() * 800));
-        const response = generateResponse(userMsg);
+        const response = await generateResponse(userMsg);
         setIsTyping(false);
         await saveMessage('assistant', response);
     };

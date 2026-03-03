@@ -4,6 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGamification } from './useGamification';
 import type { Transaction, TransactionInsert, TransactionUpdate } from '@/lib/database.types';
 
+export type TransactionWithCategory = Transaction & {
+    categories?: {
+        name: string;
+        icon: string | null;
+        color: string | null;
+    } | null;
+};
+
 export function useTransactions(filters?: { month?: number; year?: number; type?: string }) {
     const { user } = useAuth();
     const queryClient = useQueryClient();
@@ -11,7 +19,7 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
 
     const query = useQuery({
         queryKey: ['transactions', user?.id, filters],
-        queryFn: async (): Promise<Transaction[]> => {
+        queryFn: async (): Promise<TransactionWithCategory[]> => {
             if (!user) return [];
 
             let q = supabase
@@ -32,7 +40,7 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
 
             const { data, error } = await q;
             if (error) throw error;
-            return (data as unknown as Transaction[]) || [];
+            return (data as unknown as TransactionWithCategory[]) || [];
         },
         enabled: !!user,
     });
@@ -42,7 +50,7 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
             if (!user) throw new Error('Not authenticated');
             const { data, error } = await supabase
                 .from('transactions')
-                .insert({ ...transaction, user_id: user.id })
+                .insert([{ ...transaction, user_id: user.id }] as any)
                 .select()
                 .single();
             if (error) throw error;
@@ -58,7 +66,7 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
         mutationFn: async ({ id, ...updates }: TransactionUpdate & { id: string }) => {
             const { data, error } = await supabase
                 .from('transactions')
-                .update(updates)
+                .update(updates as any)
                 .eq('id', id)
                 .select()
                 .single();

@@ -189,11 +189,27 @@
   }
 
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-card;
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-card transition-all duration-500 hover:-translate-y-1 hover:border-primary/30 hover:shadow-glow-sm relative;
+  }
+
+  .glass::after {
+    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.03] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-inherit;
+  }
+
+  .glass:hover::after {
+    @apply opacity-100;
   }
 
   .glass-strong {
-    @apply bg-card/80 backdrop-blur-2xl border border-border/60;
+    @apply bg-card/80 backdrop-blur-2xl border border-border/60 transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow relative;
+  }
+
+  .glass-strong::after {
+    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.05] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-inherit;
+  }
+
+  .glass-strong:hover::after {
+    @apply opacity-100;
   }
 
   /* Page entrance animation */
