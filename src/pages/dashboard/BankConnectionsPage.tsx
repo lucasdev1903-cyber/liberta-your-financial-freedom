@@ -17,12 +17,6 @@ export function BankConnectionsPage() {
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [showAddBank, setShowAddBank] = useState(false);
-    const [selectedBank, setSelectedBank] = useState<typeof SUPPORTED_BANKS[0] | null>(null);
-    const [accountType, setAccountType] = useState('checking');
-    const [lastFour, setLastFour] = useState('');
-    const [balance, setBalance] = useState('');
-
     // Import state
     const [showImport, setShowImport] = useState(false);
     const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
@@ -90,27 +84,6 @@ export function BankConnectionsPage() {
         }
     };
 
-    const handleAddBank = async () => {
-        if (!selectedBank) return;
-        try {
-            await addConnection.mutateAsync({
-                bank_name: selectedBank.name,
-                bank_code: selectedBank.code,
-                bank_logo: selectedBank.logo,
-                account_type: accountType,
-                last_four: lastFour || null,
-                balance: parseFloat(balance) || 0,
-                status: 'connected',
-                last_synced_at: new Date().toISOString(),
-            });
-            toast({ title: `✅ ${selectedBank.name} adicionado!` });
-            setShowAddBank(false);
-            setSelectedBank(null);
-            setLastFour('');
-            setBalance('');
-        } catch { toast({ title: "Erro ao adicionar", variant: "destructive" }); }
-    };
-
     const handleDeleteBank = async (id: string, name: string) => {
         if (confirm(`Remover ${name}?`)) {
             await deleteConnection.mutateAsync(id);
@@ -174,8 +147,8 @@ export function BankConnectionsPage() {
                     <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="gap-2">
                         <Upload className="w-4 h-4" /> Importar Extrato
                     </Button>
-                    <Button onClick={() => setShowAddBank(true)} className="bg-gradient-to-r from-primary to-orange-500 text-white shadow-glow gap-2">
-                        <Plus className="w-4 h-4" /> Adicionar Banco
+                    <Button onClick={handlePluggyConnect} disabled={pluggyLoading} className="bg-gradient-to-r from-primary to-orange-500 text-white shadow-glow gap-2">
+                        {pluggyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Conectar Banco
                     </Button>
                 </div>
                 <input ref={fileInputRef} type="file" accept=".ofx,.ofc,.csv,.txt" className="hidden" onChange={handleFileSelect} />
@@ -242,62 +215,7 @@ export function BankConnectionsPage() {
                 )}
             </AnimatePresence>
 
-            {/* Add Bank Modal */}
-            <AnimatePresence>
-                {showAddBank && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="glass rounded-2xl p-6 space-y-4 overflow-hidden">
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-bold">Adicionar Conta Bancária</h3>
-                            <Button variant="ghost" size="icon" onClick={() => setShowAddBank(false)}>
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-
-                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                            {SUPPORTED_BANKS.map(bank => (
-                                <button key={bank.code} onClick={() => setSelectedBank(bank)} className={cn(
-                                    "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all text-center",
-                                    selectedBank?.code === bank.code
-                                        ? "border-primary bg-primary/5 shadow-glow"
-                                        : "border-transparent bg-secondary/20 hover:bg-secondary/40"
-                                )}>
-                                    <div className="w-12 h-12 flex items-center justify-center text-lg">
-                                        {bank.logo ? (
-                                            bank.logo.startsWith('/') ? (
-                                                <img src={bank.logo} alt={bank.name} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" />
-                                            ) : (
-                                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white", bank.color)}>{bank.logo}</div>
-                                            )
-                                        ) : (
-                                            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-500 text-white">🏦</div>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] font-bold leading-tight">{bank.name}</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        {selectedBank && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-3 gap-3 pt-2">
-                                <select value={accountType} onChange={e => setAccountType(e.target.value)} className="rounded-xl bg-secondary/50 border border-border/50 px-3 py-2.5 text-sm">
-                                    <option value="checking">Conta Corrente</option>
-                                    <option value="savings">Poupança</option>
-                                    <option value="investment">Investimento</option>
-                                    <option value="credit">Cartão de Crédito</option>
-                                </select>
-                                <Input placeholder="4 últimos dígitos" maxLength={4} value={lastFour} onChange={e => setLastFour(e.target.value)} />
-                                <Input placeholder="Saldo atual (R$)" type="number" step="0.01" value={balance} onChange={e => setBalance(e.target.value)} />
-                            </motion.div>
-                        )}
-
-                        {selectedBank && (
-                            <Button onClick={handleAddBank} disabled={addConnection.isPending} className="w-full bg-gradient-to-r from-primary to-orange-500 text-white">
-                                {addConnection.isPending ? "Adicionando..." : `Adicionar ${selectedBank.name}`}
-                            </Button>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Add Bank Modal removed entirely inside favor of Pluggy open finance */}
 
             {/* Connections List */}
             <div className="space-y-3">
@@ -314,8 +232,8 @@ export function BankConnectionsPage() {
                             <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="gap-2">
                                 <Upload className="w-4 h-4" /> Importar Extrato
                             </Button>
-                            <Button onClick={() => setShowAddBank(true)} className="bg-gradient-to-r from-primary to-orange-500 text-white gap-2">
-                                <Plus className="w-4 h-4" /> Adicionar Banco
+                            <Button onClick={handlePluggyConnect} disabled={pluggyLoading} className="bg-gradient-to-r from-primary to-orange-500 text-white gap-2">
+                                {pluggyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Conectar Banco
                             </Button>
                         </div>
                     </div>
