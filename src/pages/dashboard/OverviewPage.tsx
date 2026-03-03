@@ -151,7 +151,7 @@ export function OverviewPage() {
                 {statCards.map((stat, i) => (
                     <motion.div
                         key={stat.label}
-                        className="glass rounded-xl p-5 border-border/50"
+                        className="glass rounded-xl p-5 border-border/50 card-hover"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1, duration: 0.4 }}
