@@ -60,15 +60,16 @@ export default function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-hero overflow-hidden">
+    <div className="min-h-screen bg-background dark:bg-gradient-hero overflow-hidden bg-grain">
       {/* Glow effect */}
-      <div className="fixed inset-0 bg-glow pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] pointer-events-none float-slow z-0" />
+      <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-orange-500/10 rounded-full blur-[100px] pointer-events-none float-slow z-0" style={{ animationDelay: '2s' }} />
 
       {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
+      <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto backdrop-blur-md rounded-2xl mt-4 border border-border/20 shadow-sm glass-subtle">
         <div>
-          <img src={logoWhite} alt="Liberta" className="h-10 hidden dark:block" />
-          <img src={logoColor} alt="Liberta" className="h-10 block dark:hidden" />
+          <img src={logoWhite} alt="Liberta" className="h-8 hidden dark:block" />
+          <img src={logoColor} alt="Liberta" className="h-8 block dark:hidden" />
         </div>
         <div className="flex items-center gap-3">
           <ModeToggle />
@@ -102,7 +103,7 @@ export default function LandingPage() {
           custom={1}
         >
           Liberte suas finanças <br className="hidden md:block" />
-          <span className="text-gradient">com propósito.</span>
+          <span className="text-gradient text-glow">com propósito.</span>
         </motion.h1>
 
         <motion.p
@@ -213,7 +214,7 @@ export default function LandingPage() {
           {features.map((f, i) => (
             <motion.div
               key={f.title}
-              className="glass rounded-[2rem] p-8 group hover:border-primary/40 transition-all duration-500 hover:shadow-glow-sm"
+              className="glass rounded-[2rem] p-8 group hover:border-primary/40 transition-all duration-500 card-hover"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -277,7 +278,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="glass-strong rounded-[2.5rem] p-8 shadow-2xl relative z-10 border-border/80 max-w-md mx-auto shadow-glow">
+            <div className="glass-strong rounded-[2.5rem] p-8 shadow-2xl relative z-10 border-border/80 max-w-md mx-auto shadow-glow float-slow">
               <div className="flex items-center gap-4 mb-8 border-b border-border/50 pb-6">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30 shadow-glow"><img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" /></div>
                 <div>
@@ -309,7 +310,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="absolute -inset-10 bg-primary/10 blur-[80px] rounded-full -z-10 animate-pulse" />
+            <div className="absolute -inset-10 bg-primary/10 blur-[80px] rounded-full -z-10 pulse-glow" />
           </motion.div>
         </div>
       </section>
@@ -381,7 +382,7 @@ export default function LandingPage() {
           </div>
 
           <motion.div
-            className="glass-strong rounded-[3rem] p-12 border-primary/30 relative shadow-glow overflow-hidden"
+            className="glass-subtle rounded-[3rem] p-12 border border-primary/30 relative shadow-glow-lg overflow-hidden card-hover"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}

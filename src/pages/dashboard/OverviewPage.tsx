@@ -175,7 +175,7 @@ export function OverviewPage() {
             <div className="grid lg:grid-cols-5 gap-6">
                 {/* Chart area */}
                 <motion.div
-                    className="lg:col-span-3 glass rounded-xl p-6 border-border/50"
+                    className="lg:col-span-3 glass-subtle rounded-xl p-6 border-border/50 card-hover shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -210,7 +210,7 @@ export function OverviewPage() {
 
                 {/* Categories Breakdown */}
                 <motion.div
-                    className="lg:col-span-2 glass rounded-xl p-6 border-border/50 flex flex-col"
+                    className="lg:col-span-2 glass-subtle rounded-xl p-6 border-border/50 flex flex-col card-hover shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
