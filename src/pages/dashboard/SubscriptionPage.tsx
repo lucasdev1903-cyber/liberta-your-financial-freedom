@@ -1,24 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Sparkles, CreditCard, Shield, Zap, Crown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PLANS } from "@/lib/stripe";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 export function SubscriptionPage() {
     const [isAnnual, setIsAnnual] = useState(false);
-    const { subscription, isPremium, isLoading, createCheckout } = useSubscription();
+    const { user } = useAuth();
     const { toast } = useToast();
     const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [subscription, setSubscription] = useState<any>(null);
+    const [pageReady, setPageReady] = useState(false);
 
     const selectedPlan = isAnnual ? PLANS.annual : PLANS.monthly;
 
+    useEffect(() => {
+        const loadSub = async () => {
+            if (!user) { setPageReady(true); return; }
+            try {
+                const { data } = await (supabase.from('subscriptions') as any)
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+                setSubscription(data);
+            } catch { /* no subscription yet */ }
+            setPageReady(true);
+        };
+        loadSub();
+    }, [user]);
+
     const handleSubscribe = async () => {
+        if (!user) { toast({ title: "Faça login primeiro", variant: "destructive" }); return; }
         setCheckoutLoading(true);
         try {
-            await createCheckout(selectedPlan.stripePriceId);
+            const email = user.email || user.user_metadata?.email || '';
+            if (!email) throw new Error('Email não encontrado');
+
+            const { data, error } = await supabase.functions.invoke('create-checkout', {
+                body: {
+                    priceId: selectedPlan.stripePriceId,
+                    userId: user.id,
+                    email,
+                    successUrl: `${window.location.origin}/dashboard?checkout=success`,
+                    cancelUrl: `${window.location.origin}/dashboard/subscription?checkout=canceled`,
+                },
+            });
+            if (error) throw error;
+            if (data?.error) throw new Error(data.error);
+            if (data?.url) {
+                window.location.href = data.url;
+            }
         } catch (error: any) {
             toast({ title: "Erro ao criar checkout", description: error.message, variant: "destructive" });
         } finally {
@@ -37,14 +72,11 @@ export function SubscriptionPage() {
         "Suporte prioritário",
     ];
 
-    if (isLoading) {
-        return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
-    }
+    const isPremium = subscription?.status === 'active' || subscription?.status === 'trialing';
 
-    // Show active subscription info
     if (isPremium) {
         return (
-            <div className="max-w-xl mx-auto space-y-8 text-center">
+            <div className="max-w-xl mx-auto space-y-8 text-center py-8">
                 <div className="glass-strong rounded-3xl p-12 border-green-500/30 shadow-glow">
                     <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-green-500/10 flex items-center justify-center">
                         <Crown className="w-8 h-8 text-green-500" />
@@ -56,9 +88,6 @@ export function SubscriptionPage() {
                         {subscription?.current_period_end && (
                             <div className="flex justify-between"><span className="text-muted-foreground">Renova em</span><span className="font-bold">{new Date(subscription.current_period_end).toLocaleDateString('pt-BR')}</span></div>
                         )}
-                        {subscription?.cancel_at_period_end && (
-                            <p className="text-yellow-500 text-xs mt-2">⚠️ A assinatura será cancelada ao final do período.</p>
-                        )}
                     </div>
                 </div>
             </div>
@@ -66,7 +95,7 @@ export function SubscriptionPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8 py-4">
             <header className="text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4 border border-primary/20">
                     <Crown className="w-3.5 h-3.5" /> Premium
@@ -92,7 +121,7 @@ export function SubscriptionPage() {
                     <Sparkles className="w-32 h-32 text-primary" />
                 </div>
                 <div className="relative z-10">
-                    <h3 className="text-xl font-bold mb-1 text-primary uppercase tracking-widest text-sm">plano liberta+</h3>
+                    <h3 className="text-sm font-bold mb-1 text-primary uppercase tracking-widest">plano liberta+</h3>
                     <p className="text-muted-foreground text-sm mb-8">Tudo para dominar suas finanças.</p>
 
                     <div className="flex items-baseline justify-center gap-1 mb-2">
