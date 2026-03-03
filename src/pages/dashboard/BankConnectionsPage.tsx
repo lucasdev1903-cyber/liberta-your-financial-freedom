@@ -1,16 +1,19 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Plus, Upload, RefreshCw, SmartphoneNfc, Trash2, FileText, CheckCircle2, AlertCircle, Building2, X, Loader2, Landmark } from "lucide-react";
+import { ShieldCheck, Plus, Upload, RefreshCw, SmartphoneNfc, Trash2, FileText, CheckCircle2, AlertCircle, Building2, X, Loader2, Landmark, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useBankConnections } from "@/hooks/useBankConnections";
 import { parseOFX, parseCSV, ParsedTransaction } from "@/lib/bankParser";
-import { SUPPORTED_BANKS, isPluggyConfigured } from "@/lib/pluggy";
+import { SUPPORTED_BANKS, isPluggyConfigured, getPluggyClientId } from "@/lib/pluggy";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 export function BankConnectionsPage() {
     const { connections, isLoading, addConnection, deleteConnection, importTransactions } = useBankConnections();
+    const { user } = useAuth();
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +28,67 @@ export function BankConnectionsPage() {
     const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
     const [importing, setImporting] = useState(false);
     const [importFileName, setImportFileName] = useState('');
+
+    // Pluggy state
+    const [pluggyLoading, setPluggyLoading] = useState(false);
+
+    const handlePluggyConnect = async () => {
+        if (!user) return;
+        setPluggyLoading(true);
+        try {
+            // 1. Get connect token from Edge Function
+            const { data: tokenData, error: tokenError } = await supabase.functions.invoke('pluggy-connect', {
+                body: { action: 'create-token', userId: user.id },
+            });
+            if (tokenError) throw tokenError;
+            if (tokenData?.error) throw new Error(tokenData.error);
+
+            const connectToken = tokenData?.connectToken;
+            if (!connectToken) throw new Error('Token não gerado');
+
+            // 2. Open Pluggy Connect widget
+            const clientId = getPluggyClientId();
+            const widgetUrl = `https://connect.pluggy.ai/?connectToken=${connectToken}&clientId=${clientId}`;
+
+            const popup = window.open(widgetUrl, 'pluggy-connect', 'width=450,height=650,toolbar=no,menubar=no');
+
+            toast({ title: "🏦 Conecte seu banco", description: "Complete a autenticação na janela que abriu" });
+
+            // 3. Listen for success message
+            const handler = async (event: MessageEvent) => {
+                if (event.data?.event === 'close' || event.data?.itemId) {
+                    window.removeEventListener('message', handler);
+                    popup?.close();
+
+                    if (event.data?.itemId) {
+                        toast({ title: "⏳ Sincronizando transações..." });
+                        // Fetch accounts
+                        await supabase.functions.invoke('pluggy-connect', {
+                            body: { action: 'get-accounts', itemId: event.data.itemId, userId: user.id },
+                        });
+                        // Fetch transactions
+                        const { data: txData } = await supabase.functions.invoke('pluggy-connect', {
+                            body: { action: 'get-transactions', itemId: event.data.itemId, userId: user.id },
+                        });
+                        toast({ title: `✅ ${txData?.imported || 0} transações sincronizadas!` });
+                        window.location.reload();
+                    }
+                }
+            };
+            window.addEventListener('message', handler);
+
+            // Timeout fallback
+            setTimeout(() => {
+                window.removeEventListener('message', handler);
+                setPluggyLoading(false);
+            }, 120000);
+
+        } catch (error: any) {
+            toast({ title: "Erro na conexão Pluggy", description: error.message, variant: "destructive" });
+        } finally {
+            setPluggyLoading(false);
+        }
+    };
 
     const handleAddBank = async () => {
         if (!selectedBank) return;
@@ -292,13 +356,19 @@ export function BankConnectionsPage() {
                 <div className="glass rounded-2xl p-6 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <SmartphoneNfc className="w-6 h-6 text-primary" />
+                            <Zap className="w-6 h-6 text-primary" />
                         </div>
                         <div className="flex-1">
                             <h3 className="font-bold">Conexão Automática via Pluggy</h3>
                             <p className="text-sm text-muted-foreground">Sincronize transações automaticamente com o Open Finance</p>
                         </div>
-                        <Button className="bg-gradient-to-r from-primary to-orange-500 text-white">Conectar Banco</Button>
+                        <Button
+                            onClick={handlePluggyConnect}
+                            disabled={pluggyLoading}
+                            className="bg-gradient-to-r from-primary to-orange-500 text-white"
+                        >
+                            {pluggyLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Conectando...</> : "Conectar Banco"}
+                        </Button>
                     </div>
                 </div>
             )}
