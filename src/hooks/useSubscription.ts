@@ -35,16 +35,23 @@ export function useSubscription() {
     const isPremium = query.data?.status === 'active' || query.data?.status === 'trialing';
 
     const createCheckout = async (priceId: string) => {
+        if (!user?.id) throw new Error('Usuário não autenticado');
+
+        const email = user.email || user.user_metadata?.email || '';
+        if (!email) throw new Error('Email do usuário não encontrado');
+        if (!priceId) throw new Error('Price ID não configurado');
+
         const { data, error } = await supabase.functions.invoke('create-checkout', {
             body: {
                 priceId,
-                userId: user?.id,
-                email: user?.email,
+                userId: user.id,
+                email,
                 successUrl: `${window.location.origin}/dashboard?checkout=success`,
                 cancelUrl: `${window.location.origin}/dashboard/subscription?checkout=canceled`,
             },
         });
         if (error) throw error;
+        if (data?.error) throw new Error(data.error);
         if (data?.url) {
             window.location.href = data.url;
         }
