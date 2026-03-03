@@ -40,21 +40,30 @@ export function SubscriptionPage() {
             const email = user.email || user.user_metadata?.email || '';
             if (!email) throw new Error('Email não encontrado');
 
+            console.log('Creating checkout with:', { priceId: selectedPlan.stripePriceId, userId: user.id, email });
+
             const { data, error } = await supabase.functions.invoke('create-checkout', {
                 body: {
                     priceId: selectedPlan.stripePriceId,
                     userId: user.id,
                     email,
-                    successUrl: `${window.location.origin}/dashboard?checkout=success`,
-                    cancelUrl: `${window.location.origin}/dashboard/subscription?checkout=canceled`,
+                    successUrl: 'https://liberta-your-financial-freedom.lovable.app/dashboard?checkout=success',
+                    cancelUrl: 'https://liberta-your-financial-freedom.lovable.app/dashboard/subscription?checkout=canceled',
                 },
             });
+
+            console.log('Checkout response:', data, error);
+
             if (error) throw error;
             if (data?.error) throw new Error(data.error);
             if (data?.url) {
-                window.location.href = data.url;
+                // Use window.open for iframe compatibility (Lovable)
+                window.open(data.url, '_blank');
+            } else {
+                throw new Error('URL de checkout não retornada');
             }
         } catch (error: any) {
+            console.error('Checkout error:', error);
             toast({ title: "Erro ao criar checkout", description: error.message, variant: "destructive" });
         } finally {
             setCheckoutLoading(false);
