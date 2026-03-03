@@ -42,7 +42,7 @@ export function BankConnectionsPage() {
 
             // 2. Open Pluggy Connect widget
             const clientId = getPluggyClientId();
-            const widgetUrl = `https://connect.pluggy.ai/?connectToken=${connectToken}&clientId=${clientId}`;
+            const widgetUrl = `https://connect.pluggy.ai/?connect_token=${connectToken}`;
 
             const popup = window.open(widgetUrl, 'pluggy-connect', 'width=450,height=650,toolbar=no,menubar=no');
 
