@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { TrendingUp, Calculator } from "lucide-react";
+import { TrendingUp, Calculator, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -128,9 +128,15 @@ export function InvestmentsPage() {
                         </div>
                     </div>
 
-                    <Button variant="hero" className="w-full" onClick={() => { }}>
-                        Atualizar Projeção
-                    </Button>
+                    <div className="pt-6 space-y-4 border-t border-border/50">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground bg-primary/5 p-4 rounded-xl border border-primary/10">
+                            <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                            <p>Com esse ritmo, você terá acumulado <span className="text-primary font-bold">{formatCurrency(finalBalance)}</span> em {years} anos.</p>
+                        </div>
+                        <Button variant="hero" className="w-full shadow-glow py-6" onClick={() => { }}>
+                            Salvar Simulação
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Gráfico e Resultados */}

@@ -7,12 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import logoWhite from '@/assets/liberta-logo-white.png';
 import logoColor from '@/assets/logo_liberta_colorido.png';
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Smartphone, Fingerprint } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function RegisterPage() {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -42,9 +44,18 @@ export default function RegisterPage() {
             return;
         }
 
+        if (cpf.length < 11) {
+            toast({
+                title: 'CPF inválido',
+                description: 'Por favor, insira um CPF válido.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
         setIsLoading(true);
 
-        const { error } = await signUpWithEmail(email, password, fullName);
+        const { error } = await signUpWithEmail(email, password, fullName, cpf.replace(/\D/g, ''), phone);
 
         if (error) {
             toast({
@@ -98,7 +109,7 @@ export default function RegisterPage() {
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold mb-2">Crie sua conta</h1>
                         <p className="text-muted-foreground text-sm">
-                            Comece grátis por 4 dias — sem cartão de crédito
+                            Teste grátis por 7 dias — requer cartão de crédito
                         </p>
                     </div>
 
@@ -154,6 +165,44 @@ export default function RegisterPage() {
                                     className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
                                     required
                                 />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="cpf" className="text-sm text-muted-foreground">
+                                    CPF
+                                </Label>
+                                <div className="relative">
+                                    <Fingerprint className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <Input
+                                        id="cpf"
+                                        type="text"
+                                        placeholder="000.000.000-00"
+                                        value={cpf}
+                                        onChange={(e) => setCpf(e.target.value)}
+                                        className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="phone" className="text-sm text-muted-foreground">
+                                    Telefone
+                                </Label>
+                                <div className="relative">
+                                    <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="(00) 00000-0000"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
 

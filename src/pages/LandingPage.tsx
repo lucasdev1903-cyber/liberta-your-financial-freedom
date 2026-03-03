@@ -25,34 +25,34 @@ const fadeUp = {
 
 const features = [
   {
-    icon: Heart,
-    title: "Categorias Emocionais",
-    desc: "Organize gastos por sentimentos como 'Momentos com Amigos' e 'Bem-Estar', não por planilhas frias.",
+    icon: Bot,
+    title: "IA — Lia 2.0",
+    desc: "Sua assistente agora fala com seus dados reais. Pergunte sobre seu saldo, metas e peça para ela lançar gastos via texto ou voz.",
+  },
+  {
+    icon: Landmark,
+    title: "Open Finance Real",
+    desc: "Esqueça mockups. Conecte mais de 25 bancos brasileiros via Pluggy e veja suas transações reais em segundos.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Patrimônio Consolidado",
+    desc: "Visão 360º de Ativos (contas, imóveis, carros) e Passivos. Saiba exatamente qual sua saúde financeira atual.",
   },
   {
     icon: Target,
-    title: "Metas Visuais",
-    desc: "Defina sonhos com progresso visual, prazos e previsões inteligentes de quando você vai alcançá-los.",
+    title: "Gestão por Objetivos",
+    desc: "Crie metas inteligentes e deixe a IA calcular quanto tempo falta para você atingir a liberdade financeira.",
   },
   {
-    icon: Bot,
-    title: "Insights por IA",
-    desc: "Receba análises personalizadas sobre seus hábitos e sugestões para economizar mais.",
-  },
-  {
-    icon: BarChart3,
-    title: "Relatórios Avançados",
-    desc: "Gráficos interativos, evolução patrimonial e exportação em PDF e Excel.",
-  },
-  {
-    icon: Bell,
-    title: "Lembretes Inteligentes",
-    desc: "Notificações personalizadas para manter você no caminho certo das suas metas.",
+    icon: Smartphone,
+    title: "App Nativo (PWA)",
+    desc: "Instale o Liberta no seu iPhone ou Android. Rapidez e fluidez de um app direto da App Store, sem ocupar espaço.",
   },
   {
     icon: Shield,
-    title: "100% Seguro",
-    desc: "Seus dados protegidos com criptografia de ponta a ponta e autenticação avançada.",
+    title: "Segurança de Elite",
+    desc: "Autenticação por CPF, criptografia bancária e proteção de dados nível enterprise (LGPD compliant).",
   },
 ];
 
@@ -90,8 +90,8 @@ export default function LandingPage() {
           variants={fadeUp}
           custom={0}
         >
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-6 tracking-wide">
-            7 dias grátis — avaliado com 4.9/5
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-6 tracking-wide uppercase">
+            7 dias grátis — requer cartão de crédito
           </span>
         </motion.div>
 
@@ -291,13 +291,13 @@ export default function LandingPage() {
 
               <div className="space-y-6 mb-10 min-h-[220px]">
                 <div className="glass p-4 rounded-3xl rounded-tl-none text-sm max-w-[90%] leading-relaxed">
-                  Olá! Eu sou a Lia 💙 Sua assistente financeira inteligente. Como posso facilitar seu dia hoje?
+                  Olá! Eu sou a Lia 💙 Sua assistente financeira inteligente. Com base no seu saldo atual de **R$ 12.450**, como posso ajudar seu patrimônio a crescer hoje?
                 </div>
                 <div className="bg-primary/20 p-4 rounded-3xl rounded-tr-none text-sm ml-auto max-w-[85%] border border-primary/20 shadow-sm">
-                  Qual o meu saldo total investido hoje?
+                  Qual a porcentagem da minha meta de Viagem eu já atingi?
                 </div>
                 <div className="glass p-4 rounded-3xl rounded-tl-none text-sm max-w-[90%] font-medium border-primary/10 leading-relaxed shadow-sm">
-                  Atualmente seu patrimônio total em ativos é de <span className="text-primary font-bold">R$ 16.750,00</span>. Você está <span className="text-green-500">23%</span> mais perto da sua Meta de Viagem! ✈️
+                  Você já conquistou <span className="text-green-500 font-bold">54%</span> do seu objetivo! Com seu ritmo atual de economia, você chegará lá <span className="text-primary font-bold">3 meses antes</span> do previsto. ✈️
                 </div>
               </div>
 
@@ -334,8 +334,8 @@ export default function LandingPage() {
           <div className="hidden md:block absolute top-[2.75rem] left-[15%] right-[15%] h-0.5 border-t border-dashed border-primary/30 -z-10" />
 
           {[
-            { icon: ClipboardList, title: "Crie sua conta", desc: "Cadastre-se com Google ou email em 2 minutos. Seguro e criptografado." },
-            { icon: Target, title: "Ancore metas", desc: "Defina seus objetivos e categorias emocionais que fazem sentido para você." },
+            { icon: ClipboardList, title: "Crie sua conta", desc: "Cadastre-se com CPF e Google em 2 minutos. Seguro e criptografado." },
+            { icon: Landmark, title: "Conecte Bancos", desc: "Sincronize suas contas reais via Open Finance e tenha controle total imediato." },
             { icon: TrendingUp, title: "Evolua", desc: "Receba diagnósticos da Lia e veja seu patrimônio crescer mês a mês." }
           ].map((step, idx) => (
             <motion.div
@@ -446,7 +446,7 @@ export default function LandingPage() {
           </AccordionItem>
           <AccordionItem value="3" className="border-transparent py-2">
             <AccordionTrigger className="text-left font-bold text-lg hover:text-primary transition-colors">Preciso colocar cartão para testar?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground leading-relaxed pt-2">Não. Experimente o Liberta+ completo por 7 dias sem qualquer compromisso. O cartão só é solicitado se você decidir continuar sua jornada conosco.</AccordionContent>
+            <AccordionContent className="text-muted-foreground leading-relaxed pt-2">Sim. Para garantir a segurança e evitar abusos na nossa infraestrutura de IA e Open Finance, solicitamos um cartão válido. Você não será cobrado se cancelar antes dos 7 dias.</AccordionContent>
           </AccordionItem>
         </Accordion>
       </section>

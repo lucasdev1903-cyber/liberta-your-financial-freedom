@@ -44,7 +44,39 @@ export function AssistantPage() {
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [stats, setStats] = useState<any>(null);
     const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'amigo';
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!user) return;
+
+            const [
+                { data: bankData },
+                { data: assetsData },
+                { data: liabilitiesData },
+                { data: goalsData }
+            ] = await Promise.all([
+                supabase.from('bank_connections').select('balance'),
+                supabase.from('assets').select('value'),
+                supabase.from('liabilities').select('value'),
+                supabase.from('goals').select('title, target_amount, current_amount')
+            ]);
+
+            const totalBalance = (bankData as any[])?.reduce((acc, curr) => acc + (Number(curr.balance) || 0), 0) || 0;
+            const totalAssets = (assetsData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
+            const totalLiabilities = (liabilitiesData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
+            const netWorth = totalBalance + totalAssets - totalLiabilities;
+
+            setStats({
+                totalBalance,
+                netWorth,
+                goals: goalsData || []
+            });
+        };
+
+        fetchStats();
+    }, [user]);
 
     useEffect(() => {
         if (user) {
@@ -100,13 +132,27 @@ export function AssistantPage() {
         for (const [keyword, response] of Object.entries(LIA_RESPONSES)) {
             if (lower.includes(keyword)) return response;
         }
+
+        if (lower.includes("quanto") && (lower.includes("tenho") || lower.includes("saldo"))) {
+            if (!stats) return "Deixe-me ver... Estou acessando seus dados bancários agora. Pode perguntar novamente em um segundo?";
+            const balanceStr = stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            return `Atualmente, o saldo total somado das suas contas conectadas é de **${balanceStr}**. Além disso, considerando seus bens e dívidas, seu patrimônio líquido é de **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**.`;
+        }
+
+        if (lower.includes("meta")) {
+            if (!stats || stats.goals.length === 0) return "Você ainda não definiu nenhuma meta financeira. Que tal criar uma na aba **Metas**? Posso te ajudar a planejar!";
+            const primaryGoal = stats.goals[0];
+            const percent = Math.round((primaryGoal.current_amount / primaryGoal.target_amount) * 100);
+            return `Você está com a meta **${primaryGoal.title}** em andamento! Já conquistou **${percent}%** do objetivo (R$ ${primaryGoal.current_amount.toLocaleString('pt-BR')} de R$ ${primaryGoal.target_amount.toLocaleString('pt-BR')}). Continue assim! 🚀`;
+        }
+
         if (lower.includes("oi") || lower.includes("olá") || lower.includes("ola")) {
-            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira. Estou aqui para te ajudar a organizar suas finanças. Você pode inclusive me pedir para lançar algo, por exemplo: "gastei 50 no mercado hoje". O que gostaria de fazer?`;
+            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira inteligente. Estou conectada aos seus dados reais e pronta para te ajudar a gerenciar seus **${stats?.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'recursos'}**. O que vamos planejar hoje?`;
         }
         if (lower.includes("obrigad")) {
-            return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Lembre-se: consistência é a chave da liberdade financeira! 🔑`;
+            return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Minha missão é ver seu patrimônio de **${stats?.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'Liberta'}** crescer cada vez mais! 🔑`;
         }
-        return `Entendi, ${firstName}! 🤔 Essa é uma ótima pergunta. Por enquanto, posso te ajudar com:\n\n• **Lançamentos por voz/texto** (ex: "gastei 45 na padaria")\n• **Análise de gastos** e despesas\n• **Metas** e dicas de economia\n\nMe diga mais sobre o que precisa!`;
+        return `Entendi, ${firstName}! 🤔 Essa é uma ótima pergunta. Com base nos seus dados atuais, posso te ajudar a analisar seus gastos, acompanhar o progresso das suas metas ou registrar novos lançamentos. O que prefere?`;
     };
 
     const handleSend = async (text?: string) => {

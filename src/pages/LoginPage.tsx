@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import logoWhite from '@/assets/liberta-logo-white.png';
 import logoColor from '@/assets/logo_liberta_colorido.png';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
+    const [loginIdentifier, setLoginIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,13 +24,38 @@ export default function LoginPage() {
         e.preventDefault();
         setIsLoading(true);
 
-        const { error } = await signInWithEmail(email, password);
+        let emailToUse = loginIdentifier;
+
+        // Check if it's a CPF (only numbers or formatted CPF)
+        const isCpf = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/.test(loginIdentifier);
+
+        if (isCpf) {
+            const cleanCpf = loginIdentifier.replace(/\D/g, '');
+            const { data, error: cpfError } = await (supabase
+                .from('profiles')
+                .select('email')
+                .eq('cpf', cleanCpf)
+                .maybeSingle() as any);
+
+            if (cpfError || !data?.email) {
+                toast({
+                    title: 'CPF não encontrado',
+                    description: 'Não encontramos nenhuma conta vinculada a este CPF.',
+                    variant: 'destructive',
+                });
+                setIsLoading(false);
+                return;
+            }
+            emailToUse = data.email;
+        }
+
+        const { error } = await signInWithEmail(emailToUse, password);
 
         if (error) {
             toast({
                 title: 'Erro ao entrar',
                 description: error.message === 'Invalid login credentials'
-                    ? 'Email ou senha incorretos.'
+                    ? 'Email/CPF ou senha incorretos.'
                     : error.message,
                 variant: 'destructive',
             });
@@ -110,24 +136,24 @@ export default function LoginPage() {
                     {/* Divider */}
                     <div className="flex items-center gap-3 mb-6">
                         <div className="flex-1 h-px bg-border/50" />
-                        <span className="text-xs text-muted-foreground">ou entre com email</span>
+                        <span className="text-xs text-muted-foreground">ou entre com seus dados</span>
                         <div className="flex-1 h-px bg-border/50" />
                     </div>
 
                     {/* Form */}
                     <form onSubmit={handleEmailLogin} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm text-muted-foreground">
-                                Email
+                            <Label htmlFor="loginIdentifier" className="text-sm text-muted-foreground">
+                                Email ou CPF
                             </Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="seu@email.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    id="loginIdentifier"
+                                    type="text"
+                                    placeholder="seu@email.com ou 000.000.000-00"
+                                    value={loginIdentifier}
+                                    onChange={(e) => setLoginIdentifier(e.target.value)}
                                     className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
                                     required
                                 />

@@ -11,8 +11,13 @@ import {
     Home,
     Trash2,
     Bitcoin,
-    LineChart
+    LineChart,
+    PieChart as PieIcon,
+    ShieldCheck
 } from "lucide-react";
+import {
+    PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip
+} from "recharts";
 import { useNetWorth, Asset, Liability } from "@/hooks/useNetWorth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -74,13 +79,63 @@ export function NetWorthPage() {
                     </h1>
                     <p className="text-muted-foreground mt-1">Acompanhe seu patrimônio líquido e evolução financeira.</p>
                 </div>
-                <div className="glass p-4 rounded-2xl border-primary/20 bg-primary/5 min-w-[200px]">
+                <div className="glass p-4 rounded-2xl border-primary/20 bg-primary/5 min-w-[200px] shadow-glow-sm">
                     <span className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Patrimônio Líquido</span>
                     <p className="text-3xl font-black text-primary drop-shadow-glow">
                         {formatCurrency(netWorth)}
                     </p>
                 </div>
             </header>
+
+            {/* DISTRIBUTION CHART */}
+            <div className="grid lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-1 glass border-border/50 p-6 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><PieIcon className="w-12 h-12" /></div>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">Distribuição</h3>
+                    <div className="h-48 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={[
+                                        { name: 'Ativos', value: totalAssets },
+                                        { name: 'Passivos', value: totalLiabilities }
+                                    ]}
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    <Cell fill="hsl(var(--primary))" />
+                                    <Cell fill="#ef4444" />
+                                </Pie>
+                                <RechartsTooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="flex gap-6 mt-4 text-xs font-bold uppercase">
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-primary" /> Ativos</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Passivos</div>
+                    </div>
+                </Card>
+
+                <Card className="lg:col-span-2 glass border-border/50 p-8 flex flex-col justify-center relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                        <TrendingUp className="w-32 h-32 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-black mb-4">Sua Saúde Financeira</h3>
+                    <p className="text-muted-foreground max-w-lg mb-8">
+                        Seu patrimônio líquido é a diferença real entre o que você possui e o que você deve.
+                        Manter uma proporção saudável acima de 70% é o ideal para a sua liberdade.
+                    </p>
+                    <div className="space-y-3">
+                        <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
+                            <span>Indíce de Liquidez</span>
+                            <span className="text-primary">{Math.round((netWorth / (totalAssets || 1)) * 100)}%</span>
+                        </div>
+                        <Progress value={Math.max(0, (netWorth / (totalAssets || 1)) * 100)} className="h-3 shadow-glow-sm" />
+                    </div>
+                </Card>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-8">
                 {/* ASSETS SECTION */}
@@ -274,24 +329,11 @@ export function NetWorthPage() {
                 </div>
             </div>
 
-            {/* SUMMARY CARD */}
-            <Card className="glass border-primary/20 p-8 flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                    <TrendingUp className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-black">Sua Saúde Financeira</h3>
-                <p className="text-muted-foreground max-w-lg">
-                    Seu patrimônio líquido é a diferença entre seus ativos e passivos.
-                    Quanto maior este valor, maior sua segurança e liberdade financeira.
-                </p>
-                <div className="w-full max-w-md pt-4 space-y-2">
-                    <div className="flex justify-between text-xs font-bold uppercase">
-                        <span>Líquido</span>
-                        <span>{Math.round((netWorth / (totalAssets || 1)) * 100)}% do Bruto</span>
-                    </div>
-                    <Progress value={Math.max(0, (netWorth / (totalAssets || 1)) * 100)} className="h-3 shadow-glow-sm" />
-                </div>
-            </Card>
+            {/* Footer Notice */}
+            <div className="bg-primary/5 rounded-2xl p-6 flex gap-4 text-sm text-muted-foreground items-start border border-primary/10">
+                <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+                <p>Todos os dados de patrimônio e investimentos são criptografados localmente e sincronizados de forma segura com o Liberta Cloud.</p>
+            </div>
         </div>
     );
 }
