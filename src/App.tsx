@@ -22,6 +22,7 @@ import { SubscriptionPage } from "./pages/dashboard/SubscriptionPage";
 import { RecurringPage } from "./pages/dashboard/RecurringPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ThemeProvider } from "@/components/theme-provider";
+import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <InstallPWAPrompt />
       <BrowserRouter>
         <AuthProvider>
           <Routes>

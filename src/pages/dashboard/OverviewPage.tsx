@@ -14,6 +14,7 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useGamification } from "@/hooks/useGamification";
 import { useAuth } from "@/contexts/AuthContext";
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
+import { FinancialScoreCard } from "@/components/dashboard/FinancialScoreCard";
 import { cn } from "@/lib/utils";
 import {
     BarChart,
@@ -172,10 +173,15 @@ export function OverviewPage() {
                 ))}
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-6">
+            <div className="grid lg:grid-cols-3 gap-6">
+                {/* Financial Score */}
+                <div className="lg:col-span-1">
+                    <FinancialScoreCard />
+                </div>
+
                 {/* Chart area */}
                 <motion.div
-                    className="lg:col-span-3 glass-subtle rounded-xl p-6 border-border/50 card-hover shadow-sm"
+                    className="lg:col-span-2 glass-subtle rounded-xl p-6 border-border/50 card-hover shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -210,7 +216,7 @@ export function OverviewPage() {
 
                 {/* Categories Breakdown */}
                 <motion.div
-                    className="lg:col-span-2 glass-subtle rounded-xl p-6 border-border/50 flex flex-col card-hover shadow-sm"
+                    className="lg:col-span-1 glass-subtle rounded-xl p-6 border-border/50 flex flex-col card-hover shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}

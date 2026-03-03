@@ -9,7 +9,9 @@ import {
     Car,
     CreditCard,
     Home,
-    Trash2
+    Trash2,
+    Bitcoin,
+    LineChart
 } from "lucide-react";
 import { useNetWorth, Asset, Liability } from "@/hooks/useNetWorth";
 import { Button } from "@/components/ui/button";
@@ -50,6 +52,8 @@ export function NetWorthPage() {
         investment: TrendingUp,
         property: Home,
         vehicle: Car,
+        crypto: Bitcoin,
+        stock: LineChart,
         other: Building2
     };
 
@@ -122,13 +126,15 @@ export function NetWorthPage() {
                                                     <SelectItem value="investment">Investimentos</SelectItem>
                                                     <SelectItem value="property">Imóvel</SelectItem>
                                                     <SelectItem value="vehicle">Veículo</SelectItem>
+                                                    <SelectItem value="crypto">Criptomoeda</SelectItem>
+                                                    <SelectItem value="stock">Ações (Bolsa)</SelectItem>
                                                     <SelectItem value="other">Outros</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor (R$)</label>
-                                            <Input name="value" type="number" step="0.01" placeholder="0,00" required />
+                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor em R$ (ou Qtde para Cripto/Ações)</label>
+                                            <Input name="value" type="number" step="0.00000001" placeholder="0,00" required />
                                         </div>
                                     </div>
                                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">Salvar Ativo</Button>
@@ -154,10 +160,17 @@ export function NetWorthPage() {
                                         </div>
                                         <div>
                                             <p className="font-semibold text-sm ">{asset.name}</p>
-                                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{asset.type}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                                                {asset.type}
+                                                {(asset.type === 'crypto' || asset.type === 'stock') && asset.currentPrice && (
+                                                    <span className="text-primary capitalize lowercase">
+                                                        • {asset.value} unid. @ {formatCurrency(asset.currentPrice)}
+                                                    </span>
+                                                )}
+                                            </p>
                                         </div>
                                     </div>
-                                    <p className="font-bold text-green-500">{formatCurrency(asset.value)}</p>
+                                    <p className="font-bold text-green-500">{formatCurrency(asset.totalValue || asset.value)}</p>
                                 </motion.div>
                             );
                         })}

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import logoWhite from '@/assets/liberta-logo-white.png';
+import logoColor from '@/assets/logo_liberta_colorido.png';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -65,7 +66,8 @@ export default function LoginPage() {
             >
                 {/* Logo */}
                 <Link to="/" className="flex justify-center mb-10">
-                    <img src={logoWhite} alt="Liberta" className="h-8" />
+                    <img src={logoWhite} alt="Liberta" className="h-8 hidden dark:block" />
+                    <img src={logoColor} alt="Liberta" className="h-8 block dark:hidden" />
                 </Link>
 
                 {/* Card */}
