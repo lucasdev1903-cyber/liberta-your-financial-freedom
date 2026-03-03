@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { PluggyConnect } from 'react-pluggy-connect';
 
 export function BankConnectionsPage() {
     const { connections, isLoading, addConnection, deleteConnection, importTransactions } = useBankConnections();
@@ -25,6 +26,7 @@ export function BankConnectionsPage() {
 
     // Pluggy state
     const [pluggyLoading, setPluggyLoading] = useState(false);
+    const [connectToken, setConnectToken] = useState<string | null>(null);
 
     const handlePluggyConnect = async () => {
         if (!user) return;
@@ -285,28 +287,6 @@ export function BankConnectionsPage() {
                 ))}
             </div>
 
-            {/* Pluggy Connect Banner */}
-            {isPluggyConfigured() && (
-                <div className="glass rounded-2xl p-6 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <Zap className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold">Conexão Automática via Pluggy</h3>
-                            <p className="text-sm text-muted-foreground">Sincronize transações automaticamente com o Open Finance</p>
-                        </div>
-                        <Button
-                            onClick={handlePluggyConnect}
-                            disabled={pluggyLoading}
-                            className="bg-gradient-to-r from-primary to-orange-500 text-white"
-                        >
-                            {pluggyLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Conectando...</> : "Conectar Banco"}
-                        </Button>
-                    </div>
-                </div>
-            )}
-
             {/* Security Notice */}
             <div className="bg-secondary/20 rounded-2xl p-5 flex gap-4 text-sm text-muted-foreground items-start border border-border/30">
                 <ShieldCheck className="w-8 h-8 shrink-0 text-green-500" />
@@ -315,6 +295,6 @@ export function BankConnectionsPage() {
                     <p>Os extratos importados são processados localmente no seu navegador. Apenas as transações são salvas no banco de dados, protegidas por criptografia e políticas de acesso por usuário (RLS).</p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
