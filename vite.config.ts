@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    /* 
+      // TEMPORARILY DISABLED: The VitePWA plugin is causing the Lovable preview build to crash 
+      // (likely due to Workbox minification exceeding memory limits in the cloud container).
     mode === 'production' && VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico'],
@@ -34,6 +37,7 @@ export default defineConfig(({ mode }) => ({
         ]
       }
     }),
+    */
     mode === "development" && componentTagger()
   ].filter(Boolean),
   resolve: {
