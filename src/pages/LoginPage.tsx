@@ -144,14 +144,14 @@ export default function LoginPage() {
                     <form onSubmit={handleEmailLogin} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="loginIdentifier" className="text-sm text-muted-foreground">
-                                Email ou CPF
+                                E-mail ou CPF
                             </Label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input
                                     id="loginIdentifier"
                                     type="text"
-                                    placeholder="seu@email.com ou 000.000.000-00"
+                                    placeholder="e-mail ou cpf"
                                     value={loginIdentifier}
                                     onChange={(e) => setLoginIdentifier(e.target.value)}
                                     className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
