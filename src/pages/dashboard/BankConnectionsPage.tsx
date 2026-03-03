@@ -261,8 +261,10 @@ export function BankConnectionsPage() {
                                         ? "border-primary bg-primary/5 shadow-glow"
                                         : "border-transparent bg-secondary/20 hover:bg-secondary/40"
                                 )}>
-                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg", bank.color)}>
-                                        {bank.logo}
+                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg overflow-hidden", bank.color)}>
+                                        {bank.logo ? (
+                                            bank.logo.startsWith('/') ? <img src={bank.logo} alt={bank.name} className="w-full h-full object-cover" /> : bank.logo
+                                        ) : '🏦'}
                                     </div>
                                     <span className="text-[10px] font-bold leading-tight">{bank.name}</span>
                                 </button>
@@ -316,10 +318,12 @@ export function BankConnectionsPage() {
                 {connections.map((bank, i) => (
                     <motion.div key={bank.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass rounded-xl p-5 flex items-center justify-between group card-hover">
                         <div className="flex items-center gap-4">
-                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl shadow-lg",
+                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl shadow-lg overflow-hidden",
                                 SUPPORTED_BANKS.find(b => b.code === bank.bank_code)?.color || 'bg-slate-500'
                             )}>
-                                {bank.bank_logo || '🏦'}
+                                {bank.bank_logo ? (
+                                    bank.bank_logo.startsWith('/') ? <img src={bank.bank_logo} alt={bank.bank_name} className="w-full h-full object-cover" /> : bank.bank_logo
+                                ) : '🏦'}
                             </div>
                             <div>
                                 <h3 className="font-bold">{bank.bank_name}</h3>

@@ -15,21 +15,21 @@ export interface PluggyConfig {
 
 // Bancos brasileiros suportados pelo Pluggy
 export const SUPPORTED_BANKS = [
-    { name: 'Nubank', code: '260', logo: '💜', color: 'bg-purple-600' },
-    { name: 'Itaú', code: '341', logo: '🟠', color: 'bg-orange-500' },
-    { name: 'Bradesco', code: '237', logo: '🔴', color: 'bg-red-600' },
-    { name: 'Banco do Brasil', code: '001', logo: '🟡', color: 'bg-yellow-500' },
-    { name: 'Santander', code: '033', logo: '🔴', color: 'bg-red-500' },
-    { name: 'Caixa', code: '104', logo: '🔵', color: 'bg-blue-600' },
-    { name: 'Inter', code: '077', logo: '🟠', color: 'bg-orange-400' },
-    { name: 'C6 Bank', code: '336', logo: '⬛', color: 'bg-gray-800' },
-    { name: 'BTG Pactual', code: '208', logo: '🔵', color: 'bg-blue-800' },
-    { name: 'XP Investimentos', code: '102', logo: '⬛', color: 'bg-gray-900' },
-    { name: 'Rico', code: '322', logo: '🟠', color: 'bg-orange-600' },
-    { name: 'Neon', code: '655', logo: '🔵', color: 'bg-cyan-500' },
-    { name: 'PagBank', code: '290', logo: '🟢', color: 'bg-green-500' },
-    { name: 'Mercado Pago', code: '323', logo: '🔵', color: 'bg-blue-400' },
-    { name: 'Outro', code: '000', logo: '🏦', color: 'bg-slate-500' },
+    { name: 'Nubank', code: '260', logo: '/banks/nubank.png', color: 'bg-purple-600' },
+    { name: 'Itaú', code: '341', logo: '/banks/itau.png', color: 'bg-orange-500' },
+    { name: 'Bradesco', code: '237', logo: '/banks/bradesco.png', color: 'bg-red-600' },
+    { name: 'Banco do Brasil', code: '001', logo: '/banks/banco_do_brasil.jpg', color: 'bg-yellow-500' },
+    { name: 'Santander', code: '033', logo: '/banks/santander.png', color: 'bg-red-500' },
+    { name: 'Caixa', code: '104', logo: '/banks/caixa.png', color: 'bg-blue-600' },
+    { name: 'Inter', code: '077', logo: '/banks/inter.png', color: 'bg-orange-400' },
+    { name: 'C6 Bank', code: '336', logo: '/banks/c6_bank.png', color: 'bg-gray-800' },
+    { name: 'BTG Pactual', code: '208', logo: '/banks/btg_pactual.png', color: 'bg-blue-800' },
+    { name: 'XP Investimentos', code: '102', logo: '/banks/xp_investimentos.png', color: 'bg-gray-900' },
+    { name: 'Rico', code: '322', logo: '/banks/rico.png', color: 'bg-orange-600' },
+    { name: 'Neon', code: '655', logo: '/banks/neon.png', color: 'bg-cyan-500' },
+    { name: 'PagBank', code: '290', logo: '/banks/pagbank.png', color: 'bg-green-500' },
+    { name: 'Mercado Pago', code: '323', logo: '/banks/mercado_pago.png', color: 'bg-blue-400' },
+    { name: 'Outro', code: '000', logo: null, color: 'bg-slate-500' },
 ];
 
 /**
