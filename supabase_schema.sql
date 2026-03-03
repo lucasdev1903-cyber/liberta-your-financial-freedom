@@ -307,3 +307,50 @@ create policy "Users can view their own subscription"
 create policy "Service role can manage subscriptions"
   on public.subscriptions for all
   using (true);
+
+-- ============================================
+-- RECURRING TRANSACTIONS
+-- ============================================
+create table public.recurring_transactions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  description text not null,
+  amount numeric not null,
+  type text not null check (type in ('income','expense')),
+  category text not null,
+  frequency text not null default 'monthly' check (frequency in ('weekly','monthly','yearly')),
+  day_of_month integer default 1,
+  is_active boolean default true,
+  next_due_date date,
+  last_processed_at timestamptz,
+  created_at timestamptz default now() not null
+);
+
+alter table public.recurring_transactions enable row level security;
+
+create policy "Users can manage their own recurring transactions"
+  on public.recurring_transactions for all
+  using (auth.uid() = user_id or public.is_admin());
+
+-- ============================================
+-- BANK CONNECTIONS (Open Finance)
+-- ============================================
+create table public.bank_connections (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  bank_name text not null,
+  bank_code text,
+  bank_logo text,
+  account_type text default 'checking',
+  last_four text,
+  balance numeric default 0,
+  status text default 'connected' check (status in ('connected','disconnected','syncing','error')),
+  last_synced_at timestamptz,
+  created_at timestamptz default now() not null
+);
+
+alter table public.bank_connections enable row level security;
+
+create policy "Users can manage their own bank connections"
+  on public.bank_connections for all
+  using (auth.uid() = user_id or public.is_admin());
