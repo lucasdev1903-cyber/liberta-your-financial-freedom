@@ -238,81 +238,196 @@ export default function LandingPage() {
             {/* ──── LAPTOP MOCKUP ──── */}
             <motion.div
               style={{ y: y1 }}
-              className="absolute w-[90%] sm:w-[80%] md:w-[700px] aspect-video rounded-t-2xl sm:rounded-t-3xl border-4 sm:border-8 border-border bg-background shadow-2xl overflow-hidden flex flex-col z-10"
+              className="absolute w-[95%] sm:w-[85%] md:w-[800px] aspect-[16/10] sm:aspect-video rounded-t-2xl sm:rounded-t-3xl border-4 sm:border-8 border-border bg-background shadow-2xl overflow-hidden flex flex-col z-10"
             >
               {/* Browser Header */}
               <div className="h-6 sm:h-8 border-b border-border bg-secondary/80 flex items-center px-3 sm:px-4 gap-1.5 sm:gap-2 shrink-0">
-                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500/80" />
-                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-yellow-500/80" />
-                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
               </div>
 
-              {/* Dashboard Content (Dynamic) */}
-              <div className="flex-1 bg-background/50 backdrop-blur-3xl p-4 sm:p-6 grid grid-cols-3 gap-4 overflow-hidden">
-                <div className="col-span-2 space-y-4">
-                  <div className="h-4 sm:h-5 w-24 sm:w-32 bg-secondary rounded" />
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="bg-secondary/30 rounded-lg p-2 sm:p-3 border border-border/30">
-                        <div className="h-2 sm:h-2.5 w-12 sm:w-16 bg-muted/20 rounded mb-2 sm:mb-3" />
-                        <div className="h-4 sm:h-5 w-16 sm:w-20 bg-muted/40 rounded" />
-                      </div>
-                    ))}
+              {/* Liberta Real UI - Relatórios */}
+              <div className="flex-1 flex bg-background overflow-hidden text-[10px] sm:text-xs">
+                {/* Sidebar */}
+                <div className="w-32 sm:w-48 border-r border-border p-2 sm:p-4 flex flex-col gap-1 sm:gap-2 hidden md:flex shrink-0">
+                  <div className="flex items-center gap-2 font-black text-sm sm:text-base mb-4 px-2 tracking-tight">
+                    <img src={logoColor} alt="Liberta" className="h-4 block dark:hidden" />
+                    <img src={logoWhite} alt="Liberta" className="h-4 hidden dark:block" />
                   </div>
-                  <div className="h-24 sm:h-40 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 flex items-end p-3 sm:p-4 gap-1.5 sm:gap-2">
-                    {[30, 50, 40, 70, 55, 80, 60, 90, 40, 60].map((h, i) => (
-                      <motion.div key={i} initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="flex-1 bg-gradient-to-t from-primary to-primary/20 rounded-t-sm" />
-                    ))}
-                  </div>
+                  {[
+                    { n: 'Dashboard', active: false },
+                    { n: 'Patrimônio', active: false },
+                    { n: 'Lançamentos', active: false },
+                    { n: 'Metas', active: false },
+                    { n: 'Orçamentos', active: false },
+                    { n: 'Investimentos', active: false },
+                    { n: 'Relatórios', active: true },
+                    { n: 'Assistente IA', active: false },
+                  ].map(item => (
+                    <div key={item.n} className={`px-2 py-1.5 sm:py-2 rounded-md flex items-center gap-2 font-medium transition-colors ${item.active ? 'bg-primary text-primary-foreground font-bold' : 'text-muted-foreground hover:bg-secondary/50'}`}>
+                      {item.active && <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" />}
+                      {!item.active && <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50"></div>}
+                      {item.n}
+                    </div>
+                  ))}
                 </div>
-                <div className="space-y-4">
-                  <div className="h-24 sm:h-32 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 flex items-center justify-center p-4">
-                    <motion.div initial={{ rotate: -90, scale: 0 }} whileInView={{ rotate: 0, scale: 1 }} viewport={{ once: true }} transition={{ type: "spring", duration: 1.5 }} className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-[6px] sm:border-[8px] border-primary/20 border-t-primary border-r-primary" />
+
+                {/* Main Content */}
+                <div className="flex-1 p-4 sm:p-8 flex flex-col gap-4 sm:gap-6 overflow-hidden bg-[#FAFAFA] dark:bg-background">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="font-bold text-sm sm:text-xl text-foreground">Boa noite, Jean! 👋</h1>
+                      <p className="text-muted-foreground text-[8px] sm:text-xs mt-0.5">Aqui está o resumo das suas finanças</p>
+                    </div>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-border flex items-center justify-center"><Sparkles className="w-3 h-3 sm:w-4 sm:h-4 opacity-50" /></div>
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px] sm:text-xs">J</div>
+                    </div>
                   </div>
-                  <div className="h-20 sm:h-28 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 p-3 sm:p-4 flex flex-col justify-end gap-2 sm:gap-3">
-                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "70%" }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 1 }} className="h-full bg-primary rounded-full" /></div>
-                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "45%" }} viewport={{ once: true }} transition={{ delay: 0.4, duration: 1 }} className="h-full bg-purple-500 rounded-full" /></div>
-                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "85%" }} viewport={{ once: true }} transition={{ delay: 0.6, duration: 1 }} className="h-full bg-orange-500 rounded-full" /></div>
+
+                  {/* Title & Tabs */}
+                  <div>
+                    <h2 className="font-bold text-base sm:text-2xl flex items-center gap-2 text-foreground">
+                      <BarChart3 className="w-5 h-5 text-primary" /> Relatórios & Análises
+                    </h2>
+                    <div className="flex gap-2 mt-4 border-b border-border/50 pb-0">
+                      <div className="px-4 py-2 border-b-2 border-primary text-primary font-bold bg-primary/5 rounded-t-lg">Visão Geral</div>
+                      <div className="px-4 py-2 text-muted-foreground font-medium hidden sm:block">Análise de Gastos</div>
+                      <div className="px-4 py-2 text-muted-foreground font-medium hidden sm:block">Tendências</div>
+                    </div>
+                  </div>
+
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+                    {/* Receitas */}
+                    <div className="bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/50 p-3 sm:p-4 rounded-xl shadow-sm">
+                      <p className="text-[8px] sm:text-[10px] text-green-700 dark:text-green-500 font-bold uppercase tracking-wider mb-1">Receitas</p>
+                      <p className="text-base sm:text-2xl font-black text-green-600 dark:text-green-400">R$ 14.500,00</p>
+                      <p className="text-[7px] sm:text-[10px] text-green-600/70 dark:text-green-400/70 font-medium mt-1">↗ 12% vs mês anterior</p>
+                    </div>
+                    {/* Despesas */}
+                    <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 p-3 sm:p-4 rounded-xl shadow-sm">
+                      <p className="text-[8px] sm:text-[10px] text-red-700 dark:text-red-500 font-bold uppercase tracking-wider mb-1">Despesas</p>
+                      <p className="text-base sm:text-2xl font-black text-red-600 dark:text-red-400">R$ 4.230,00</p>
+                      <p className="text-[7px] sm:text-[10px] text-red-600/70 dark:text-red-400/70 font-medium mt-1">↘ 5% vs mês anterior</p>
+                    </div>
+                    {/* Taxa de Poupança */}
+                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/50 p-3 sm:p-4 rounded-xl shadow-sm">
+                      <p className="text-[8px] sm:text-[10px] text-blue-700 dark:text-blue-500 font-bold uppercase tracking-wider mb-1">Taxa de Poupança</p>
+                      <p className="text-base sm:text-2xl font-black text-blue-600 dark:text-blue-400">70%</p>
+                    </div>
+                    {/* Gasto Médio */}
+                    <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/50 p-3 sm:p-4 rounded-xl shadow-sm">
+                      <p className="text-[8px] sm:text-[10px] text-orange-700 dark:text-orange-500 font-bold uppercase tracking-wider mb-1">Gasto Médio/Dia</p>
+                      <p className="text-base sm:text-2xl font-black text-orange-600 dark:text-orange-400">R$ 141,00</p>
+                    </div>
+                  </div>
+
+                  {/* Chart Area */}
+                  <div className="flex-1 bg-white dark:bg-secondary/20 shadow-sm border border-border rounded-xl p-4 sm:p-5 flex flex-col">
+                    <h3 className="font-bold text-[10px] sm:text-sm text-foreground flex items-center gap-2"><TrendingUp className="w-4 h-4 text-primary" /> Fluxo de Caixa Acumulado</h3>
+                    <div className="flex-1 mt-4 relative flex items-end ml-4 sm:ml-8 border-l border-b border-border/50">
+                      {/* Grids */}
+                      <div className="absolute inset-0 flex flex-col justify-between opacity-10">
+                        <div className="w-full border-t border-dashed border-foreground"></div>
+                        <div className="w-full border-t border-dashed border-foreground"></div>
+                        <div className="w-full border-t border-dashed border-foreground"></div>
+                        <div className="w-full border-t border-dashed border-foreground"></div>
+                      </div>
+
+                      <svg viewBox="0 0 100 40" className="w-full h-full preserve-3d overflow-visible z-10" preserveAspectRatio="none">
+                        <motion.path
+                          initial={{ pathLength: 0 }}
+                          whileInView={{ pathLength: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.5, ease: "easeInOut" }}
+                          d="M0,35 C10,25 20,30 30,15 C40,0 50,10 60,5 C70,0 80,20 90,10 L100,0"
+                          fill="none"
+                          stroke="currentColor"
+                          className="text-primary stroke-[0.5] sm:stroke-[0.3]"
+                        />
+                        <motion.path
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 0.1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.5, ease: "easeInOut" }}
+                          d="M0,35 C10,25 20,30 30,15 C40,0 50,10 60,5 C70,0 80,20 90,10 L100,0 L100,40 L0,40 Z"
+                          fill="currentColor"
+                          className="text-primary"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* ──── MOBILE PHONE MOCKUP ──── */}
+            {/* ──── MOBILE PHONE MOCKUP (Patrimônio) ──── */}
             <motion.div
               style={{ y: y2 }}
-              className="absolute right-[5%] sm:right-[15%] md:right-[15%] bottom-[5%] sm:bottom-[-5%] w-[120px] sm:w-[180px] md:w-[220px] aspect-[9/19] rounded-[2rem] sm:rounded-[2.5rem] border-[6px] sm:border-[8px] border-border bg-background shadow-2xl overflow-hidden z-20"
+              className="absolute right-[2%] sm:right-[10%] md:right-[15%] bottom-[0%] sm:bottom-[-5%] w-[130px] sm:w-[180px] md:w-[220px] aspect-[9/19] rounded-[2rem] sm:rounded-[2.5rem] border-[6px] sm:border-[8px] border-border bg-background shadow-2xl overflow-hidden z-20"
             >
               {/* Dynamic Island / Notch */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-border rounded-full z-30" />
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-black dark:bg-border rounded-full z-30" />
 
-              <div className="flex-1 h-full bg-background/80 backdrop-blur-3xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4 overflow-hidden pt-8 sm:pt-10">
-                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-purple-500 shrink-0" />
-                  <div className="space-y-1 sm:space-y-1.5 w-full">
-                    <div className="h-2 sm:h-2.5 w-16 sm:w-20 bg-muted/40 rounded" />
-                    <div className="h-1.5 sm:h-2 w-10 sm:w-12 bg-muted/20 rounded" />
+              <div className="flex-1 h-full bg-[#FAFAFA] dark:bg-background flex flex-col overflow-hidden pt-8 sm:pt-10">
+                {/* Header Mobile */}
+                <div className="px-3 sm:px-4 pb-2 sm:pb-3 flex justify-between items-center mt-2">
+                  <div className="font-bold text-[10px] sm:text-xs">
+                    <img src={logoColor} alt="Liberta" className="h-2.5 sm:h-3 block dark:hidden" />
+                    <img src={logoWhite} alt="Liberta" className="h-2.5 sm:h-3 hidden dark:block" />
                   </div>
+                  <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[8px] sm:text-[10px]">J</div>
                 </div>
 
-                <div className="h-20 sm:h-28 bg-primary text-primary-foreground rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-lg">
-                  <span className="text-[10px] sm:text-xs opacity-80">Saldo Geral</span>
-                  <div className="h-4 sm:h-6 w-24 sm:w-32 bg-white/20 rounded" />
-                </div>
+                <div className="p-3 sm:p-4 flex flex-col gap-3 sm:gap-4 flex-1">
+                  <div>
+                    <h2 className="font-bold text-[10px] sm:text-sm text-foreground flex items-center gap-1.5 leading-tight"><Landmark className="w-3 h-3 text-primary" /> Consolidação de Patrimônio</h2>
+                  </div>
 
-                <div className="space-y-2 sm:space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-secondary/50 rounded-lg sm:rounded-xl p-2 sm:p-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-muted/40 shrink-0" />
-                        <div className="space-y-1">
-                          <div className="h-1.5 sm:h-2 w-12 sm:w-16 bg-muted/40 rounded" />
-                          <div className="h-1.5 sm:h-2 w-8 sm:w-10 bg-muted/20 rounded" />
-                        </div>
-                      </div>
-                      <div className="h-2 sm:h-3 w-8 sm:w-12 bg-primary/40 rounded" />
+                  {/* Patrimônio total card */}
+                  <div className="border border-primary/20 bg-primary/5 rounded-xl p-3 sm:p-4 text-center shadow-sm">
+                    <p className="text-[7px] sm:text-[9px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Patrimônio Líquido</p>
+                    <p className="text-[12px] sm:text-lg font-black text-primary">R$ 38.500,00</p>
+                  </div>
+
+                  {/* Donut Chart Simulation */}
+                  <div className="border border-border bg-white dark:bg-secondary/10 rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center relative shadow-sm">
+                    <p className="text-[7px] sm:text-[9px] font-bold absolute top-2 sm:top-3 left-2 sm:left-3 text-muted-foreground uppercase tracking-widest">Distribuição</p>
+                    <motion.div
+                      initial={{ rotate: -90, scale: 0.5 }}
+                      whileInView={{ rotate: 0, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, type: "spring" }}
+                      className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-[5px] sm:border-[8px] border-red-500 border-t-green-500 border-r-green-500 mt-5 shadow-inner"
+                    />
+                    <div className="flex gap-3 mt-4 text-[7px] sm:text-[9px] font-bold text-muted-foreground">
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500"></span> Ativos</span>
+                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500"></span> Passivos</span>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Saúde Financeira */}
+                  <div className="border border-border bg-white dark:bg-secondary/10 rounded-xl p-3 sm:p-4 flex-1 flex flex-col justify-center shadow-sm">
+                    <p className="text-[8px] sm:text-[11px] font-bold mb-1 text-foreground">Sua Saúde Financeira</p>
+                    <p className="text-[5px] sm:text-[7.5px] text-muted-foreground leading-snug mb-3">Manter uma proporção acima de 70% é o ideal para sua liberdade.</p>
+                    <div className="flex justify-between text-[6px] sm:text-[8px] font-bold mb-1.5">
+                      <span className="text-muted-foreground uppercase tracking-wider text-[5px] sm:text-[7px]">Índice de Liquidez</span>
+                      <span className="text-green-500">85%</span>
+                    </div>
+                    <div className="h-1.5 sm:h-2 w-full bg-secondary rounded-full overflow-hidden shadow-inner">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "85%" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="h-full bg-gradient-to-r from-green-400 to-green-500"
+                      />
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </motion.div>
