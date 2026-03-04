@@ -234,18 +234,89 @@ export default function LandingPage() {
             <p className="text-lg text-muted-foreground font-medium">Relatórios complexos (Pareto, Radar, Treemap) simplificados em uma interface de cair o queixo.</p>
           </div>
 
-          <motion.div
-            style={{ y: y1 }}
-            className="rounded-[2rem] border border-border/60 bg-background/50 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(255,255,255,0.02)] overflow-hidden relative flex justify-center items-center"
-          >
-            <div className="absolute top-0 inset-x-0 h-10 border-b border-border/40 bg-background/80 flex items-center px-6 gap-2 z-10">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-            </div>
+          <div className="relative flex justify-center items-center h-[400px] sm:h-[600px] w-full perspective-[1000px]">
+            {/* ──── LAPTOP MOCKUP ──── */}
+            <motion.div
+              style={{ y: y1 }}
+              className="absolute w-[90%] sm:w-[80%] md:w-[700px] aspect-video rounded-t-2xl sm:rounded-t-3xl border-4 sm:border-8 border-border bg-background shadow-2xl overflow-hidden flex flex-col z-10"
+            >
+              {/* Browser Header */}
+              <div className="h-6 sm:h-8 border-b border-border bg-secondary/80 flex items-center px-3 sm:px-4 gap-1.5 sm:gap-2 shrink-0">
+                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500/80" />
+                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-yellow-500/80" />
+                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500/80" />
+              </div>
 
-            <img src={heroMockupDevices} alt="Liberta Dashboard Preview" className="w-full h-auto object-cover pt-10" />
-          </motion.div>
+              {/* Dashboard Content (Dynamic) */}
+              <div className="flex-1 bg-background/50 backdrop-blur-3xl p-4 sm:p-6 grid grid-cols-3 gap-4 overflow-hidden">
+                <div className="col-span-2 space-y-4">
+                  <div className="h-4 sm:h-5 w-24 sm:w-32 bg-secondary rounded" />
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="bg-secondary/30 rounded-lg p-2 sm:p-3 border border-border/30">
+                        <div className="h-2 sm:h-2.5 w-12 sm:w-16 bg-muted/20 rounded mb-2 sm:mb-3" />
+                        <div className="h-4 sm:h-5 w-16 sm:w-20 bg-muted/40 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="h-24 sm:h-40 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 flex items-end p-3 sm:p-4 gap-1.5 sm:gap-2">
+                    {[30, 50, 40, 70, 55, 80, 60, 90, 40, 60].map((h, i) => (
+                      <motion.div key={i} initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="flex-1 bg-gradient-to-t from-primary to-primary/20 rounded-t-sm" />
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-24 sm:h-32 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 flex items-center justify-center p-4">
+                    <motion.div initial={{ rotate: -90, scale: 0 }} whileInView={{ rotate: 0, scale: 1 }} viewport={{ once: true }} transition={{ type: "spring", duration: 1.5 }} className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-[6px] sm:border-[8px] border-primary/20 border-t-primary border-r-primary" />
+                  </div>
+                  <div className="h-20 sm:h-28 bg-secondary/30 rounded-lg sm:rounded-xl border border-border/30 p-3 sm:p-4 flex flex-col justify-end gap-2 sm:gap-3">
+                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "70%" }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 1 }} className="h-full bg-primary rounded-full" /></div>
+                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "45%" }} viewport={{ once: true }} transition={{ delay: 0.4, duration: 1 }} className="h-full bg-purple-500 rounded-full" /></div>
+                    <div className="h-1.5 sm:h-2 w-full bg-muted/20 rounded-full"><motion.div initial={{ width: 0 }} whileInView={{ width: "85%" }} viewport={{ once: true }} transition={{ delay: 0.6, duration: 1 }} className="h-full bg-orange-500 rounded-full" /></div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ──── MOBILE PHONE MOCKUP ──── */}
+            <motion.div
+              style={{ y: y2 }}
+              className="absolute right-[5%] sm:right-[15%] md:right-[15%] bottom-[5%] sm:bottom-[-5%] w-[120px] sm:w-[180px] md:w-[220px] aspect-[9/19] rounded-[2rem] sm:rounded-[2.5rem] border-[6px] sm:border-[8px] border-border bg-background shadow-2xl overflow-hidden z-20"
+            >
+              {/* Dynamic Island / Notch */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-border rounded-full z-30" />
+
+              <div className="flex-1 h-full bg-background/80 backdrop-blur-3xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4 overflow-hidden pt-8 sm:pt-10">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-purple-500 shrink-0" />
+                  <div className="space-y-1 sm:space-y-1.5 w-full">
+                    <div className="h-2 sm:h-2.5 w-16 sm:w-20 bg-muted/40 rounded" />
+                    <div className="h-1.5 sm:h-2 w-10 sm:w-12 bg-muted/20 rounded" />
+                  </div>
+                </div>
+
+                <div className="h-20 sm:h-28 bg-primary text-primary-foreground rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col justify-between shadow-lg">
+                  <span className="text-[10px] sm:text-xs opacity-80">Saldo Geral</span>
+                  <div className="h-4 sm:h-6 w-24 sm:w-32 bg-white/20 rounded" />
+                </div>
+
+                <div className="space-y-2 sm:space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-secondary/50 rounded-lg sm:rounded-xl p-2 sm:p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-muted/40 shrink-0" />
+                        <div className="space-y-1">
+                          <div className="h-1.5 sm:h-2 w-12 sm:w-16 bg-muted/40 rounded" />
+                          <div className="h-1.5 sm:h-2 w-8 sm:w-10 bg-muted/20 rounded" />
+                        </div>
+                      </div>
+                      <div className="h-2 sm:h-3 w-8 sm:w-12 bg-primary/40 rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
