@@ -20,6 +20,7 @@ import { NetWorthPage } from "./pages/dashboard/NetWorthPage";
 import { BudgetsPage } from "./pages/dashboard/BudgetsPage";
 import { SubscriptionPage } from "./pages/dashboard/SubscriptionPage";
 import { RecurringPage } from "./pages/dashboard/RecurringPage";
+import { ReportsPage } from "./pages/dashboard/ReportsPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
@@ -58,6 +59,7 @@ const App = () => (
                 <Route path="budgets" element={<BudgetsPage />} />
                 <Route path="subscription" element={<SubscriptionPage />} />
                 <Route path="recurring" element={<RecurringPage />} />
+                <Route path="reports" element={<ReportsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
               <Route path="/admin" element={<AdminDashboard />} />

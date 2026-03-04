@@ -125,6 +125,45 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-4">
+                    {/* Premium Type Toggle */}
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tipo</FormLabel>
+                                <FormControl>
+                                    <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/20 rounded-xl border border-border/50">
+                                        <button
+                                            type="button"
+                                            onClick={() => field.onChange('expense')}
+                                            className={cn(
+                                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all duration-200",
+                                                field.value === 'expense'
+                                                    ? "bg-red-500 text-white shadow-md shadow-red-500/20"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <span>📉</span> Despesa
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => field.onChange('income')}
+                                            className={cn(
+                                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all duration-200",
+                                                field.value === 'income'
+                                                    ? "bg-green-500 text-white shadow-md shadow-green-500/20"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <span>📈</span> Receita
+                                        </button>
+                                    </div>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
                     <FormField
                         control={form.control}
                         name="description"

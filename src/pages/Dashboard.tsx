@@ -4,7 +4,7 @@ import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard, Repeat
+  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard, Repeat, FileBarChart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -31,7 +31,8 @@ const navItems = [
   { icon: PieChart, label: "Orçamentos", href: "/dashboard/budgets" },
   { icon: Repeat, label: "Recorrências", href: "/dashboard/recurring" },
   { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
-  { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant" },
+  { icon: FileBarChart, label: "Relatórios", href: "/dashboard/reports" },
+  { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant", badge: '✨' },
   { icon: CreditCard, label: "Assinatura", href: "/dashboard/subscription" },
   { icon: Settings, label: "Configurações", href: "/dashboard/settings" },
 ];
@@ -76,6 +77,9 @@ export default function Dashboard() {
             >
               <item.icon className="w-4 h-4" />
               {item.label}
+              {(item as any).badge && (
+                <span className="ml-auto text-xs">{(item as any).badge}</span>
+              )}
             </Link>
           );
         })}

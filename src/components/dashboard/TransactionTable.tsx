@@ -38,14 +38,18 @@ export function TransactionTable({ limit }: { limit?: number }) {
 
     if (displayTransactions.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-16 text-center glass rounded-xl border-dashed">
-                <div className="w-12 h-12 bg-secondary/50 rounded-full flex items-center justify-center mb-4 text-muted-foreground">
-                    <Wallet className="w-6 h-6 opacity-50" />
+            <div className="flex flex-col items-center justify-center py-20 text-center glass rounded-xl border-dashed">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-orange-500/20 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                    <Wallet className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="text-lg font-medium mb-1">Nenhum lançamento no período</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                    Suas transações registradas aparecerão aqui. Clique no botão de nova transação para começar.
+                <h3 className="text-lg font-bold mb-1">Nenhum lançamento ainda</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                    Comece registrando sua primeira receita ou despesa. Você também pode pedir à Lia: <strong className="text-primary">"Gastei R$ 50 em alimentação"</strong>
                 </p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    Dica: Use o botão "Novo Lançamento" acima
+                </div>
             </div>
         );
     }

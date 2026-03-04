@@ -277,12 +277,17 @@ export function GoalsPage() {
                 </div>
             ) : goals.length === 0 ? (
                 <div className="text-center py-20 glass rounded-xl border-dashed">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Target className="w-8 h-8 text-primary" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-orange-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+                        <Target className="w-9 h-9 text-primary" />
                     </div>
-                    <h2 className="text-lg font-semibold mb-2">Nenhuma meta ainda</h2>
-                    <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                        Defina objetivos financeiros para acompanhar sua jornada rumo à liberdade.
+                    <h2 className="text-xl font-bold mb-2">Defina sua primeira meta 🎯</h2>
+                    <p className="text-muted-foreground text-sm max-w-md mx-auto mb-4">
+                        Metas te ajudam a manter o foco. Pode ser uma viagem, um carro, ou
+                        sua reserva de emergência. A barra de progresso anima conforme você guarda!
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse mr-1" />
+                        Clique em "Nova Meta" para começar
                     </p>
                 </div>
             ) : (

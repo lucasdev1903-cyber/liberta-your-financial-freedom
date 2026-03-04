@@ -108,10 +108,17 @@ export function BudgetsPage() {
 
             {budgets.length === 0 ? (
                 <div className="glass rounded-2xl p-12 text-center border-dashed">
-                    <PieChartIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
-                    <h3 className="text-lg font-bold mb-2">Nenhum orçamento definido</h3>
-                    <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                        Crie limites de gastos por categoria para controlar melhor suas finanças e ser alertado quando estiver perto de estourar.
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-yellow-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+                        <PieChartIcon className="w-9 h-9 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">Controle seus gastos 📊</h3>
+                    <p className="text-muted-foreground text-sm max-w-md mx-auto mb-4">
+                        Defina limites menssais por categoria e receba alertas visuais quando estiver perto de estourar.
+                        As barras mudam de cor automaticamente: <span className="text-green-500 font-bold">verde</span> → <span className="text-yellow-500 font-bold">amarelo</span> → <span className="text-red-500 font-bold">vermelho</span>.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse mr-1" />
+                        Clique em "Novo Orçamento" para começar
                     </p>
                 </div>
             ) : (
