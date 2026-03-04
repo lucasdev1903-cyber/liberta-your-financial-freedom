@@ -67,7 +67,6 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <img src={logoWhite} alt="Liberta" className="h-7 hidden dark:block hover:scale-105 transition-transform" />
             <img src={logoColor} alt="Liberta" className="h-7 block dark:hidden hover:scale-105 transition-transform" />
-            <span className="font-extrabold text-xl tracking-tight hidden sm:block">Liberta.</span>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
             <ModeToggle />
@@ -209,146 +208,179 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ══════════════ BENTO BOX FEATURES ══════════════ */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:py-32">
-        <div className="text-center mb-16 sm:mb-24">
-          <h2 className="text-3xl sm:text-5xl font-black mb-6">
-            Design premium. <br className="hidden sm:block" /> <span className="text-muted-foreground">Poder enterprise.</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Tudo o que você precisa em uma única plataforma, desenhada com obsessão pelos detalhes e performance absoluta.</p>
-        </div>
+      {/* ══════════════ BANK MARQUEE ══════════════ */}
+      <section className="relative z-10 py-12 border-y border-border/10 bg-background/30 overflow-hidden flex items-center">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-[300px]">
+        <motion.div
+          className="flex gap-12 sm:gap-24 items-center min-w-max px-12"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ ease: "linear", duration: 25, repeat: Infinity }}
+        >
+          {/* Duplicate array for seamless infinite loop */}
+          {[...['NUBANK', 'ITAÚ', 'BRADESCO', 'SANTANDER', 'INTER', 'C6 BANK', 'XP', 'BTG PACTUAL', 'CAIXA'], ...['NUBANK', 'ITAÚ', 'BRADESCO', 'SANTANDER', 'INTER', 'C6 BANK', 'XP', 'BTG PACTUAL', 'CAIXA']].map((bank, i) => (
+            <div key={i} className="flex items-center gap-2 text-xl sm:text-2xl font-black text-muted-foreground/30 grayscale hover:grayscale-0 hover:text-primary transition-all duration-300">
+              <Landmark className="w-5 h-5 sm:w-8 sm:h-8" /> {bank}
+            </div>
+          ))}
+        </motion.div>
+      </section>
 
-          {/* Bento Item 1: Lia AI (Large) */}
+      {/* ══════════════ LIA 2.0 (Restored & Enhanced) ══════════════ */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:py-32 overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="md:col-span-2 lg:col-span-2 row-span-2 glass-strong rounded-[2rem] p-8 sm:p-10 relative overflow-hidden group border border-border/50 hover:border-primary/50 transition-colors"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <Bot className="w-10 h-10 text-primary mb-6" />
-                <h3 className="text-3xl font-black mb-3">Conheça a Lia 2.0</h3>
-                <p className="text-lg text-muted-foreground max-w-sm">Sua assistente financeira com acesso real aos seus dados. Pergunte qualquer coisa em linguagem natural.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-[10px] sm:text-xs font-bold mb-8 border border-primary/20 uppercase tracking-widest shadow-glow-sm">
+              <Sparkles className="w-4 h-4" />
+              <span>Sua inteligência 24h</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8 leading-[1.1] tracking-tight">
+              A Lia é a inteligência <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">
+                que trabalha para você.
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg sm:text-xl mb-10 max-w-lg leading-relaxed">
+              Diga adeus à digitação manual. Converse com a Lia por texto ou voz para automatizar lançamentos e obter diagnósticos precisos do seu patrimônio.
+            </p>
+
+            <div className="space-y-8">
+              {[
+                { title: "Lançamentos Automáticos", desc: "Diga 'Registrar despesa de R$ 350 com fornecedor X' e pronto." },
+                { title: "Alertas Inteligentes", desc: "Rastreio constante de contas, faturas e fluxo de caixa em tempo real." },
+                { title: "Análise Preditiva", desc: "Receba previsões de quando suas metas serão atingidas com base no seu perfil." }
+              ].map((item, idx) => (
+                <div key={idx} className="flex gap-5 group">
+                  <div className="w-10 h-10 rounded-full bg-secondary border border-border/50 flex items-center justify-center shrink-0 mt-1 shadow-sm group-hover:bg-primary group-hover:border-primary transition-colors">
+                    <CheckCircle2 className="w-5 h-5 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">{item.title}</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* AI Chat Preview */}
+          <motion.div
+            className="relative perspective-1000"
+            initial={{ opacity: 0, scale: 0.9, x: 40, rotateY: -10 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0, rotateY: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, type: "spring" }}
+          >
+            <div className="glass-strong rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative z-10 border border-primary/20 max-w-md mx-auto shadow-glow-lg float-slow bg-background/60 backdrop-blur-xl">
+              <div className="flex items-center gap-4 mb-8 border-b border-border/30 pb-6">
+                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/50 shadow-glow"><img src={liaAvatar} alt="Lia" className="w-full h-full object-cover" /></div>
+                <div>
+                  <h4 className="font-extrabold text-lg">Lia 2.0</h4>
+                  <p className="text-[10px] text-green-500 flex items-center gap-1.5 font-bold uppercase tracking-widest">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-glow-sm" /> Online Agora
+                  </p>
+                </div>
               </div>
-              <div className="glass rounded-xl p-4 border border-primary/20 bg-background/80 mt-8 transform group-hover:-translate-y-2 transition-transform duration-500">
-                <p className="text-sm">"Lia, quanto eu gastei de iFood esse mês comparado ao mês passado?"</p>
-                <div className="mt-3 flex gap-2 items-center text-primary text-xs font-bold">
-                  <Sparkles className="w-3 h-3" /> Gerando resposta baseada em 14 transações...
+
+              <div className="space-y-6 mb-8 min-h-[220px]">
+                <div className="glass p-4 rounded-3xl rounded-tl-none text-sm max-w-[90%] leading-relaxed border-border/30 shadow-sm">
+                  Olá! Eu sou a Lia 👋 Sua assistente financeira. Com base no seu saldo atual de <strong className="text-foreground">R$ 12.450</strong>, como posso ajudar seu patrimônio a crescer hoje?
+                </div>
+                <div className="bg-primary/20 p-4 rounded-3xl rounded-tr-none text-sm ml-auto max-w-[85%] border border-primary/30 shadow-sm font-medium text-foreground">
+                  Quanto gastei de iFood esse mês?
+                </div>
+                <div className="glass p-4 rounded-3xl rounded-tl-none text-sm max-w-[90%] font-medium border-primary/20 leading-relaxed shadow-glow-sm bg-primary/5">
+                  Você gastou <span className="text-red-500 font-bold">R$ 480,00</span> em Delivery este mês. Isso representa <span className="font-bold">12%</span> do seu orçamento. Quer que eu restrinja esse limite? 🎯
                 </div>
               </div>
             </div>
+            {/* Ambient Background Blur for Chat */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/10 blur-[100px] rounded-full -z-10 pulse-glow" />
           </motion.div>
-
-          {/* Bento Item 2: Open Finance */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="md:col-span-1 lg:col-span-2 glass-strong rounded-[2rem] p-8 relative overflow-hidden group border border-border/50 hover:border-border transition-colors"
-          >
-            <Landmark className="w-8 h-8 text-foreground mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Open Finance Real</h3>
-            <p className="text-muted-foreground">Conexão segura com Nubank, Itaú, XP e mais de 25 instituições financeiras via Pluggy.</p>
-          </motion.div>
-
-          {/* Bento Item 3: Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="glass-strong rounded-[2rem] p-8 flex flex-col justify-center items-center text-center group border border-border/50 hover:border-border transition-colors"
-          >
-            <PieChart className="w-12 h-12 text-primary mb-4 transform group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-bold mb-2">Análises Avançadas</h3>
-            <p className="text-sm text-muted-foreground">Radar, Pareto e projeções de fluxo de caixa.</p>
-          </motion.div>
-
-          {/* Bento Item 4: Security */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
-            className="glass-strong rounded-[2rem] p-8 flex flex-col justify-center items-center text-center group border border-border/50 hover:border-border transition-colors bg-gradient-to-br from-green-500/5 to-transparent"
-          >
-            <Shield className="w-12 h-12 text-green-500 mb-4 transform group-hover:scale-110 transition-transform" />
-            <h3 className="text-xl font-bold mb-2">Segurança de Elite</h3>
-            <p className="text-sm text-muted-foreground">Criptografia bancária e login via CPF único.</p>
-          </motion.div>
-
         </div>
       </section>
 
-      {/* ══════════════ PRICING ══════════════ */}
+      {/* ══════════════ PRICING (Restored & Enhanced) ══════════════ */}
       <section id="planos" className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:py-32 border-t border-border/10">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-5xl font-black mb-6">Investimento no seu futuro</h2>
-          <p className="text-lg text-muted-foreground">Cancele quando quiser. Sem letras miúdas.</p>
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none -z-10">
+          <Sparkles className="w-64 h-64 text-primary" />
+        </div>
 
-          <div className="flex items-center justify-center gap-3 mt-10">
-            <span className={`text-sm font-semibold ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensal</span>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={0} className="text-center mb-16">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black mb-6 tracking-tight">Um investimento na sua <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">liberdade.</span></h2>
+          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+            Acesso completo a todas as ferramentas premium por um valor justo e transparente.
+          </p>
+        </motion.div>
+
+        <div className="max-w-xl mx-auto">
+          <div className="flex justify-center items-center gap-4 sm:gap-6 mb-12">
+            <span className={`text-sm sm:text-base font-bold tracking-tight ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensal</span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              className="w-14 h-7 rounded-full bg-secondary relative border border-border/50 transition-colors focus:outline-none"
+              className="group relative w-16 h-8 sm:w-20 sm:h-10 rounded-full bg-secondary border border-border/50 flex items-center px-1.5 transition-all hover:bg-secondary/80 shadow-inner focus:outline-none"
             >
               <motion.div
-                className="w-5 h-5 bg-primary rounded-full absolute top-0.5"
-                animate={{ left: isAnnual ? "32px" : "4px" }}
+                className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-primary transition-all duration-500 shadow-glow"
+                animate={{ x: isAnnual ? (window.innerWidth >= 640 ? 36 : 28) : 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             </button>
-            <span className={`text-sm font-semibold ${isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
-              Anual <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-1">2 meses grátis</span>
+            <span className={`text-sm sm:text-base font-bold tracking-tight flex items-center gap-2 ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Anual <span className="text-primary text-[10px] font-black border border-primary/20 px-2 py-0.5 rounded-full bg-primary/10 uppercase tracking-wider hidden sm:inline-block">2 meses grátis</span>
             </span>
           </div>
-        </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Free Plan */}
-          <div className="glass rounded-[2rem] p-8 sm:p-10 border border-border/50">
-            <h3 className="text-2xl font-bold mb-2">Basic</h3>
-            <p className="text-muted-foreground text-sm mb-6">Comece a organizar a casa.</p>
-            <div className="mb-8">
-              <span className="text-5xl font-black">R$ 0</span><span className="text-muted-foreground">/mês</span>
-            </div>
-            <ul className="space-y-4 mb-8">
-              {['Lançamentos manuais ilimitados', 'Dashboard básico de relatórios', 'Gestão de Categorias', 'App Nativo PWA'].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-muted-foreground shrink-0" /> {item}
-                </li>
-              ))}
-            </ul>
-            <Link to="/register"><Button className="w-full text-lg py-6 rounded-xl" variant="outline">Criar Conta Grátis</Button></Link>
-          </div>
+          <motion.div
+            className="glass-strong rounded-[2.5rem] p-8 sm:p-12 border border-primary/30 relative shadow-glow-lg overflow-hidden card-hover bg-background/60"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-purple-500/5" />
 
-          {/* Pro Plan */}
-          <div className="glass-strong rounded-[2rem] p-8 sm:p-10 border-2 border-primary relative overflow-hidden transform md:-translate-y-4 shadow-2xl shadow-primary/20">
-            <div className="absolute top-6 right-6 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-              Recomendado
+            <div className="relative z-10 text-center">
+              <h3 className="text-2xl font-black mb-2 text-primary uppercase tracking-widest">Plano Liberta</h3>
+              <p className="text-muted-foreground text-sm mb-8 font-medium">Tudo o que você precisa para dominar suas finanças.</p>
+
+              <div className="flex items-baseline justify-center gap-1 mb-10">
+                <span className="text-6xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/70">
+                  {isAnnual ? "R$ 29,90" : "R$ 34,90"}
+                </span>
+                <span className="text-muted-foreground text-sm sm:text-base font-bold uppercase tracking-widest">/mês</span>
+              </div>
+
+              <ul className="space-y-4 mb-10 text-left max-w-sm mx-auto">
+                {[
+                  "Metas financeiras ilimitadas",
+                  "Histórico de transações completo",
+                  "Consolidação de Patrimônio",
+                  "Inteligência Artificial Lia 2.0 (Chat 24/7)",
+                  "Relatórios Avançados (Pareto, Radar)",
+                  "Conexão Open Finance Inclusa"
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-4 text-foreground/90 font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm leading-snug">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link to="/register">
+                <Button variant="hero" className="w-full h-16 sm:h-20 rounded-2xl text-xl sm:text-2xl font-black shadow-glow hover:scale-[1.03] transition-all">
+                  Assinar Premium
+                </Button>
+              </Link>
+              <p className="mt-6 text-xs text-muted-foreground font-bold uppercase tracking-widest">Cancele quando quiser</p>
             </div>
-            <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-            <h3 className="text-2xl font-bold mb-2 text-primary">Premium</h3>
-            <p className="text-muted-foreground text-sm mb-6">Inteligência completa a seu favor.</p>
-            <div className="mb-8">
-              <span className="text-5xl font-black text-foreground">R$ {isAnnual ? '29,90' : '34,90'}</span>
-              <span className="text-muted-foreground">/mês</span>
-              {isAnnual && <p className="text-xs text-primary font-semibold mt-1">Cobrado R$ 358,80 anualmente</p>}
-            </div>
-            <ul className="space-y-4 mb-8">
-              {[
-                'Assistente IA (Lia 2.0)',
-                'Conexão Open Finance',
-                'Relatórios avançados (Pareto, Radar)',
-                'Metas e Orçamentos Ilimitados',
-                'Suporte prioritário',
-                'Gestão de Patrimônio e Investimentos'
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0" /> {item}
-                </li>
-              ))}
-            </ul>
-            <Link to="/register">
-              <Button className="w-full text-lg py-6 rounded-xl bg-primary hover:bg-primary/90 shadow-xl font-bold transition-transform hover:scale-105">
-                Assinar Premium
-              </Button>
-            </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
