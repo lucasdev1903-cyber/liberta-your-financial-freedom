@@ -26,18 +26,15 @@ export default function LoginPage() {
 
         let emailToUse = loginIdentifier;
 
-        // Check if it's a CPF (only numbers or formatted CPF)
-        const isCpf = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/.test(loginIdentifier);
+        // Robust CPF detection: only 11 digits after cleaning
+        const cleanCpf = loginIdentifier.replace(/\D/g, '');
+        const isCpf = cleanCpf.length === 11 && /^\d+$/.test(cleanCpf);
 
         if (isCpf) {
-            const cleanCpf = loginIdentifier.replace(/\D/g, '');
             const { data, error: cpfError } = await (supabase
-                .from('profiles')
-                .select('email')
-                .eq('cpf', cleanCpf)
-                .maybeSingle() as any);
+                .rpc('get_email_by_cpf', { lookup_cpf: cleanCpf }) as any);
 
-            if (cpfError || !data?.email) {
+            if (cpfError || !data) {
                 toast({
                     title: 'CPF não encontrado',
                     description: 'Não encontramos nenhuma conta vinculada a este CPF.',
@@ -46,7 +43,7 @@ export default function LoginPage() {
                 setIsLoading(false);
                 return;
             }
-            emailToUse = data.email;
+            emailToUse = data;
         }
 
         const { error } = await signInWithEmail(emailToUse, password);
@@ -155,6 +152,7 @@ export default function LoginPage() {
                                     value={loginIdentifier}
                                     onChange={(e) => setLoginIdentifier(e.target.value)}
                                     className="pl-10 py-5 bg-secondary/30 border-border/50 focus:border-primary/50"
+                                    autoComplete="off"
                                     required
                                 />
                             </div>
