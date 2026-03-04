@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import logoWhite from '@/assets/liberta-logo-white.png';
 import logoColor from '@/assets/logo_liberta_colorido.png';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Smartphone, Fingerprint } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 
 export default function RegisterPage() {
@@ -55,7 +56,51 @@ export default function RegisterPage() {
 
         setIsLoading(true);
 
-        const { error } = await signUpWithEmail(email, password, fullName, cpf.replace(/\D/g, ''), phone);
+        const cleanCpf = cpf.replace(/\D/g, '');
+
+        // 1. Check if Email already exists in profiles
+        const { data: emailData, error: emailCheckError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (emailCheckError) {
+            console.error('Email check error:', emailCheckError);
+        }
+
+        if (emailData) {
+            toast({
+                title: 'E-mail já cadastrado',
+                description: 'Este e-mail já está sendo utilizado por outra conta.',
+                variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        // 2. Check if CPF already exists in profiles
+        const { data: cpfData, error: cpfCheckError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('cpf', cleanCpf)
+            .maybeSingle();
+
+        if (cpfCheckError) {
+            console.error('CPF check error:', cpfCheckError);
+        }
+
+        if (cpfData) {
+            toast({
+                title: 'CPF já cadastrado',
+                description: 'Este CPF já está sendo utilizado por outra conta.',
+                variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        const { error } = await signUpWithEmail(email, password, fullName, cleanCpf, phone);
 
         if (error) {
             toast({
