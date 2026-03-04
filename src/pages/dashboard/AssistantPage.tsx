@@ -103,56 +103,82 @@ export function AssistantPage() {
         await (supabase.from('ai_messages') as any).insert([{ user_id: user.id, role, content }]);
     };
 
+    const parseTransaction = (msg: string): { amount: number; description: string; type: 'income' | 'expense' } | null => {
+        const lower = msg.toLowerCase().trim();
+
+        // Pattern 1: "gastei R$ 45 em alimentação"
+        const p1 = lower.match(/(gastei|comprei|paguei|recebi|ganhei|adicione|lance|lança|registre|anote)\s+(?:r\$\s?)?(\d+(?:[.,]\d+)?)\s+(?:em|com|de|no|na|para)\s+(.+)/i);
+        if (p1) {
+            const type = ['recebi', 'ganhei'].includes(p1[1]) ? 'income' as const : 'expense' as const;
+            return { amount: parseFloat(p1[2].replace(',', '.')), description: p1[3].trim().replace(/[?!.]$/, ''), type };
+        }
+
+        // Pattern 2: "50 reais uber" or "R$30 farmacia"
+        const p2 = lower.match(/(?:r\$\s?)?(\d+(?:[.,]\d+)?)\s*(?:reais|real)?\s+(?:em|com|de|no|na|para)?\s*(.{2,})/i);
+        if (p2 && !lower.includes('meta') && !lower.includes('saldo')) {
+            const hasIncomeHint = lower.includes('salário') || lower.includes('salario') || lower.includes('freelance') || lower.includes('recebi') || lower.includes('renda');
+            return { amount: parseFloat(p2[1].replace(',', '.')), description: p2[2].trim().replace(/[?!.]$/, ''), type: hasIncomeHint ? 'income' : 'expense' };
+        }
+
+        return null;
+    };
+
     const generateResponse = async (userMsg: string): Promise<string> => {
         const lower = userMsg.toLowerCase();
 
-        // AI Transaction Intent Matching
-        const txMatch = lower.match(/(gastei|comprei|paguei|recebi|ganhei|adicione|lance)\s+(?:r\$\s*)?(\d+(?:[.,]\d+)?)\s+(?:em|com|de|no|na)\s+(.+)/i);
-
-        if (txMatch) {
-            const action = txMatch[1];
-            const amountStr = txMatch[2].replace(',', '.');
-            const amount = parseFloat(amountStr);
-            const description = txMatch[3].trim().replace(/[?!.]$/, '');
-            const type = ['recebi', 'ganhei'].includes(action) ? 'income' : 'expense';
-
+        // 1. Try to parse a transaction intent
+        const tx = parseTransaction(userMsg);
+        if (tx && tx.amount > 0 && tx.description.length >= 2) {
             try {
                 await addTransaction.mutateAsync({
-                    amount,
-                    description: description.charAt(0).toUpperCase() + description.slice(1),
-                    type,
+                    amount: tx.amount,
+                    description: tx.description.charAt(0).toUpperCase() + tx.description.slice(1),
+                    type: tx.type,
                     date: new Date().toISOString().split('T')[0],
                 } as any);
-                return `✅ Feito! Acabei de registrar ${type === 'income' ? 'a receita' : 'o gasto'} de **R$ ${amount.toFixed(2).replace('.', ',')}** (${description}) no seu painel.`;
+                const emoji = tx.type === 'income' ? '💰' : '💸';
+                const label = tx.type === 'income' ? 'receita' : 'despesa';
+                return `${emoji} Pronto, ${firstName}! Registrei a ${label} de **R$ ${tx.amount.toFixed(2).replace('.', ',')}** — "${tx.description.charAt(0).toUpperCase() + tx.description.slice(1)}" — no dia de hoje. Você pode conferir na aba **Lançamentos**.`;
             } catch (e) {
                 return "❌ Ops, tentei anotar isso mas algo deu errado no sistema. Pode tentar fazer isso na aba Lançamentos?";
             }
         }
 
+        // 2. Keyword-based responses
         for (const [keyword, response] of Object.entries(LIA_RESPONSES)) {
             if (lower.includes(keyword)) return response;
         }
 
+        // 3. Balance / Net Worth query
         if (lower.includes("quanto") && (lower.includes("tenho") || lower.includes("saldo"))) {
             if (!stats) return "Deixe-me ver... Estou acessando seus dados bancários agora. Pode perguntar novamente em um segundo?";
             const balanceStr = stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             return `Atualmente, o saldo total somado das suas contas conectadas é de **${balanceStr}**. Além disso, considerando seus bens e dívidas, seu patrimônio líquido é de **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**.`;
         }
 
+        // 4. Goal progress
         if (lower.includes("meta")) {
             if (!stats || stats.goals.length === 0) return "Você ainda não definiu nenhuma meta financeira. Que tal criar uma na aba **Metas**? Posso te ajudar a planejar!";
-            const primaryGoal = stats.goals[0];
-            const percent = Math.round((primaryGoal.current_amount / primaryGoal.target_amount) * 100);
-            return `Você está com a meta **${primaryGoal.title}** em andamento! Já conquistou **${percent}%** do objetivo (R$ ${primaryGoal.current_amount.toLocaleString('pt-BR')} de R$ ${primaryGoal.target_amount.toLocaleString('pt-BR')}). Continue assim! 🚀`;
+            const goalLines = stats.goals.slice(0, 3).map((g: any) => {
+                const pct = Math.round((g.current_amount / g.target_amount) * 100);
+                return `• **${g.title}**: ${pct}% concluído (R$ ${Number(g.current_amount).toLocaleString('pt-BR')} / R$ ${Number(g.target_amount).toLocaleString('pt-BR')})`;
+            }).join('\n');
+            return `Aqui estão suas metas, ${firstName}:\n\n${goalLines}\n\nContinue assim! 🚀`;
         }
 
-        if (lower.includes("oi") || lower.includes("olá") || lower.includes("ola")) {
-            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira inteligente. Estou conectada aos seus dados reais e pronta para te ajudar a gerenciar seus **${stats?.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'recursos'}**. O que vamos planejar hoje?`;
+        // 5. Resumo mensal
+        if (lower.includes('resumo') || lower.includes('relatório') || lower.includes('relatorio')) {
+            if (!stats) return "Ainda estou carregando seus dados...";
+            return `📊 **Resumo do Mês**, ${firstName}:\n\n• Saldo das contas: **${stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Patrimônio líquido: **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Metas ativas: **${stats.goals.length}**\n\nQuer que eu detalhe algum ponto?`;
+        }
+
+        if (lower.includes("oi") || lower.includes("olá") || lower.includes("ola") || lower.includes("hey")) {
+            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira inteligente. Posso:\n\n• 📝 **Registrar lançamentos** — ex: "Gastei R$ 45 em alimentação"\n• 📊 **Ver seu saldo** — ex: "Quanto eu tenho?"\n• 🎯 **Acompanhar metas** — ex: "Como estão minhas metas?"\n• 📋 **Gerar resumo** — ex: "Me dá um resumo"\n\nO que vamos fazer hoje?`;
         }
         if (lower.includes("obrigad")) {
-            return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Minha missão é ver seu patrimônio de **${stats?.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'Liberta'}** crescer cada vez mais! 🔑`;
+            return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Minha missão é ver seu patrimônio crescer cada vez mais! 🔑`;
         }
-        return `Entendi, ${firstName}! 🤔 Essa é uma ótima pergunta. Com base nos seus dados atuais, posso te ajudar a analisar seus gastos, acompanhar o progresso das suas metas ou registrar novos lançamentos. O que prefere?`;
+        return `Entendi, ${firstName}! 🤔 Posso te ajudar de várias formas:\n\n• Diga algo como **"Gastei 50 em uber"** para eu registrar\n• Pergunte **"Quanto eu tenho?"** para ver seu saldo\n• Diga **"Resumo"** para uma visão geral\n\nO que prefere?`;
     };
 
     const handleSend = async (text?: string) => {

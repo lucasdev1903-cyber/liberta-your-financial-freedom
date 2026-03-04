@@ -1,6 +1,6 @@
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
 import { Button } from "@/components/ui/button";
-import { Plus, FileDown, FileSpreadsheet } from "lucide-react";
+import { Plus, FileDown, FileSpreadsheet, Search, Filter } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { TransactionForm } from "@/components/dashboard/TransactionForm";
@@ -8,9 +8,13 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { exportToExcel, exportToPDF } from "@/lib/exportUtils";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 export function TransactionsPage() {
     const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
+    const [periodFilter, setPeriodFilter] = useState<'all' | 'month' | 'week'>('month');
     const { transactions } = useTransactions();
     const { data: stats } = useDashboardStats();
     const { toast } = useToast();
@@ -27,6 +31,25 @@ export function TransactionsPage() {
         );
         toast({ title: "📄 PDF gerado com sucesso!" });
     };
+
+    // Filter logic
+    const now = new Date();
+    const filteredTransactions = transactions.filter((t: any) => {
+        // Type filter
+        if (typeFilter !== 'all' && t.type !== typeFilter) return false;
+        // Search filter
+        if (search && !t.description?.toLowerCase().includes(search.toLowerCase())) return false;
+        // Period filter
+        if (periodFilter === 'month') {
+            const txDate = new Date(t.date);
+            if (txDate.getMonth() !== now.getMonth() || txDate.getFullYear() !== now.getFullYear()) return false;
+        } else if (periodFilter === 'week') {
+            const txDate = new Date(t.date);
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            if (txDate < weekAgo) return false;
+        }
+        return true;
+    });
 
     return (
         <div className="space-y-6">
@@ -60,6 +83,55 @@ export function TransactionsPage() {
                         </DialogContent>
                     </Dialog>
                 </div>
+            </div>
+
+            {/* Filters Bar */}
+            <div className="flex flex-wrap items-center gap-3 glass rounded-xl p-4 border-border/50">
+                <div className="relative flex-1 min-w-[200px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Buscar por descrição..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9 bg-secondary/20 border-border/50 h-10 rounded-lg"
+                    />
+                </div>
+                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1">
+                    {(['all', 'income', 'expense'] as const).map((t) => (
+                        <button
+                            key={t}
+                            onClick={() => setTypeFilter(t)}
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${typeFilter === t
+                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            {t === 'all' ? 'Todos' : t === 'income' ? 'Receitas' : 'Despesas'}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1">
+                    {(['week', 'month', 'all'] as const).map((p) => (
+                        <button
+                            key={p}
+                            onClick={() => setPeriodFilter(p)}
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${periodFilter === p
+                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            {p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : 'Tudo'}
+                        </button>
+                    ))}
+                </div>
+                {(search || typeFilter !== 'all' || periodFilter !== 'month') && (
+                    <button
+                        onClick={() => { setSearch(''); setTypeFilter('all'); setPeriodFilter('month'); }}
+                        className="text-xs text-primary hover:underline font-medium"
+                    >
+                        Limpar filtros
+                    </button>
+                )}
             </div>
 
             <div className="glass rounded-xl p-6 border-border/50">

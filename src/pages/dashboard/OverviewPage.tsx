@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
 import { FinancialScoreCard } from "@/components/dashboard/FinancialScoreCard";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import {
     BarChart,
     Bar,
@@ -29,8 +30,16 @@ import {
     Cell
 } from "recharts";
 
+const getGreeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Bom dia';
+    if (h < 18) return 'Boa tarde';
+    return 'Boa noite';
+};
+
 export function OverviewPage() {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats();
     const { profile, badges, isLoading: isGamificationLoading, isError: isGamificationError } = useGamification();
 
@@ -171,6 +180,28 @@ export function OverviewPage() {
                         </span>
                     </motion.div>
                 ))}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-3">
+                <button
+                    onClick={() => navigate('/dashboard/transactions')}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm font-semibold text-primary hover:bg-primary/20 active:scale-95 transition-all"
+                >
+                    <Wallet className="w-4 h-4" /> Novo Lançamento
+                </button>
+                <button
+                    onClick={() => navigate('/dashboard/goals')}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all"
+                >
+                    <Target className="w-4 h-4" /> Metas
+                </button>
+                <button
+                    onClick={() => navigate('/dashboard/assistant')}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all"
+                >
+                    <Bot className="w-4 h-4" /> Falar com Lia
+                </button>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">

@@ -324,10 +324,20 @@ export function GoalsPage() {
                                     <div className="flex justify-between text-xs mb-1">
                                         <span className="font-medium">{perc}% concluído</span>
                                         <span className="text-muted-foreground">
-                                            Faltam {formatCurrency(goal.target_amount - goal.current_amount)}
+                                            {perc >= 100 ? '🎉 Conquistado!' : `Faltam ${formatCurrency(goal.target_amount - goal.current_amount)}`}
                                         </span>
                                     </div>
-                                    <Progress value={perc} className="h-2 bg-secondary" />
+                                    <div className="relative h-3 bg-secondary rounded-full overflow-hidden">
+                                        <motion.div
+                                            className={cn(
+                                                "absolute inset-y-0 left-0 rounded-full",
+                                                perc >= 100 ? "bg-gradient-to-r from-green-500 to-emerald-400" : perc >= 70 ? "bg-gradient-to-r from-yellow-500 to-orange-400" : "bg-gradient-to-r from-primary to-blue-400"
+                                            )}
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${perc}%` }}
+                                            transition={{ duration: 1.2, ease: 'easeOut', delay: i * 0.15 }}
+                                        />
+                                    </div>
                                 </div>
 
                                 {perc < 100 && (
@@ -359,9 +369,16 @@ export function GoalsPage() {
                                     </div>
                                 )}
                                 {perc >= 100 && (
-                                    <div className="mt-6 pt-4 border-t border-border/50 text-center">
-                                        <p className="text-sm font-semibold text-green-400">🎉 Meta alcançada!</p>
-                                    </div>
+                                    <motion.div
+                                        className="mt-6 pt-4 border-t border-green-500/30 text-center bg-green-500/5 rounded-xl p-4 -mx-2"
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                    >
+                                        <span className="text-3xl block mb-1">🎉🌟🏆</span>
+                                        <p className="text-sm font-bold text-green-400">Meta Conquistada!</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Parabéns, você chegou lá! 🚀</p>
+                                    </motion.div>
                                 )}
                             </motion.div>
                         );

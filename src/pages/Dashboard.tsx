@@ -15,6 +15,13 @@ import { LiaFloatingButton } from "@/components/dashboard/LiaFloatingButton";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
 import { cn } from "@/lib/utils";
 
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Bom dia';
+  if (h < 18) return 'Boa tarde';
+  return 'Boa noite';
+};
+
 const navItems = [
   { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
   { icon: Landmark, label: "Patrimônio", href: "/dashboard/net-worth" },
@@ -147,7 +154,7 @@ export default function Dashboard() {
             </Button>
             <div className="hidden sm:block">
               <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold">Olá, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
+                <h1 className="text-xl font-bold">{getGreeting()}, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
                 <StreakDisplay />
               </div>
               <p className="text-sm text-muted-foreground">Aqui está o resumo das suas finanças</p>

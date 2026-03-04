@@ -151,13 +151,33 @@ export function BudgetsPage() {
                                 <div className="relative">
                                     <Progress value={b.percentage} className={cn("h-4 rounded-full", b.status === "danger" ? "[&>div]:bg-red-500" : b.status === "warning" ? "[&>div]:bg-yellow-500" : "[&>div]:bg-green-500")} />
                                 </div>
-                                <div className="flex items-center gap-1.5 mt-1">
+                                <div className="flex items-center gap-1.5 mt-2">
                                     {b.status === "danger" ? (
-                                        <><AlertTriangle className="w-3.5 h-3.5 text-red-500" /><span className="text-[11px] text-red-500 font-bold">Limite quase atingido! ({Math.round(b.percentage)}%)</span></>
+                                        <motion.div
+                                            className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-1.5 w-full"
+                                            animate={{ opacity: [1, 0.7, 1] }}
+                                            transition={{ repeat: Infinity, duration: 2 }}
+                                        >
+                                            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+                                            <span className="text-[11px] text-red-500 font-bold">
+                                                {b.percentage >= 100 ? `🚨 Limite estourado! (${Math.round(b.percentage)}%)` : `⚠️ Cuidado! ${Math.round(b.percentage)}% do limite`}
+                                            </span>
+                                            <span className="ml-auto text-[10px] text-red-400">
+                                                {b.percentage >= 100 ? `Excedeu ${formatCurrency(b.spent - b.amount_limit)}` : `Resta ${formatCurrency(b.amount_limit - b.spent)}`}
+                                            </span>
+                                        </motion.div>
                                     ) : b.status === "warning" ? (
-                                        <><AlertTriangle className="w-3.5 h-3.5 text-yellow-500" /><span className="text-[11px] text-yellow-500 font-bold">Atenção: {Math.round(b.percentage)}% do limite</span></>
+                                        <div className="flex items-center gap-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-3 py-1.5 w-full">
+                                            <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
+                                            <span className="text-[11px] text-yellow-500 font-bold">Atenção: {Math.round(b.percentage)}% do limite</span>
+                                            <span className="ml-auto text-[10px] text-yellow-400">Resta {formatCurrency(b.amount_limit - b.spent)}</span>
+                                        </div>
                                     ) : (
-                                        <><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /><span className="text-[11px] text-green-500 font-bold">Dentro do orçamento ({Math.round(b.percentage)}%)</span></>
+                                        <div className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-1.5 w-full">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                                            <span className="text-[11px] text-green-500 font-bold">✅ Dentro do orçamento ({Math.round(b.percentage)}%)</span>
+                                            <span className="ml-auto text-[10px] text-green-400">Resta {formatCurrency(b.amount_limit - b.spent)}</span>
+                                        </div>
                                     )}
                                 </div>
                             </div>

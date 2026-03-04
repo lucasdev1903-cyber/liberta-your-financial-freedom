@@ -56,6 +56,23 @@ export function RecurringPage() {
     const totalIncome = activeItems.filter(i => i.type === 'income').reduce((s, i) => s + i.amount, 0);
     const totalExpense = activeItems.filter(i => i.type === 'expense').reduce((s, i) => s + i.amount, 0);
 
+    const getNextDueDate = (item: RecurringTransaction) => {
+        const now = new Date();
+        const day = item.day_of_month || 1;
+        let next = new Date(now.getFullYear(), now.getMonth(), day);
+        if (next <= now) {
+            next = new Date(now.getFullYear(), now.getMonth() + 1, day);
+        }
+        return next;
+    };
+
+    const getDaysUntil = (date: Date) => {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const diff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        return diff;
+    };
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -138,6 +155,17 @@ export function RecurringPage() {
                                     <span className="px-2 py-0.5 rounded-full bg-secondary text-[10px] font-bold">{item.category}</span>
                                     <span><Calendar className="w-3 h-3 inline mr-1" />{FREQUENCIES.find(f => f.value === item.frequency)?.label} • Dia {item.day_of_month}</span>
                                 </div>
+                                {(() => {
+                                    const nextDue = getNextDueDate(item);
+                                    const daysLeft = getDaysUntil(nextDue);
+                                    const urgencyClass = daysLeft <= 3 ? 'text-red-500 font-bold' : daysLeft <= 7 ? 'text-yellow-500' : 'text-muted-foreground';
+                                    return (
+                                        <div className={cn('text-[10px] mt-1 flex items-center gap-1', urgencyClass)}>
+                                            {daysLeft <= 3 && <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />}
+                                            Próximo: {nextDue.toLocaleDateString('pt-BR')} ({daysLeft === 0 ? 'Hoje!' : daysLeft === 1 ? 'Amanhã' : `em ${daysLeft} dias`})
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                         <div className="flex items-center gap-3">

@@ -1,36 +1,73 @@
 import { useState, useEffect } from "react";
-import { Settings, User, Bell, Shield, Palette, Camera, Loader2, LogOut, CheckCircle2, FolderHeart, Trash2 } from "lucide-react";
+import { Settings, User, Bell, Shield, Palette, Camera, Loader2, LogOut, CheckCircle2, FolderHeart, Trash2, Lock, Fingerprint, Smartphone } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useCategories } from "@/hooks/useCategories";
+import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useTheme } from "@/components/theme-provider";
+import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function SettingsPage() {
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
     const { profile, isLoading, isUploading, updateProfile, uploadAvatar } = useProfile();
     const { categories, deleteCategory } = useCategories();
     const { theme, setTheme } = useTheme();
+    const { toast } = useToast();
     const [fullName, setFullName] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [phone, setPhone] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+    // Password change
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
 
     useEffect(() => {
         if (profile) {
             setFullName((profile as any).full_name || "");
+            setCpf((profile as any).cpf || "");
+            setPhone((profile as any).phone || "");
         }
     }, [profile]);
 
     const handleSaveProfile = async () => {
         setIsSaving(true);
         try {
-            await updateProfile.mutateAsync({ full_name: fullName });
+            await updateProfile.mutateAsync({ full_name: fullName, cpf: cpf.replace(/\D/g, ''), phone } as any);
+            toast({ title: '✅ Perfil atualizado com sucesso!' });
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmNewPassword) {
+            toast({ title: 'As senhas não conferem', variant: 'destructive' });
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast({ title: 'Senha muito curta (mínimo 6 caracteres)', variant: 'destructive' });
+            return;
+        }
+        setIsChangingPassword(true);
+        try {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) throw error;
+            toast({ title: '🔒 Senha alterada com sucesso!' });
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
+        } catch (err: any) {
+            toast({ title: 'Erro ao alterar senha', description: err.message, variant: 'destructive' });
+        } finally {
+            setIsChangingPassword(false);
         }
     };
 
@@ -132,12 +169,29 @@ export function SettingsPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-semibold ml-1">E-mail</label>
                                     <Input
-                                        value={profile?.id ? (profile as any).email || '' : ''}
+                                        value={user?.email || ''}
                                         disabled
                                         className="bg-secondary/10 border-border/30 h-12 rounded-xl px-4 opacity-70"
                                         placeholder="seu@email.com"
                                     />
-                                    {/* Note: Profile table doesn't have email, but user object from useAuth does. handled below */}
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold ml-1 flex items-center gap-2"><Fingerprint className="w-3.5 h-3.5" /> CPF</label>
+                                    <Input
+                                        value={cpf}
+                                        onChange={(e) => setCpf(e.target.value)}
+                                        className="bg-secondary/20 border-border/50 h-12 rounded-xl px-4"
+                                        placeholder="000.000.000-00"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold ml-1 flex items-center gap-2"><Smartphone className="w-3.5 h-3.5" /> Telefone</label>
+                                    <Input
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="bg-secondary/20 border-border/50 h-12 rounded-xl px-4"
+                                        placeholder="(00) 00000-0000"
+                                    />
                                 </div>
                             </div>
                         </CardContent>
@@ -171,6 +225,49 @@ export function SettingsPage() {
                                 </Button>
                             </div>
                         </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* PASSWORD CHANGE CARD - placed after profile tab content */}
+                <TabsContent value="profile" className="space-y-6">
+                    <Card className="glass border-border/50 overflow-hidden">
+                        <CardHeader className="border-b border-border/50 bg-secondary/5">
+                            <CardTitle className="text-xl flex items-center gap-2"><Lock className="w-5 h-5" /> Alterar Senha</CardTitle>
+                            <CardDescription>Atualize sua senha de acesso ao sistema.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-6 space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold ml-1">Nova Senha</label>
+                                <Input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="bg-secondary/20 border-border/50 h-12 rounded-xl px-4"
+                                    placeholder="Mínimo 6 caracteres"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold ml-1">Confirmar Nova Senha</label>
+                                <Input
+                                    type="password"
+                                    value={confirmNewPassword}
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                    className="bg-secondary/20 border-border/50 h-12 rounded-xl px-4"
+                                    placeholder="Repita a nova senha"
+                                />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="bg-secondary/5 border-t border-border/50 py-4 flex justify-end px-6">
+                            <Button
+                                onClick={handleChangePassword}
+                                disabled={isChangingPassword || !newPassword || !confirmNewPassword}
+                                variant="hero"
+                                className="rounded-xl h-10 px-8"
+                            >
+                                {isChangingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Lock className="w-4 h-4 mr-2" />}
+                                Alterar Senha
+                            </Button>
+                        </CardFooter>
                     </Card>
                 </TabsContent>
 
@@ -269,11 +366,25 @@ export function SettingsPage() {
                             <CardTitle>Preferências de Notificação</CardTitle>
                             <CardDescription>Escolha como deseja ser avisado sobre suas finanças.</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex items-center justify-center py-12 text-muted-foreground">
-                            <div className="text-center">
-                                <Bell className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                <p>Configurações detalhadas de notificações chegando em breve.</p>
-                            </div>
+                        <CardContent className="space-y-4 pt-2">
+                            {[
+                                { label: 'Alerta de orçamento excedido', desc: 'Receba um aviso quando ultrapassar 80% do limite', defaultOn: true },
+                                { label: 'Resumo mensal', desc: 'Receba um resumo no final de cada mês', defaultOn: true },
+                                { label: 'Metas concluídas', desc: 'Celebre quando atingir uma meta', defaultOn: true },
+                                { label: 'Recorrências próximas', desc: 'Aviso de contas a pagar nos próximos 3 dias', defaultOn: false },
+                                { label: 'Dicas da Lia', desc: 'Insights personalizados da IA sobre seus gastos', defaultOn: false },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-secondary/20 border border-border/50">
+                                    <div>
+                                        <p className="font-semibold text-sm">{item.label}</p>
+                                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" defaultChecked={item.defaultOn} className="sr-only peer" />
+                                        <div className="w-11 h-6 bg-secondary/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            ))}
                         </CardContent>
                     </Card>
                 </TabsContent>
