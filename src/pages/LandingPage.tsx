@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button";
 import logoWhite from "@/assets/liberta-logo-white.png";
 import logoColor from "@/assets/logo_liberta_colorido.png";
+import heroMockupDevices from "@/assets/hero-mockup-devices.png";
 import { ArrowRight, Shield, TrendingUp, Bot, Smartphone, BarChart3, Target, Star, CheckCircle2, Heart, Sparkles, PieChart, Landmark, ArrowUpRight, Lock, Zap, ChevronRight, PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -58,8 +59,8 @@ export default function LandingPage() {
         <nav className="flex items-center justify-between px-6 lg:px-12 max-w-[1400px] mx-auto">
           <Link to="/" className="flex items-center gap-2 relative group">
             <div className="absolute -inset-2 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            <img src={logoWhite} alt="Liberta" className="h-6 relative z-10 hidden dark:block transition-transform group-hover:scale-105" />
-            <img src={logoColor} alt="Liberta" className="h-6 relative z-10 block dark:hidden transition-transform group-hover:scale-105" />
+            <img src={logoWhite} alt="Liberta" className="h-10 relative z-10 hidden dark:block transition-transform group-hover:scale-105" />
+            <img src={logoColor} alt="Liberta" className="h-10 relative z-10 block dark:hidden transition-transform group-hover:scale-105" />
           </Link>
           <div className="flex items-center gap-2 sm:gap-6">
             <ModeToggle />
@@ -79,18 +80,7 @@ export default function LandingPage() {
       <section className="relative z-10 pt-40 pb-20 sm:pt-48 sm:pb-32 px-6 overflow-hidden">
         <motion.div style={{ opacity: opacityHero }} className="max-w-5xl mx-auto text-center flex flex-col items-center justify-center min-h-[70vh]">
 
-          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/50 dark:bg-white/5 border border-black/5 dark:border-white/10 backdrop-blur-xl mb-10 shadow-sm cursor-pointer group hover:bg-secondary transition-colors">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-              </span>
-              <span className="text-xs sm:text-sm font-bold tracking-wide">
-                Bem-vindo ao futuro do Open Finance
-              </span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-            </div>
-          </motion.div>
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}></motion.div>
 
           <motion.h1
             className="text-5xl sm:text-7xl lg:text-[6rem] font-bold tracking-tighter leading-[1.05] mb-8"
@@ -119,12 +109,6 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <a href="#demo" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto text-lg h-16 px-10 rounded-full border-2 border-border/50 hover:bg-secondary/50 transition-all duration-300 font-bold group bg-background/50 backdrop-blur-sm">
-                <PlayCircle className="mr-2 w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                Ver como funciona
-              </Button>
-            </a>
           </motion.div>
         </motion.div>
       </section>
@@ -141,9 +125,30 @@ export default function LandingPage() {
             animate={{ x: ["0%", "-50%"] }}
             transition={{ ease: "linear", duration: 30, repeat: Infinity }}
           >
-            {[...['NUBANK', 'ITAÚ', 'BRADESCO', 'SANTANDER', 'INTER', 'C6 BANK', 'XP', 'BTG', 'CAIXA'], ...['NUBANK', 'ITAÚ', 'BRADESCO', 'SANTANDER', 'INTER', 'C6 BANK', 'XP', 'BTG', 'CAIXA']].map((bank, i) => (
-              <div key={i} className="flex items-center gap-3 text-2xl sm:text-3xl font-black text-muted-foreground/20 hover:text-foreground/80 transition-colors duration-300 cursor-default">
-                <Landmark className="w-6 h-6 sm:w-8 sm:h-8" /> {bank}
+            {[
+              ...[
+                { name: 'Nubank', logo: '/banks/nubank.png' },
+                { name: 'Itaú', logo: '/banks/itau.png' },
+                { name: 'Bradesco', logo: '/banks/bradesco.png' },
+                { name: 'Santander', logo: '/banks/santander.png' },
+                { name: 'Inter', logo: '/banks/inter.png' },
+                { name: 'C6 Bank', logo: '/banks/c6_bank.png' },
+                { name: 'XP', logo: '/banks/xp_investimentos.png' },
+                { name: 'Caixa', logo: '/banks/caixa.png' }
+              ],
+              ...[
+                { name: 'Nubank', logo: '/banks/nubank.png' },
+                { name: 'Itaú', logo: '/banks/itau.png' },
+                { name: 'Bradesco', logo: '/banks/bradesco.png' },
+                { name: 'Santander', logo: '/banks/santander.png' },
+                { name: 'Inter', logo: '/banks/inter.png' },
+                { name: 'C6 Bank', logo: '/banks/c6_bank.png' },
+                { name: 'XP', logo: '/banks/xp_investimentos.png' },
+                { name: 'Caixa', logo: '/banks/caixa.png' }
+              ]
+            ].map((bank, i) => (
+              <div key={i} className="flex items-center gap-3 opacity-40 hover:opacity-100 grayscale hover:grayscale-0 transition-opacity duration-300 cursor-default">
+                <img src={bank.logo} alt={bank.name} className="h-10 sm:h-12 w-auto object-contain" />
               </div>
             ))}
           </motion.div>
@@ -154,8 +159,8 @@ export default function LandingPage() {
       <section id="demo" className="relative z-10 max-w-7xl mx-auto px-6 py-32 overflow-hidden">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 flex items-center justify-center mb-8 shadow-inner">
-              <Bot className="w-8 h-8 text-primary" />
+            <div className="w-20 h-20 rounded-3xl overflow-hidden bg-gradient-to-br from-primary/20 to-purple-500/20 border-2 border-primary/20 flex items-center justify-center mb-8 shadow-2xl">
+              <img src={liaAvatar} alt="Lia AI" className="w-full h-full object-cover" />
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-5xl font-bold mb-6 leading-tight tracking-tight">
               A inteligência artificial que entende o <span className="text-primary italic">seu bolso.</span>
@@ -231,42 +236,15 @@ export default function LandingPage() {
 
           <motion.div
             style={{ y: y1 }}
-            className="rounded-[2rem] border border-border/60 bg-background/50 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(255,255,255,0.02)] overflow-hidden relative"
+            className="rounded-[2rem] border border-border/60 bg-background/50 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(255,255,255,0.02)] overflow-hidden relative flex justify-center items-center"
           >
-            <div className="h-10 border-b border-border/40 bg-background/80 flex items-center px-6 gap-2">
+            <div className="absolute top-0 inset-x-0 h-10 border-b border-border/40 bg-background/80 flex items-center px-6 gap-2 z-10">
               <div className="w-3 h-3 rounded-full bg-red-500/80" />
               <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
               <div className="w-3 h-3 rounded-full bg-green-500/80" />
             </div>
 
-            <div className="p-8 grid md:grid-cols-3 gap-8">
-              <div className="md:col-span-2 space-y-6">
-                <div className="h-6 w-40 bg-secondary rounded" />
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="bg-secondary/30 rounded-xl p-4 border border-border/30">
-                      <div className="h-3 w-16 bg-muted/20 rounded mb-4" />
-                      <div className="h-6 w-24 bg-muted/40 rounded" />
-                    </div>
-                  ))}
-                </div>
-                <div className="h-64 bg-secondary/30 rounded-xl border border-border/30 flex items-end p-6 gap-2">
-                  {[40, 60, 45, 80, 55, 90, 70, 100].map((h, i) => (
-                    <motion.div key={i} initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex-1 bg-gradient-to-t from-primary to-primary/20 rounded-t-sm" />
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-6">
-                <div className="h-48 bg-secondary/30 rounded-xl border border-border/30 flex items-center justify-center p-6">
-                  <div className="w-32 h-32 rounded-full border-8 border-primary/20 border-t-primary" />
-                </div>
-                <div className="h-32 bg-secondary/30 rounded-xl border border-border/30 p-6 flex flex-col justify-end gap-3">
-                  <div className="h-2 w-full bg-muted/20 rounded-full"><div className="h-full w-[70%] bg-primary rounded-full" /></div>
-                  <div className="h-2 w-full bg-muted/20 rounded-full"><div className="h-full w-[45%] bg-purple-500 rounded-full" /></div>
-                  <div className="h-2 w-full bg-muted/20 rounded-full"><div className="h-full w-[85%] bg-orange-500 rounded-full" /></div>
-                </div>
-              </div>
-            </div>
+            <img src={heroMockupDevices} alt="Liberta Dashboard Preview" className="w-full h-auto object-cover pt-10" />
           </motion.div>
         </div>
       </section>
@@ -313,22 +291,23 @@ export default function LandingPage() {
 
               <div className="flex items-baseline justify-center md:justify-start gap-2 mb-2">
                 <span className="text-6xl font-black tracking-tighter">
-                  {isAnnual ? "R$ 29,90" : "R$ 34,90"}
+                  {isAnnual ? "R$ 197,10" : "R$ 21,90"}
                 </span>
-                <span className="text-muted-foreground font-bold">/mês</span>
+                <span className="text-muted-foreground font-bold">{isAnnual ? '/ano' : '/mês'}</span>
               </div>
-              {isAnnual && <p className="text-sm text-primary font-bold">Cobrado R$ 358,80 ao ano</p>}
+              {isAnnual && <p className="text-sm text-primary font-bold">Equivale a apenas R$ 16,42 por mês (25% off)</p>}
             </div>
 
             <div className="w-full md:w-auto">
               <ul className="space-y-4 mb-8 text-left">
                 {[
-                  "IA Lia 2.0 Ilimitada",
-                  "Open Finance com +25 Bancos",
-                  "Metas e Orçamentos Infinitos",
-                  "Gráficos Avançados (Pareto, Radar)",
-                  "Gestão Patrimonial Consolidada",
-                  "Suporte Prioritário VIP"
+                  "Inteligência Artificial Lia 2.0 Ilimitada",
+                  "Sincronização com +25 Bancos (Open Finance)",
+                  "Metas e Orçamentos Ilimitados",
+                  "Gráficos Diretos (Radar, Pareto, Fluxo)",
+                  "Gestão Consolidada de Patrimônio",
+                  "Suporte Prioritário VIP",
+                  "Sem surpresas. Zero anúncios."
                 ].map(item => (
                   <li key={item} className="flex items-center gap-4 font-medium">
                     <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
@@ -360,7 +339,7 @@ export default function LandingPage() {
             </p>
             <Link to="/register">
               <Button size="lg" className="h-20 px-12 rounded-full bg-white text-primary hover:bg-white/90 font-black text-2xl shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300">
-                Começar Agora Mismo <ArrowUpRight className="ml-3 w-8 h-8" />
+                Começar Agora Mesmo <ArrowUpRight className="ml-3 w-8 h-8" />
               </Button>
             </Link>
           </motion.div>
