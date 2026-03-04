@@ -157,7 +157,7 @@ export function OverviewPage() {
     return (
         <div className="space-y-6">
             {/* Stats cards */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, i) => (
                     <motion.div
                         key={stat.label}
@@ -183,7 +183,7 @@ export function OverviewPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <button
                     onClick={() => navigate('/dashboard/transactions')}
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm font-semibold text-primary hover:bg-primary/20 active:scale-95 transition-all"

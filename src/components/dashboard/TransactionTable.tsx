@@ -66,7 +66,7 @@ export function TransactionTable({ limit }: { limit?: number }) {
     };
 
     return (
-        <div className="rounded-md border border-border/50 overflow-hidden">
+        <div className="rounded-md border border-border/50 overflow-x-auto scrollbar-thin">
             <Table>
                 <TableHeader className="bg-secondary/20">
                     <TableRow className="border-border/50 hover:bg-transparent">

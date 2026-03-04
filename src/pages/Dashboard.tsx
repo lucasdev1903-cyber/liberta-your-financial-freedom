@@ -146,26 +146,27 @@ export default function Dashboard() {
         <div className="fixed top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10" />
 
         {/* Top Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/50 backdrop-blur-md z-10 shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-border/50 bg-background/50 backdrop-blur-md z-10 shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden shrink-0"
               onClick={() => setMobileOpen(true)}
             >
               <Menu className="w-5 h-5" />
             </Button>
-            <div className="hidden sm:block">
+            <div className="hidden sm:block min-w-0">
               <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold">{getGreeting()}, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
+                <h1 className="text-lg sm:text-xl font-bold truncate">{getGreeting()}, {getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
                 <StreakDisplay />
               </div>
-              <p className="text-sm text-muted-foreground">Aqui está o resumo das suas finanças</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">Aqui está o resumo das suas finanças</p>
             </div>
-            <div className="sm:hidden">
-              <img src={logoWhite} alt="Liberta" className="h-6 hidden dark:block" />
-              <img src={logoColor} alt="Liberta" className="h-6 block dark:hidden" />
+            <div className="sm:hidden flex items-center gap-2 min-w-0">
+              <img src={logoWhite} alt="Liberta" className="h-5 sm:h-6 hidden dark:block" />
+              <img src={logoColor} alt="Liberta" className="h-5 sm:h-6 block dark:hidden" />
+              <h1 className="text-base font-bold truncate">{getFirstName(user?.user_metadata?.full_name)}! 👋</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -184,7 +185,7 @@ export default function Dashboard() {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
           <div className="max-w-7xl mx-auto pb-20 page-enter">
             <Outlet />
           </div>

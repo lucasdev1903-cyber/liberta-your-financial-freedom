@@ -187,16 +187,16 @@ export function ReportsPage() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex gap-1 bg-secondary/20 rounded-xl p-1 border border-border/50">
+            <div className="flex gap-1 bg-secondary/20 rounded-xl p-1 border border-border/50 overflow-x-auto overflow-y-hidden pb-1 snap-x scrollbar-hide w-full max-w-full">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all flex-1 justify-center",
+                            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all flex-1 justify-center whitespace-nowrap snap-start shrink-0",
                             activeTab === tab.id
                                 ? "bg-primary text-primary-foreground shadow-md"
-                                : "text-muted-foreground hover:text-foreground"
+                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                         )}
                     >
                         <tab.icon className="w-4 h-4" /> {tab.label}
@@ -208,7 +208,7 @@ export function ReportsPage() {
             {activeTab === 'overview' && (
                 <div className="space-y-6">
                     {/* KPI Cards */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
                             { label: 'Receitas', value: formatCurrency(stats?.totalIncome || 0), change: stats?.incomeChange || 0, icon: TrendingUp, color: 'text-green-500', bg: 'from-green-500/10 to-emerald-500/5' },
                             { label: 'Despesas', value: formatCurrency(stats?.totalExpenses || 0), change: stats?.expenseChange || 0, icon: TrendingDown, color: 'text-red-500', bg: 'from-red-500/10 to-rose-500/5' },
@@ -238,10 +238,10 @@ export function ReportsPage() {
                     </div>
 
                     {/* Cashflow Evolution (Composed Chart) */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                         <h3 className="font-bold mb-1 flex items-center gap-2"><Activity className="w-4 h-4 text-primary" /> Fluxo de Caixa Acumulado</h3>
                         <p className="text-xs text-muted-foreground mb-4">Receitas, despesas e saldo acumulado dos últimos 6 meses</p>
-                        <div className="h-72">
+                        <div className="h-64 sm:h-72 w-full min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <ComposedChart data={cumulativeCashflow}>
                                     <defs>
@@ -288,13 +288,13 @@ export function ReportsPage() {
             {/* ═══════════════ TAB: SPENDING ═══════════════ */}
             {activeTab === 'spending' && (
                 <div className="space-y-6">
-                    <div className="grid lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Pareto (Category Concentration) */}
-                        <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <h3 className="font-bold mb-1 flex items-center gap-2"><PieChartIcon className="w-4 h-4 text-primary" /> Concentração de Gastos (Pareto)</h3>
                             <p className="text-xs text-muted-foreground mb-4">Quais categorias concentram a maior parte dos seus gastos</p>
                             {paretoData.length > 0 ? (
-                                <div className="h-64">
+                                <div className="h-64 sm:h-72 w-full min-w-0">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <ComposedChart data={paretoData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" />
@@ -313,18 +313,19 @@ export function ReportsPage() {
                         </motion.div>
 
                         {/* Category Treemap */}
-                        <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                        <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                             <h3 className="font-bold mb-1 flex items-center gap-2"><PieChartIcon className="w-4 h-4 text-primary" /> Mapa de Categorias</h3>
                             <p className="text-xs text-muted-foreground mb-4">Proporção visual dos seus gastos por categoria</p>
                             {categoryTreemap.length > 0 ? (
-                                <div className="h-64">
+                                <div className="h-64 sm:h-72 w-full min-w-0">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <Treemap
                                             data={categoryTreemap}
                                             dataKey="size"
                                             aspectRatio={4 / 3}
                                             stroke="hsl(var(--background))"
-                                            content={({ x, y, width, height, name, fill }: any) => {
+                                            content={((props: any) => {
+                                                const { x, y, width, height, name, fill } = props;
                                                 if (width < 40 || height < 30) return null;
                                                 return (
                                                     <g>
@@ -334,7 +335,7 @@ export function ReportsPage() {
                                                         </text>
                                                     </g>
                                                 );
-                                            }}
+                                            }) as any}
                                         />
                                     </ResponsiveContainer>
                                 </div>
@@ -343,10 +344,10 @@ export function ReportsPage() {
                     </div>
 
                     {/* Day-of-Week Pattern */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                         <h3 className="font-bold mb-1 flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> Padrão de Gastos por Dia da Semana</h3>
                         <p className="text-xs text-muted-foreground mb-4">Em quais dias você tende a gastar mais</p>
-                        <div className="h-56">
+                        <div className="h-48 sm:h-56 w-full min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={weekdaySpending}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" />
@@ -366,7 +367,7 @@ export function ReportsPage() {
                     </motion.div>
 
                     {/* Top 5 Expenses */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                         <h3 className="font-bold mb-4 flex items-center gap-2"><Zap className="w-4 h-4 text-primary" /> Top 5 Maiores Despesas</h3>
                         {topExpenses.length > 0 ? (
                             <div className="space-y-3">
@@ -391,10 +392,10 @@ export function ReportsPage() {
             {activeTab === 'trends' && (
                 <div className="space-y-6">
                     {/* Revenue vs Expense Area Chart */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h3 className="font-bold mb-1 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-primary" /> Evolução Receitas vs Despesas</h3>
                         <p className="text-xs text-muted-foreground mb-4">Comparação mensal dos últimos 6 meses</p>
-                        <div className="h-72">
+                        <div className="h-64 sm:h-72 w-full min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={stats?.monthlyData || []}>
                                     <defs>
@@ -420,10 +421,10 @@ export function ReportsPage() {
                     </motion.div>
 
                     {/* Monthly Saving Rate */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                         <h3 className="font-bold mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4 text-primary" /> Taxa de Poupança Mensal</h3>
                         <p className="text-xs text-muted-foreground mb-4">Quanto você poupou em relação à receita a cada mês</p>
-                        <div className="h-56">
+                        <div className="h-48 sm:h-56 w-full min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={(stats?.monthlyData || []).map(m => ({
                                     month: m.month,
@@ -450,9 +451,9 @@ export function ReportsPage() {
                     </motion.div>
 
                     {/* Monthly Comparison */}
-                    <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                         <h3 className="font-bold mb-4">📊 Comparativo Mensal</h3>
-                        <div className="h-56">
+                        <div className="h-48 sm:h-56 w-full min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={stats?.monthlyData || []} barGap={4}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" />
@@ -473,11 +474,11 @@ export function ReportsPage() {
                 <div className="space-y-6">
                     {/* Budget Radar */}
                     <div className="grid lg:grid-cols-2 gap-6">
-                        <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <h3 className="font-bold mb-1 flex items-center gap-2"><PieChartIcon className="w-4 h-4 text-primary" /> Radar de Orçamentos</h3>
                             <p className="text-xs text-muted-foreground mb-4">Utilização dos seus limites por categoria</p>
                             {budgetRadar.length > 0 ? (
-                                <div className="h-72">
+                                <div className="h-64 sm:h-72 w-full min-w-0">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <RadarChart data={budgetRadar}>
                                             <PolarGrid stroke="hsl(var(--border) / 0.5)" />
@@ -498,7 +499,7 @@ export function ReportsPage() {
                         </motion.div>
 
                         {/* Goals Summary */}
-                        <motion.div className="glass rounded-xl p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                        <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                             <h3 className="font-bold mb-1 flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Resumo de Metas</h3>
                             <p className="text-xs text-muted-foreground mb-6">Progresso geral das suas metas financeiras</p>
 

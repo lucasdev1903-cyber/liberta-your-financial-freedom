@@ -86,8 +86,8 @@ export function TransactionsPage() {
             </div>
 
             {/* Filters Bar */}
-            <div className="flex flex-wrap items-center gap-3 glass rounded-xl p-4 border-border/50">
-                <div className="relative flex-1 min-w-[200px]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 glass rounded-xl p-4 border-border/50">
+                <div className="relative flex-1 min-w-0">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         placeholder="Buscar por descrição..."
@@ -96,28 +96,28 @@ export function TransactionsPage() {
                         className="pl-9 bg-secondary/20 border-border/50 h-10 rounded-lg"
                     />
                 </div>
-                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1">
+                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1 overflow-x-auto scrollbar-hide">
                     {(['all', 'income', 'expense'] as const).map((t) => (
                         <button
                             key={t}
                             onClick={() => setTypeFilter(t)}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${typeFilter === t
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {t === 'all' ? 'Todos' : t === 'income' ? 'Receitas' : 'Despesas'}
                         </button>
                     ))}
                 </div>
-                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1">
+                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1 overflow-x-auto scrollbar-hide">
                     {(['week', 'month', 'all'] as const).map((p) => (
                         <button
                             key={p}
                             onClick={() => setPeriodFilter(p)}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${periodFilter === p
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : 'Tudo'}
@@ -134,7 +134,7 @@ export function TransactionsPage() {
                 )}
             </div>
 
-            <div className="glass rounded-xl p-6 border-border/50">
+            <div className="glass rounded-xl p-4 sm:p-6 border-border/50 overflow-hidden">
                 <TransactionTable />
             </div>
         </div>
