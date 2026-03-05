@@ -211,6 +211,8 @@ create table public.liabilities (
   name text not null,
   type text not null check (type in ('credit_card', 'loan', 'mortgage', 'other')),
   value numeric(12, 2) not null default 0,
+  interest_rate numeric(5, 2),
+  min_payment numeric(12, 2),
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );

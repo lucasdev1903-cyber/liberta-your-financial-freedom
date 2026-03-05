@@ -191,6 +191,8 @@ export interface Database {
                     name: string;
                     type: 'credit_card' | 'loan' | 'mortgage' | 'other';
                     value: number;
+                    interest_rate: number | null;
+                    min_payment: number | null;
                     created_at: string;
                     updated_at: string;
                 };
@@ -200,6 +202,8 @@ export interface Database {
                     name: string;
                     type: 'credit_card' | 'loan' | 'mortgage' | 'other';
                     value: number;
+                    interest_rate?: number | null;
+                    min_payment?: number | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -207,6 +211,8 @@ export interface Database {
                     name?: string;
                     type?: 'credit_card' | 'loan' | 'mortgage' | 'other';
                     value?: number;
+                    interest_rate?: number | null;
+                    min_payment?: number | null;
                     updated_at?: string;
                 };
             };
