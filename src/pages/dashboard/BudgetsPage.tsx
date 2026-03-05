@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDashboardFilters } from "@/contexts/DashboardFiltersContext";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export function BudgetsPage() {
     const { filters } = useDashboardFilters();
