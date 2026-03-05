@@ -15,12 +15,18 @@ interface DashboardStats {
 
 export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all' | 'custom';
 
-export function useDashboardStats(options: { dateRange?: DateRange; month?: number; year?: number } = {}) {
+export function useDashboardStats(options: {
+    dateRange?: DateRange;
+    month?: number;
+    year?: number;
+    startDate?: string;
+    endDate?: string;
+} = {}) {
     const { user } = useAuth();
-    const { dateRange = 'this_month', month, year } = options;
+    const { dateRange = 'this_month', month, year, startDate: customStart, endDate: customEnd } = options;
 
     return useQuery({
-        queryKey: ['dashboard-stats', user?.id, dateRange, month, year],
+        queryKey: ['dashboard-stats', user?.id, dateRange, month, year, customStart, customEnd],
         queryFn: async (): Promise<DashboardStats> => {
             if (!user) throw new Error('Not authenticated');
 
@@ -33,11 +39,17 @@ export function useDashboardStats(options: { dateRange?: DateRange; month?: numb
             let prevStartDate: string;
             let prevEndDate: string;
 
-            if (dateRange === 'custom' || (month !== undefined && year !== undefined)) {
+            if (customStart && customEnd) {
+                startDate = customStart;
+                endDate = customEnd;
+                // For comparison, get the same period length before start
+                const diff = new Date(endDate).getTime() - new Date(startDate).getTime();
+                prevStartDate = new Date(new Date(startDate).getTime() - diff).toISOString().split('T')[0];
+                prevEndDate = new Date(new Date(startDate).getTime() - 1).toISOString().split('T')[0];
+            } else if (dateRange === 'custom' || (month !== undefined && year !== undefined)) {
                 startDate = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
                 endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
 
-                // For comparison, get the previous month
                 const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
                 prevStartDate = prevMonthDate.toISOString().split('T')[0];
                 prevEndDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];

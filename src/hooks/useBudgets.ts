@@ -17,7 +17,7 @@ export interface BudgetWithSpent extends Budget {
     status: 'safe' | 'warning' | 'danger';
 }
 
-export function useBudgets() {
+export function useBudgets(filters?: { month?: number; year?: number }) {
     const { user } = useAuth();
     const qc = useQueryClient();
 
@@ -35,12 +35,14 @@ export function useBudgets() {
     });
 
     const transactionsQuery = useQuery({
-        queryKey: ['budget-transactions', user?.id],
+        queryKey: ['budget-transactions', user?.id, filters?.month, filters?.year],
         queryFn: async () => {
             if (!user) return [];
             const now = new Date();
-            const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-            const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+            const currentMonth = filters?.month !== undefined ? filters.month : now.getMonth();
+            const currentYear = filters?.year !== undefined ? filters.year : now.getFullYear();
+            const start = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+            const end = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
             const { data, error } = await supabase
                 .from('transactions')
                 .select('amount, category_id')

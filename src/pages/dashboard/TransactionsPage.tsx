@@ -22,12 +22,17 @@ export function TransactionsPage() {
     // Pass global filters to hook
     const { transactions, isLoading } = useTransactions({
         month: filters.month,
-        year: filters.year
+        year: filters.year,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+        dateRange: filters.mode === 'all' ? 'all' : undefined
     });
     const { data: stats } = useDashboardStats({
-        dateRange: 'custom',
+        dateRange: filters.mode === 'month' ? 'custom' : (filters.mode === 'all' ? 'all' : 'custom'),
         month: filters.month,
-        year: filters.year
+        year: filters.year,
+        startDate: filters.startDate,
+        endDate: filters.endDate
     });
     const { toast } = useToast();
 

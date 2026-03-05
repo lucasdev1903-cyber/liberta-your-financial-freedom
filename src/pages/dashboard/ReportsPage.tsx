@@ -17,13 +17,18 @@ import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 export function ReportsPage() {
     const { filters } = useDashboardFilters();
     const { data: stats, isLoading } = useDashboardStats({
-        dateRange: 'custom',
+        dateRange: filters.mode === 'month' ? 'custom' : (filters.mode === 'all' ? 'all' : 'custom'),
         month: filters.month,
-        year: filters.year
+        year: filters.year,
+        startDate: filters.startDate,
+        endDate: filters.endDate
     });
     const { transactions } = useTransactions({
         month: filters.month,
-        year: filters.year
+        year: filters.year,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+        dateRange: filters.mode === 'all' ? 'all' : undefined
     });
 
     const savingRate = useMemo(() => {

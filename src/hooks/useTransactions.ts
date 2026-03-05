@@ -14,7 +14,14 @@ export type TransactionWithCategory = Transaction & {
 
 export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all';
 
-export function useTransactions(filters?: { month?: number; year?: number; type?: string; dateRange?: DateRange }) {
+export function useTransactions(filters?: {
+    month?: number;
+    year?: number;
+    type?: string;
+    dateRange?: DateRange;
+    startDate?: string;
+    endDate?: string;
+}) {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { updateActivity } = useGamification();
@@ -30,7 +37,9 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
                 .eq('user_id', user.id)
                 .order('date', { ascending: false });
 
-            if (filters?.dateRange) {
+            if (filters?.startDate && filters?.endDate) {
+                q = q.gte('date', filters.startDate).lte('date', filters.endDate);
+            } else if (filters?.dateRange) {
                 const now = new Date();
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();

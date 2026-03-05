@@ -45,9 +45,11 @@ export function OverviewPage() {
     const navigate = useNavigate();
     const { filters } = useDashboardFilters();
     const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats({
-        dateRange: 'custom',
+        dateRange: filters.mode === 'month' ? 'custom' : (filters.mode === 'all' ? 'all' : 'custom'),
         month: filters.month,
-        year: filters.year
+        year: filters.year,
+        startDate: filters.startDate,
+        endDate: filters.endDate
     });
     const { profile, badges, isLoading: isGamificationLoading, isError: isGamificationError } = useGamification();
 

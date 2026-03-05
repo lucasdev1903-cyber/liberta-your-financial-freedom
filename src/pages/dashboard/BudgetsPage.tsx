@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { useDashboardFilters } from "@/contexts/DashboardFiltersContext";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 
 export function BudgetsPage() {
-    const { budgets, isLoading, addBudget, deleteBudget, updateBudget } = useBudgets();
+    const { filters } = useDashboardFilters();
+    const { budgets, isLoading, addBudget, deleteBudget, updateBudget } = useBudgets({
+        month: filters.month,
+        year: filters.year
+    });
     const { categories } = useCategories();
     const { toast } = useToast();
     const [open, setOpen] = useState(false);
@@ -68,6 +72,7 @@ export function BudgetsPage() {
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
+            <DashboardFilters />
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-3">
