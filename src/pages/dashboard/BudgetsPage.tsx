@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { PieChart as PieChartIcon, Plus, Trash2, Edit2, AlertTriangle, CheckCircle2, Loader2, Sparkles, ChevronRight, TrendingDown } from "lucide-react";
+import { motion } from "framer-motion";
+import { PieChart as PieChartIcon, Plus, Trash2, Edit2, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { useBudgets } from "@/hooks/useBudgets";
 import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,16 @@ export function BudgetsPage() {
     const formatCurrency = (val: number) =>
         val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-    const getStatusInfo = (status: string) => {
-        if (status === "danger") return { color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "Limite Excedido" };
-        if (status === "warning") return { color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", label: "Atenção" };
-        return { color: "text-green-500", bg: "bg-green-500/10", border: "border-green-500/20", label: "Dentro do Limite" };
+    const getStatusColor = (status: string) => {
+        if (status === "danger") return "bg-red-500";
+        if (status === "warning") return "bg-yellow-500";
+        return "bg-green-500";
+    };
+
+    const getStatusBorder = (status: string) => {
+        if (status === "danger") return "border-red-500/30";
+        if (status === "warning") return "border-yellow-500/30";
+        return "border-green-500/30";
     };
 
     const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,182 +60,138 @@ export function BudgetsPage() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 space-y-4">
-                <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 animate-pulse">Calculando margens de segurança...</p>
+            <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
 
     return (
-        <div className="space-y-8 page-enter pb-20">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-8 max-w-5xl mx-auto">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight leading-tight">Orçamentos</h1>
-                    <p className="text-sm text-muted-foreground font-medium opacity-80 mt-1.5">Defina limites inteligentes e mantenha sua saúde financeira sob controle.</p>
+                    <h1 className="text-3xl font-bold flex items-center gap-3">
+                        <PieChartIcon className="w-8 h-8 text-primary" />
+                        Gestão de Orçamentos
+                    </h1>
+                    <p className="text-muted-foreground mt-1">Defina limites de gastos por categoria e controle seu comportamento financeiro.</p>
                 </div>
-
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest shadow-glow-sm hover:scale-105 active:scale-95 transition-all" disabled={availableCategories.length === 0}>
-                            <Plus className="w-4 h-4 mr-2" /> Novo Orçamento
+                        <Button variant="hero" className="gap-2 shadow-glow" disabled={availableCategories.length === 0}>
+                            <Plus className="w-4 h-4" /> Novo Orçamento
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="glass-card border-white/10 rounded-[2rem] p-8 max-w-md">
-                        <DialogHeader>
-                            <DialogTitle className="text-xl font-black tracking-tight">Definir Limite de Gastos</DialogTitle>
-                        </DialogHeader>
-                        <form onSubmit={handleAdd} className="space-y-6 mt-6">
+                    <DialogContent className="glass">
+                        <DialogHeader><DialogTitle>Definir Limite de Gastos</DialogTitle></DialogHeader>
+                        <form onSubmit={handleAdd} className="space-y-4 pt-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Categoria</label>
+                                <label className="text-xs font-bold uppercase text-muted-foreground">Categoria</label>
                                 <Select name="category_id">
-                                    <SelectTrigger className="h-12 bg-white/5 border-white/5 rounded-xl font-medium">
-                                        <SelectValue placeholder="Selecione a categoria..." />
-                                    </SelectTrigger>
-                                    <SelectContent className="glass-card">
+                                    <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                    <SelectContent>
                                         {availableCategories.map((c: any) => (
-                                            <SelectItem key={c.id} value={c.id} className="font-medium">{c.name}</SelectItem>
+                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Limite Mensal (R$)</label>
-                                <Input name="amount_limit" type="number" step="0.01" placeholder="0,00" className="h-12 bg-white/5 border-white/5 rounded-xl font-medium" />
+                                <label className="text-xs font-bold uppercase text-muted-foreground">Limite Mensal (R$)</label>
+                                <Input name="amount_limit" type="number" step="0.01" placeholder="500,00" required />
                             </div>
-                            <Button type="submit" className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest shadow-glow-sm mt-4">
-                                Confirmar Limite
-                            </Button>
+                            <Button type="submit" variant="hero" className="w-full">Salvar Orçamento</Button>
                         </form>
                     </DialogContent>
                 </Dialog>
             </header>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                {/* Advisor Column */}
-                <div className="lg:col-span-1 space-y-8">
-                    <div className="glass-card rounded-[2.5rem] p-8 border-white/5 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                            <PieChartIcon className="w-20 h-20 text-primary" />
-                        </div>
-                        <div className="relative z-10">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 mb-2">Utilização Global</p>
-                            <h2 className="text-4xl font-black tracking-tighter mb-6">{budgets.length} Categorias <br /><span className="text-primary">Monitoradas</span></h2>
-
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Status do Sistema: Otimizado</span>
-                            </div>
-                        </div>
+            {budgets.length === 0 ? (
+                <div className="glass rounded-2xl p-12 text-center border-dashed">
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-yellow-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+                        <PieChartIcon className="w-9 h-9 text-primary" />
                     </div>
-
-                    {/* Lia AI Budget Insight */}
-                    <div className="glass-card rounded-[2.5rem] p-8 border-white/5 bg-gradient-to-br from-primary/[0.05] to-transparent relative overflow-hidden group shadow-glow-sm">
-                        <div className="flex items-center gap-2 mb-6">
-                            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                <Sparkles className="w-4 h-4" />
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Lia Budget Advisor</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium leading-relaxed mb-6 italic opacity-80">
-                            "Você está utilizando apenas 40% do seu orçamento em Alimentação este mês. Que tal mover R$ 200,00 para sua meta de 'Reserva de Emergência'?"
-                        </p>
-                        <Button variant="ghost" className="h-10 px-0 hover:bg-transparent text-[10px] font-black uppercase tracking-widest group/btn text-primary">
-                            OTIMIZAR ORÇAMENTO <ChevronRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
-                        </Button>
-                    </div>
+                    <h3 className="text-xl font-bold mb-2">Controle seus gastos 📊</h3>
+                    <p className="text-muted-foreground text-sm max-w-md mx-auto mb-4">
+                        Defina limites menssais por categoria e receba alertas visuais quando estiver perto de estourar.
+                        As barras mudam de cor automaticamente: <span className="text-green-500 font-bold">verde</span> → <span className="text-yellow-500 font-bold">amarelo</span> → <span className="text-red-500 font-bold">vermelho</span>.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse mr-1" />
+                        Clique em "Novo Orçamento" para começar
+                    </p>
                 </div>
+            ) : (
+                <div className="grid sm:grid-cols-2 gap-4">
+                    {budgets.map((b, i) => (
+                        <motion.div
+                            key={b.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            className={cn("glass rounded-2xl p-6 border-2 transition-all", getStatusBorder(b.status))}
+                        >
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className={cn("w-3 h-3 rounded-full", getStatusColor(b.status))} />
+                                    <h3 className="font-bold">{b.categories?.name || "Categoria"}</h3>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <button onClick={() => { setEditId(b.id); setEditLimit(String(b.amount_limit)); }} className="p-1.5 rounded-lg hover:bg-secondary/50 text-muted-foreground"><Edit2 className="w-3.5 h-3.5" /></button>
+                                    <button onClick={() => deleteBudget.mutate(b.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
+                                </div>
+                            </div>
 
-                {/* Budgets Grid */}
-                <div className="lg:col-span-2">
-                    <div className="grid sm:grid-cols-2 gap-6">
-                        <AnimatePresence mode="popLayout">
-                            {budgets.map((budget, i) => {
-                                const status = getStatusInfo(budget.status);
-                                const isEditing = editId === budget.id;
+                            {editId === b.id ? (
+                                <div className="flex gap-2 mb-4">
+                                    <Input value={editLimit} onChange={(e) => setEditLimit(e.target.value)} type="number" step="0.01" className="h-9" />
+                                    <Button size="sm" onClick={() => handleUpdate(b.id)}>Salvar</Button>
+                                    <Button size="sm" variant="ghost" onClick={() => setEditId(null)}>X</Button>
+                                </div>
+                            ) : null}
 
-                                return (
-                                    <motion.div
-                                        key={budget.id}
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        className="glass-card rounded-[2.5rem] p-8 border-white/5 relative group hover:border-primary/20 transition-all duration-500"
-                                    >
-                                        <div className="flex items-start justify-between mb-8">
-                                            <div>
-                                                <h3 className="text-lg font-black tracking-tight flex items-center gap-2">
-                                                    {budget.category_name}
-                                                    {budget.status === 'danger' && <AlertTriangle className="w-4 h-4 text-red-500" />}
-                                                </h3>
-                                                <p className={cn("text-[9px] font-black uppercase tracking-widest mt-1", status.color)}>
-                                                    {status.label}
-                                                </p>
-                                            </div>
-                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    onClick={() => { setEditId(budget.id); setEditLimit(budget.amount_limit.toString()); }}
-                                                    className="p-2 rounded-xl text-muted-foreground/30 hover:text-primary hover:bg-primary/10 transition-all"
-                                                >
-                                                    <Edit2 className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteBudget.mutate(budget.id)}
-                                                    className="p-2 rounded-xl text-muted-foreground/30 hover:text-red-500 hover:bg-red-500/10 transition-all"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">Gasto: <strong className="text-foreground">{formatCurrency(b.spent)}</strong></span>
+                                    <span className="text-muted-foreground">Limite: <strong className="text-foreground">{formatCurrency(b.amount_limit)}</strong></span>
+                                </div>
+                                <div className="relative">
+                                    <Progress value={b.percentage} className={cn("h-4 rounded-full", b.status === "danger" ? "[&>div]:bg-red-500" : b.status === "warning" ? "[&>div]:bg-yellow-500" : "[&>div]:bg-green-500")} />
+                                </div>
+                                <div className="flex items-center gap-1.5 mt-2">
+                                    {b.status === "danger" ? (
+                                        <motion.div
+                                            className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-1.5 w-full"
+                                            animate={{ opacity: [1, 0.7, 1] }}
+                                            transition={{ repeat: Infinity, duration: 2 }}
+                                        >
+                                            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+                                            <span className="text-[11px] text-red-500 font-bold">
+                                                {b.percentage >= 100 ? `🚨 Limite estourado! (${Math.round(b.percentage)}%)` : `⚠️ Cuidado! ${Math.round(b.percentage)}% do limite`}
+                                            </span>
+                                            <span className="ml-auto text-[10px] text-red-400">
+                                                {b.percentage >= 100 ? `Excedeu ${formatCurrency(b.spent - b.amount_limit)}` : `Resta ${formatCurrency(b.amount_limit - b.spent)}`}
+                                            </span>
+                                        </motion.div>
+                                    ) : b.status === "warning" ? (
+                                        <div className="flex items-center gap-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-3 py-1.5 w-full">
+                                            <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
+                                            <span className="text-[11px] text-yellow-500 font-bold">Atenção: {Math.round(b.percentage)}% do limite</span>
+                                            <span className="ml-auto text-[10px] text-yellow-400">Resta {formatCurrency(b.amount_limit - b.spent)}</span>
                                         </div>
-
-                                        <div className="space-y-5">
-                                            <div className="flex items-end justify-between">
-                                                <div className="space-y-1">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Gasto Atual</span>
-                                                    <p className="text-xl font-black tabular-nums">{formatCurrency(budget.current_amount)}</p>
-                                                </div>
-                                                <div className="text-right space-y-1">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Limite</span>
-                                                    {isEditing ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <Input
-                                                                value={editLimit}
-                                                                onChange={(e) => setEditLimit(e.target.value)}
-                                                                className="h-8 w-24 bg-white/5 border-primary/30 rounded-lg text-xs font-black"
-                                                                autoFocus
-                                                            />
-                                                            <Button size="icon" className="h-8 w-8 rounded-lg" onClick={() => handleUpdate(budget.id)}>
-                                                                <CheckCircle2 className="w-4 h-4" />
-                                                            </Button>
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm font-black opacity-40 italic">{formatCurrency(budget.amount_limit)}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="relative pt-2">
-                                                <Progress
-                                                    value={budget.percentage}
-                                                    className={cn("h-3 rounded-full bg-white/[0.03]", budget.status === 'danger' ? 'text-red-500' : 'text-primary')}
-                                                />
-                                                <div className="flex justify-between mt-2">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-30">Progresso</span>
-                                                    <span className={cn("text-[9px] font-black uppercase tracking-widest", budget.percentage > 100 ? "text-red-500" : "text-primary/60")}>
-                                                        {budget.percentage.toFixed(0)}%
-                                                    </span>
-                                                </div>
-                                            </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-1.5 w-full">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                                            <span className="text-[11px] text-green-500 font-bold">✅ Dentro do orçamento ({Math.round(b.percentage)}%)</span>
+                                            <span className="ml-auto text-[10px] text-green-400">Resta {formatCurrency(b.amount_limit - b.spent)}</span>
                                         </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </AnimatePresence>
-                    </div>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

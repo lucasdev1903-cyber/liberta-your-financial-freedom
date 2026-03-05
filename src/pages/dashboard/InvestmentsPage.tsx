@@ -1,13 +1,11 @@
 import { useState, useMemo } from "react";
-import { TrendingUp, Calculator, Sparkles, ChevronRight, ArrowUpRight, Target, Wallet, Zap, Loader2 } from "lucide-react";
+import { TrendingUp, Calculator, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 export function InvestmentsPage() {
     const [initialAmount, setInitialAmount] = useState(1000);
@@ -19,6 +17,8 @@ export function InvestmentsPage() {
         let data = [];
         let currentBalance = initialAmount;
         let totalInvested = initialAmount;
+
+        // Taxa mensal
         const monthlyRate = interestRate / 100 / 12;
 
         for (let year = 0; year <= years; year++) {
@@ -27,6 +27,8 @@ export function InvestmentsPage() {
                 balance: Math.round(currentBalance),
                 invested: Math.round(totalInvested),
             });
+
+            // Simula 12 meses
             for (let month = 1; month <= 12; month++) {
                 currentBalance = (currentBalance + monthlyContribution) * (1 + monthlyRate);
                 totalInvested += monthlyContribution;
@@ -45,18 +47,16 @@ export function InvestmentsPage() {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div className="glass-card border-white/10 p-4 rounded-2xl shadow-2xl backdrop-blur-2xl">
-                    <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/40 mb-3">{label}</p>
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-8">
-                            <span className="text-[11px] font-medium text-muted-foreground">Saldo Final:</span>
-                            <span className="font-black text-primary text-sm">{formatCurrency(payload[0].value)}</span>
-                        </div>
-                        <div className="flex items-center justify-between gap-8">
-                            <span className="text-[11px] font-medium text-muted-foreground">Total Investido:</span>
-                            <span className="font-black text-foreground text-sm">{formatCurrency(payload[1].value)}</span>
-                        </div>
-                    </div>
+                <div className="bg-background/90 border border-border p-3 rounded-lg shadow-xl backdrop-blur-md">
+                    <p className="font-semibold mb-2">{label}</p>
+                    <p className="text-sm flex items-center justify-between gap-4">
+                        <span className="text-muted-foreground">Saldo Final:</span>
+                        <span className="font-bold text-primary">{formatCurrency(payload[0].value)}</span>
+                    </p>
+                    <p className="text-sm flex items-center justify-between gap-4 mt-1">
+                        <span className="text-muted-foreground">Investido:</span>
+                        <span className="font-semibold">{formatCurrency(payload[1].value)}</span>
+                    </p>
                 </div>
             );
         }
@@ -64,161 +64,122 @@ export function InvestmentsPage() {
     };
 
     return (
-        <div className="space-y-8 page-enter pb-20">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight leading-tight">Simulador de Investimentos</h1>
-                    <p className="text-sm text-muted-foreground font-medium opacity-80 mt-1.5">Projete sua liberdade financeira através do poder dos juros compostos.</p>
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                        <TrendingUp className="w-6 h-6 text-primary" />
+                        Simulador de Investimentos
+                    </h1>
+                    <p className="text-sm text-muted-foreground">Projete o poder dos juros compostos no seu patrimônio</p>
                 </div>
-            </header>
+            </div>
 
-            <div className="grid lg:grid-cols-4 gap-8">
-                {/* Controles do Simulador */}
-                <div className="lg:col-span-1 glass-card rounded-[2.5rem] p-8 border-white/5 space-y-10">
-                    <div className="flex items-center gap-2 mb-2 font-black text-xs uppercase tracking-[0.2em] text-primary">
-                        <Calculator className="w-4 h-4" />
+            <div className="grid lg:grid-cols-3 gap-6">
+                {/* Formulário/Controles */}
+                <div className="lg:col-span-1 glass rounded-xl p-6 border-border/50 space-y-8">
+                    <div className="flex items-center gap-2 mb-2 font-semibold text-lg border-b border-border/50 pb-4">
+                        <Calculator className="w-5 h-5 text-primary" />
                         Parâmetros
                     </div>
 
-                    <div className="space-y-8">
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Valor Inicial</label>
-                                <span className="text-xs font-black text-primary">{formatCurrency(initialAmount)}</span>
-                            </div>
-                            <Slider
-                                value={[initialAmount]}
-                                onValueChange={([v]) => setInitialAmount(v)}
-                                max={100000}
-                                step={1000}
-                                className="premium-slider"
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Valor Inicial (R$)</label>
+                            <Input
+                                type="number"
+                                value={initialAmount}
+                                onChange={e => setInitialAmount(Number(e.target.value))}
+                                className="bg-secondary/30 text-lg"
                             />
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Aporte Mensal</label>
-                                <span className="text-xs font-black text-primary">{formatCurrency(monthlyContribution)}</span>
-                            </div>
-                            <Slider
-                                value={[monthlyContribution]}
-                                onValueChange={([v]) => setMonthlyContribution(v)}
-                                max={10000}
-                                step={100}
-                                className="premium-slider"
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Aporte Mensal (R$)</label>
+                            <Input
+                                type="number"
+                                value={monthlyContribution}
+                                onChange={e => setMonthlyContribution(Number(e.target.value))}
+                                className="bg-secondary/30 text-lg"
                             />
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Taxa p.a (%)</label>
-                                <span className="text-xs font-black text-primary">{interestRate}%</span>
-                            </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 flex justify-between">
+                                <span>Taxa de Juros Anual</span>
+                                <span className="text-primary font-bold">{interestRate}% aa</span>
+                            </label>
                             <Slider
                                 value={[interestRate]}
-                                onValueChange={([v]) => setInterestRate(v)}
-                                max={30}
-                                step={0.5}
-                                className="premium-slider"
+                                onValueChange={v => setInterestRate(v[0])}
+                                max={20} step={0.5}
+                                className="my-4"
                             />
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Tempo (Anos)</label>
-                                <span className="text-xs font-black text-primary">{years} anos</span>
-                            </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 flex justify-between">
+                                <span>Período</span>
+                                <span className="text-primary font-bold">{years} anos</span>
+                            </label>
                             <Slider
                                 value={[years]}
-                                onValueChange={([v]) => setYears(v)}
-                                max={40}
-                                step={1}
-                                className="premium-slider"
+                                onValueChange={v => setYears(v[0])}
+                                max={40} step={1}
+                                className="my-4"
                             />
                         </div>
+                    </div>
+
+                    <div className="pt-6 space-y-4 border-t border-border/50">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground bg-primary/5 p-4 rounded-xl border border-primary/10">
+                            <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                            <p>Com esse ritmo, você terá acumulado <span className="text-primary font-bold">{formatCurrency(finalBalance)}</span> em {years} anos.</p>
+                        </div>
+                        <Button variant="hero" className="w-full shadow-glow py-6" onClick={() => { }}>
+                            Salvar Simulação
+                        </Button>
                     </div>
                 </div>
 
-                {/* Main Visualization & Results */}
-                <div className="lg:col-span-3 space-y-8">
-                    {/* Metrics Bar */}
-                    <div className="grid sm:grid-cols-3 gap-6">
-                        {[
-                            { label: "Saldo Final", value: finalBalance, icon: TrendingUp, color: "primary" },
-                            { label: "Total Investido", value: totalInvested, icon: Wallet, color: "foreground" },
-                            { label: "Juros Ganhos", value: totalInterest, icon: Zap, color: "primary" }
-                        ].map((metric, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="glass-card p-6 rounded-[2rem] border-white/5 relative overflow-hidden group"
-                            >
-                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-                                    <metric.icon className="w-10 h-10" />
-                                </div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mb-2">{metric.label}</p>
-                                <p className={cn("text-2xl font-black tracking-tighter tabular-nums", metric.color === "primary" ? "text-primary text-glow" : "text-foreground")}>
-                                    {formatCurrency(metric.value)}
-                                </p>
-                            </motion.div>
-                        ))}
+                {/* Gráfico e Resultados */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="glass rounded-xl p-5 border-border/50">
+                            <p className="text-sm text-muted-foreground mb-1">Patrimônio Final</p>
+                            <p className="text-2xl font-bold text-gradient">{formatCurrency(finalBalance)}</p>
+                        </div>
+                        <div className="glass rounded-xl p-5 border-border/50">
+                            <p className="text-sm text-muted-foreground mb-1">Total Investido</p>
+                            <p className="text-2xl font-bold">{formatCurrency(totalInvested)}</p>
+                        </div>
+                        <div className="glass rounded-xl p-5 border-border/50">
+                            <p className="text-sm text-muted-foreground mb-1">Total em Juros</p>
+                            <p className="text-2xl font-bold text-green-400">+{formatCurrency(totalInterest)}</p>
+                        </div>
                     </div>
 
-                    {/* Proj. Chart */}
-                    <div className="glass-card rounded-[2.5rem] p-10 border-white/5 relative overflow-hidden h-[450px]">
-                        <div className="flex items-center justify-between mb-10">
-                            <div>
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 mb-1">Evolução Patrimonial</h3>
-                                <h2 className="text-xl font-black tracking-tight">Projeção por Tempo</h2>
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest opacity-60">
-                                    <div className="w-2 h-2 rounded-full bg-primary" /> Montante Final
-                                </div>
-                                <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest opacity-60">
-                                    <div className="w-2 h-2 rounded-full bg-white/20" /> Capital Investido
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="h-[300px] w-full">
+                    <div className="glass rounded-xl p-6 border-border/50">
+                        <h2 className="font-semibold mb-6">Evolução do Patrimônio</h2>
+                        <div className="h-72 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={chartData}>
+                                <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                        </linearGradient>
+                                        <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
-                                    <XAxis dataKey="year" tick={{ fontSize: 9, fontWeight: 900, fill: 'rgba(255,255,255,0.2)' }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 9, fontWeight: 900, fill: 'rgba(255,255,255,0.2)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${v / 1000}k`} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
+                                    <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} minTickGap={30} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(val) => `R$${val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val}`} width={60} />
                                     <Tooltip content={<CustomTooltip />} />
-                                    <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={4} fillOpacity={1} fill="url(#colorBalance)" />
-                                    <Area type="monotone" dataKey="invested" stroke="rgba(255,255,255,0.2)" strokeWidth={2} fill="transparent" />
+                                    <Area type="monotone" dataKey="balance" name="Saldo Final" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorBalance)" />
+                                    <Area type="monotone" dataKey="invested" name="Investido" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorInvested)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
-
-                    {/* Lia AI Strategic Advice */}
-                    <div className="glass-card rounded-[2.5rem] p-8 border-white/5 bg-gradient-to-br from-primary/[0.05] to-transparent relative overflow-hidden group shadow-glow-sm flex flex-col md:flex-row items-center gap-8">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-8 h-8 text-primary animate-pulse" />
-                        </div>
-                        <div className="flex-1 space-y-3">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Lia AI Investment Scout</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground font-medium leading-relaxed opacity-80">
-                                "Ao aumentar seu aporte em apenas <span className="text-primary font-black">R$ 200,00</span>, você reduziria em <span className="text-primary font-black">4 anos</span> o tempo necessário para atingir seu primeiro milhão, aproveitando a curva exponencial dos juros."
-                            </p>
-                        </div>
-                        <Button variant="ghost" className="h-11 px-6 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 shrink-0">
-                            OTIMIZAR APORTE <ChevronRight className="w-4 h-4 ml-2" />
-                        </Button>
                     </div>
                 </div>
             </div>
