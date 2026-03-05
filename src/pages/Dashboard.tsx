@@ -4,7 +4,7 @@ import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
   BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard, Repeat, FileBarChart
+  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard, Repeat, FileBarChart, Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -29,12 +29,12 @@ const navItems = [
   { icon: SmartphoneNfc, label: "Contas Bancárias", href: "/dashboard/connections" },
   { icon: Target, label: "Metas", href: "/dashboard/goals" },
   { icon: PieChart, label: "Orçamentos", href: "/dashboard/budgets" },
+  { icon: Flame, label: "Dívidas", href: "/dashboard/dividas" },
   { icon: Repeat, label: "Recorrências", href: "/dashboard/recurring" },
   { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
   { icon: FileBarChart, label: "Relatórios", href: "/dashboard/reports" },
   { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant", badge: '✨' },
   { icon: CreditCard, label: "Assinatura", href: "/dashboard/subscription" },
-  { icon: Settings, label: "Configurações", href: "/dashboard/settings" },
 ];
 
 export default function Dashboard() {
@@ -172,6 +172,11 @@ export default function Dashboard() {
             <ModeToggle />
             <NotificationDropdown />
             <Link to="/dashboard/settings" title="Configurações">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary transition-colors">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </Link>
+            <Link to="/dashboard/settings" title="Perfil">
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary overflow-hidden hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-glow-sm">
                 {user?.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
