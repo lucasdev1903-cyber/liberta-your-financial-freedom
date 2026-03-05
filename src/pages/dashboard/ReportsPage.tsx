@@ -11,9 +11,20 @@ import { cn } from "@/lib/utils";
 
 const COLORS = ['#6366f1', '#f59e0b', '#ef4444', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6'];
 
+import { useDashboardFilters } from "@/contexts/DashboardFiltersContext";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+
 export function ReportsPage() {
-    const { data: stats, isLoading } = useDashboardStats();
-    const { transactions } = useTransactions();
+    const { filters } = useDashboardFilters();
+    const { data: stats, isLoading } = useDashboardStats({
+        dateRange: 'custom',
+        month: filters.month,
+        year: filters.year
+    });
+    const { transactions } = useTransactions({
+        month: filters.month,
+        year: filters.year
+    });
 
     const savingRate = useMemo(() => {
         if (!stats || stats.totalIncome === 0) return 0;
@@ -30,7 +41,7 @@ export function ReportsPage() {
     if (isLoading) {
         return (
             <div className="space-y-6">
-                <div className="h-8 w-48 bg-secondary/30 rounded animate-pulse" />
+                <div className="h-16 bg-secondary/10 rounded-2xl animate-pulse mb-8" />
                 <div className="grid md:grid-cols-3 gap-4">
                     {[1, 2, 3].map(i => <div key={i} className="h-32 bg-secondary/30 rounded-xl animate-pulse" />)}
                 </div>
@@ -41,6 +52,7 @@ export function ReportsPage() {
 
     return (
         <div className="space-y-6">
+            <DashboardFilters />
             <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <BarChart3 className="w-6 h-6 text-primary" /> Relatórios

@@ -37,10 +37,18 @@ const getGreeting = () => {
     return 'Boa noite';
 };
 
+import { useDashboardFilters } from "@/contexts/DashboardFiltersContext";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+
 export function OverviewPage() {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats();
+    const { filters } = useDashboardFilters();
+    const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats({
+        dateRange: 'custom',
+        month: filters.month,
+        year: filters.year
+    });
     const { profile, badges, isLoading: isGamificationLoading, isError: isGamificationError } = useGamification();
 
     const isLoading = isStatsLoading || isGamificationLoading;
@@ -49,6 +57,7 @@ export function OverviewPage() {
     if (isLoading) {
         return (
             <div className="space-y-6">
+                <div className="h-16 bg-secondary/10 rounded-2xl animate-pulse mb-8" />
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="h-32 bg-secondary/10 rounded-xl animate-pulse flex flex-col p-5 gap-3">
@@ -156,6 +165,7 @@ export function OverviewPage() {
 
     return (
         <div className="space-y-6">
+            <DashboardFilters />
             {/* Stats cards */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, i) => (

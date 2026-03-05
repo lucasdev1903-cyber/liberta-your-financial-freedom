@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DashboardFiltersProvider } from "@/contexts/DashboardFiltersContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -38,35 +39,37 @@ const App = () => (
         <InstallPWAPrompt />
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<OverviewPage />} />
-                <Route path="transactions" element={<TransactionsPage />} />
-                <Route path="goals" element={<GoalsPage />} />
-                <Route path="investments" element={<InvestmentsPage />} />
-                <Route path="connections" element={<BankConnectionsPage />} />
-                <Route path="assistant" element={<AssistantPage />} />
-                <Route path="net-worth" element={<NetWorthPage />} />
-                <Route path="budgets" element={<BudgetsPage />} />
-                <Route path="subscription" element={<SubscriptionPage />} />
-                <Route path="recurring" element={<RecurringPage />} />
-                <Route path="reports" element={<ReportsPage />} />
-                <Route path="dividas" element={<DebtsPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <DashboardFiltersProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<OverviewPage />} />
+                  <Route path="transactions" element={<TransactionsPage />} />
+                  <Route path="goals" element={<GoalsPage />} />
+                  <Route path="investments" element={<InvestmentsPage />} />
+                  <Route path="connections" element={<BankConnectionsPage />} />
+                  <Route path="assistant" element={<AssistantPage />} />
+                  <Route path="net-worth" element={<NetWorthPage />} />
+                  <Route path="budgets" element={<BudgetsPage />} />
+                  <Route path="subscription" element={<SubscriptionPage />} />
+                  <Route path="recurring" element={<RecurringPage />} />
+                  <Route path="reports" element={<ReportsPage />} />
+                  <Route path="dividas" element={<DebtsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </DashboardFiltersProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

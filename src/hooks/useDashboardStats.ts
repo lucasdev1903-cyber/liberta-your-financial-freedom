@@ -13,45 +13,54 @@ interface DashboardStats {
     categoryBreakdown: { name: string; amount: number; color: string }[];
 }
 
-export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all';
+export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all' | 'custom';
 
-export function useDashboardStats(dateRange: DateRange = 'this_month') {
+export function useDashboardStats(options: { dateRange?: DateRange; month?: number; year?: number } = {}) {
     const { user } = useAuth();
+    const { dateRange = 'this_month', month, year } = options;
 
     return useQuery({
-        queryKey: ['dashboard-stats', user?.id, dateRange],
+        queryKey: ['dashboard-stats', user?.id, dateRange, month, year],
         queryFn: async (): Promise<DashboardStats> => {
             if (!user) throw new Error('Not authenticated');
 
             const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
+            const currentMonth = month !== undefined ? month : now.getMonth();
+            const currentYear = year !== undefined ? year : now.getFullYear();
 
             let startDate: string;
             let endDate: string;
             let prevStartDate: string;
             let prevEndDate: string;
 
-            if (dateRange === 'this_month') {
+            if (dateRange === 'custom' || (month !== undefined && year !== undefined)) {
                 startDate = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
                 endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
-                prevStartDate = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
+
+                // For comparison, get the previous month
+                const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
+                prevStartDate = prevMonthDate.toISOString().split('T')[0];
                 prevEndDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+            } else if (dateRange === 'this_month') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+                prevStartDate = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
             } else if (dateRange === 'last_month') {
-                startDate = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
-                endDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
-                prevStartDate = new Date(currentYear, currentMonth - 2, 1).toISOString().split('T')[0];
-                prevEndDate = new Date(currentYear, currentMonth - 1, 0).toISOString().split('T')[0];
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0];
+                endDate = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0];
+                prevStartDate = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(now.getFullYear(), now.getMonth() - 1, 0).toISOString().split('T')[0];
             } else if (dateRange === 'last_3_months') {
-                startDate = new Date(currentYear, currentMonth - 2, 1).toISOString().split('T')[0];
-                endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
-                prevStartDate = new Date(currentYear, currentMonth - 5, 1).toISOString().split('T')[0];
-                prevEndDate = new Date(currentYear, currentMonth - 2, 0).toISOString().split('T')[0];
+                startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString().split('T')[0];
+                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+                prevStartDate = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(now.getFullYear(), now.getMonth() - 2, 0).toISOString().split('T')[0];
             } else if (dateRange === 'this_year') {
-                startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
-                endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
-                prevStartDate = new Date(currentYear - 1, 0, 1).toISOString().split('T')[0];
-                prevEndDate = new Date(currentYear - 1, 11, 31).toISOString().split('T')[0];
+                startDate = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
+                endDate = new Date(now.getFullYear(), 11, 31).toISOString().split('T')[0];
+                prevStartDate = new Date(now.getFullYear() - 1, 0, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(now.getFullYear() - 1, 11, 31).toISOString().split('T')[0];
             } else { // all
                 startDate = new Date(2000, 0, 1).toISOString().split('T')[0];
                 endDate = new Date(2100, 0, 1).toISOString().split('T')[0];

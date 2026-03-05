@@ -10,13 +10,25 @@ import { exportToExcel, exportToPDF } from "@/lib/exportUtils";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 
+import { useDashboardFilters } from "@/contexts/DashboardFiltersContext";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+
 export function TransactionsPage() {
+    const { filters } = useDashboardFilters();
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
-    const [periodFilter, setPeriodFilter] = useState<'all' | 'month' | 'week'>('month');
-    const { transactions } = useTransactions();
-    const { data: stats } = useDashboardStats();
+
+    // Pass global filters to hook
+    const { transactions, isLoading } = useTransactions({
+        month: filters.month,
+        year: filters.year
+    });
+    const { data: stats } = useDashboardStats({
+        dateRange: 'custom',
+        month: filters.month,
+        year: filters.year
+    });
     const { toast } = useToast();
 
     const handleExcelExport = () => {
@@ -32,27 +44,19 @@ export function TransactionsPage() {
         toast({ title: "📄 PDF gerado com sucesso!" });
     };
 
-    // Filter logic
-    const now = new Date();
+    // Filter logic (now only search and type)
     const filteredTransactions = transactions.filter((t: any) => {
         // Type filter
         if (typeFilter !== 'all' && t.type !== typeFilter) return false;
         // Search filter
         if (search && !t.description?.toLowerCase().includes(search.toLowerCase())) return false;
-        // Period filter
-        if (periodFilter === 'month') {
-            const txDate = new Date(t.date);
-            if (txDate.getMonth() !== now.getMonth() || txDate.getFullYear() !== now.getFullYear()) return false;
-        } else if (periodFilter === 'week') {
-            const txDate = new Date(t.date);
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            if (txDate < weekAgo) return false;
-        }
         return true;
     });
 
     return (
         <div className="space-y-6">
+            <DashboardFilters />
+
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">Lançamentos</h1>
@@ -110,32 +114,24 @@ export function TransactionsPage() {
                         </button>
                     ))}
                 </div>
-                <div className="flex gap-1 bg-secondary/20 rounded-lg p-1">
-                    {(['week', 'month', 'all'] as const).map((p) => (
-                        <button
-                            key={p}
-                            onClick={() => setPeriodFilter(p)}
-                            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${periodFilter === p
-                                ? 'bg-primary text-primary-foreground shadow-sm'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
-                        >
-                            {p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : 'Tudo'}
-                        </button>
-                    ))}
-                </div>
-                {(search || typeFilter !== 'all' || periodFilter !== 'month') && (
+                {(search || typeFilter !== 'all') && (
                     <button
-                        onClick={() => { setSearch(''); setTypeFilter('all'); setPeriodFilter('month'); }}
-                        className="text-xs text-primary hover:underline font-medium"
+                        onClick={() => { setSearch(''); setTypeFilter('all'); }}
+                        className="text-xs text-primary hover:underline font-medium ml-2"
                     >
                         Limpar filtros
                     </button>
                 )}
             </div>
 
-            <div className="glass rounded-xl p-6 border-border/50">
-                <TransactionTable data={filteredTransactions} />
+            <div className="glass rounded-xl p-6 border-border/50 min-h-[400px]">
+                {isLoading ? (
+                    <div className="space-y-4">
+                        {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-12 w-full bg-secondary/10 animate-pulse rounded-lg" />)}
+                    </div>
+                ) : (
+                    <TransactionTable data={filteredTransactions} />
+                )}
             </div>
         </div>
     );
