@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
-export function TransactionTable({ limit }: { limit?: number }) {
-    const { transactions, isLoading, deleteTransaction } = useTransactions();
+export function TransactionTable({ limit, data }: { limit?: number; data?: any[] }) {
+    const { transactions: hookTransactions, isLoading, deleteTransaction } = useTransactions();
+    const transactions = data || hookTransactions;
     const { toast } = useToast();
 
     if (isLoading) {

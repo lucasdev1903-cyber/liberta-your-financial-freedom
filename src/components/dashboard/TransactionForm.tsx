@@ -81,12 +81,16 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
     const filteredCategories = categories.filter((c) => c.type === selectedType);
 
     async function onSubmit(data: TransactionFormValues) {
+        console.log('Submitting transaction data:', data);
         setIsSubmitting(true);
         try {
-            await addTransaction.mutateAsync({
+            const payload = {
                 ...data,
+                amount: Number(data.amount),
                 date: format(data.date, 'yyyy-MM-dd'),
-            } as any);
+            };
+            console.log('Final payload:', payload);
+            await addTransaction.mutateAsync(payload as any);
             toast({
                 title: 'Lançamento salvo',
                 description: 'Seu lançamento foi adicionado com sucesso.',
@@ -94,6 +98,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
             form.reset();
             if (onSuccess) onSuccess();
         } catch (error: any) {
+            console.error('Submission error:', error);
             toast({
                 title: 'Erro ao salvar',
                 description: error.message || 'Ocorreu um erro ao salvar o lançamento.',

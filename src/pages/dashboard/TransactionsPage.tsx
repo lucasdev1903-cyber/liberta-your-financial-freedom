@@ -102,8 +102,8 @@ export function TransactionsPage() {
                             key={t}
                             onClick={() => setTypeFilter(t)}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${typeFilter === t
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {t === 'all' ? 'Todos' : t === 'income' ? 'Receitas' : 'Despesas'}
@@ -116,8 +116,8 @@ export function TransactionsPage() {
                             key={p}
                             onClick={() => setPeriodFilter(p)}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${periodFilter === p
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : 'Tudo'}
@@ -135,7 +135,7 @@ export function TransactionsPage() {
             </div>
 
             <div className="glass rounded-xl p-6 border-border/50">
-                <TransactionTable />
+                <TransactionTable data={filteredTransactions} />
             </div>
         </div>
     );

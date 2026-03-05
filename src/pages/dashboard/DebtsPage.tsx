@@ -120,16 +120,25 @@ export function DebtsPage() {
                                     <Input type="number" value={newDebt.value} onChange={e => setNewDebt({ ...newDebt, value: Number(e.target.value) })} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Juros Anual (%)</label>
-                                    <Input type="number" value={newDebt.interest_rate} onChange={e => setNewDebt({ ...newDebt, interest_rate: Number(e.target.value) })} />
+                                    <label className="text-sm font-medium">Taxa de Juros (% ao ano)</label>
+                                    <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        onChange={(e) => setNewDebt({ ...newDebt, interest_rate: parseFloat(e.target.value) || 0 })}
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Pagamento Mínimo (R$)</label>
-                                <Input type="number" value={newDebt.min_payment} onChange={e => setNewDebt({ ...newDebt, min_payment: Number(e.target.value) })} />
+                                <label className="text-sm font-medium">Pagamento Mínimo</label>
+                                <Input
+                                    type="number"
+                                    placeholder="0.00"
+                                    onChange={(e) => setNewDebt({ ...newDebt, min_payment: parseFloat(e.target.value) || 0 })}
+                                />
                             </div>
-                            <Button onClick={handleAddDebt} className="w-full mt-4">
-                                Salvar Dívida
+                            <Button className="w-full mt-4" onClick={handleAddDebt} disabled={addDebt.isPending}>
+                                {addDebt.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                                Adicionar Dívida
                             </Button>
                         </div>
                     </DialogContent>
