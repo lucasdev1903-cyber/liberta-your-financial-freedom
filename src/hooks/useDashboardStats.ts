@@ -13,11 +13,13 @@ interface DashboardStats {
     categoryBreakdown: { name: string; amount: number; color: string }[];
 }
 
-export function useDashboardStats() {
+export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all';
+
+export function useDashboardStats(dateRange: DateRange = 'this_month') {
     const { user } = useAuth();
 
     return useQuery({
-        queryKey: ['dashboard-stats', user?.id],
+        queryKey: ['dashboard-stats', user?.id, dateRange],
         queryFn: async (): Promise<DashboardStats> => {
             if (!user) throw new Error('Not authenticated');
 
@@ -25,10 +27,38 @@ export function useDashboardStats() {
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
 
-            const startOfMonth = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
-            const endOfMonth = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
-            const startOfPrevMonth = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
-            const endOfPrevMonth = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+            let startDate: string;
+            let endDate: string;
+            let prevStartDate: string;
+            let prevEndDate: string;
+
+            if (dateRange === 'this_month') {
+                startDate = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+                endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                prevStartDate = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+            } else if (dateRange === 'last_month') {
+                startDate = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
+                endDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+                prevStartDate = new Date(currentYear, currentMonth - 2, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(currentYear, currentMonth - 1, 0).toISOString().split('T')[0];
+            } else if (dateRange === 'last_3_months') {
+                startDate = new Date(currentYear, currentMonth - 2, 1).toISOString().split('T')[0];
+                endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                prevStartDate = new Date(currentYear, currentMonth - 5, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(currentYear, currentMonth - 2, 0).toISOString().split('T')[0];
+            } else if (dateRange === 'this_year') {
+                startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
+                endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
+                prevStartDate = new Date(currentYear - 1, 0, 1).toISOString().split('T')[0];
+                prevEndDate = new Date(currentYear - 1, 11, 31).toISOString().split('T')[0];
+            } else { // all
+                startDate = new Date(2000, 0, 1).toISOString().split('T')[0];
+                endDate = new Date(2100, 0, 1).toISOString().split('T')[0];
+                prevStartDate = startDate;
+                prevEndDate = startDate;
+            }
+
             const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1).toISOString().split('T')[0];
 
             const [currentRes, prevRes, chartRes] = await Promise.all([
@@ -36,20 +66,20 @@ export function useDashboardStats() {
                     .from('transactions')
                     .select('amount, type, category_id, categories(name, color)')
                     .eq('user_id', user.id)
-                    .gte('date', startOfMonth)
-                    .lte('date', endOfMonth),
+                    .gte('date', startDate)
+                    .lte('date', endDate),
                 supabase
                     .from('transactions')
                     .select('amount, type')
                     .eq('user_id', user.id)
-                    .gte('date', startOfPrevMonth)
-                    .lte('date', endOfPrevMonth),
+                    .gte('date', prevStartDate)
+                    .lte('date', prevEndDate),
                 supabase
                     .from('transactions')
                     .select('amount, type, date')
                     .eq('user_id', user.id)
                     .gte('date', sixMonthsAgo)
-                    .lte('date', endOfMonth)
+                    .lte('date', endDate)
             ]);
 
             const transactions = (currentRes.data || []) as any[];

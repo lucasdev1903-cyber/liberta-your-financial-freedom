@@ -9,6 +9,15 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactions, TransactionWithCategory } from "@/hooks/useTransactions";
 import { useBudgets } from "@/hooks/useBudgets";
 import { useGoals } from "@/hooks/useGoals";
+import { DateRange as DateRangeType } from "@/hooks/useDashboardStats";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Calendar as CalendarIcon, Sparkles, Printer } from "lucide-react";
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, AreaChart, Area, Legend, RadarChart, Radar,
@@ -31,8 +40,9 @@ const tooltipStyle = {
 };
 
 export function ReportsPage() {
-    const { data: stats, isLoading: statsLoading } = useDashboardStats();
-    const { transactions, isLoading: txLoading } = useTransactions();
+    const [dateRange, setDateRange] = useState<DateRangeType>('this_month');
+    const { data: stats, isLoading: statsLoading } = useDashboardStats(dateRange);
+    const { transactions, isLoading: txLoading } = useTransactions({ dateRange });
     const { budgets } = useBudgets();
     const { goals } = useGoals();
     const [activeTab, setActiveTab] = useState<'overview' | 'spending' | 'trends' | 'goals'>('overview');
@@ -151,6 +161,32 @@ export function ReportsPage() {
         });
     }, [stats]);
 
+    // Waterfall data
+    const waterfallData = useMemo(() => {
+        if (!stats) return [];
+        return [
+            { name: 'Receitas', value: stats.totalIncome, fill: '#22c55e' },
+            { name: 'Despesas', value: -stats.totalExpenses, fill: '#ef4444' },
+            { name: 'Saldo', value: stats.totalIncome - stats.totalExpenses, fill: (stats.totalIncome - stats.totalExpenses) >= 0 ? '#6366f1' : '#f59e0b' }
+        ];
+    }, [stats]);
+
+    // Lia AI Insights
+    const liaInsights = useMemo(() => {
+        if (!stats || stats.totalIncome === 0) return "Ainda não tenho dados suficientes no período selecionado para gerar insights precisos. Registre suas receitas e despesas para começarmos!";
+
+        let insight = `Neste período, você movimentou R$ ${stats.totalIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} em receitas e R$ ${stats.totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} em despesas. `;
+
+        if (savingRate >= 20) {
+            insight += "Excelente trabalho! Você está poupando uma ótima margem de segurança. Continue mantendo esse padrão para acelerar sua liberdade financeira.";
+        } else if (savingRate > 0) {
+            insight += "Você fechou no azul, mas sua taxa de poupança ainda tem espaço para crescer. Tente reduzir gastos de categorias secundárias no seu Pareto.";
+        } else {
+            insight += "Atenção: Você gastou mais do que ganhou neste período! Revise urgentemente seus maiores gastos na aba de Análise para reequilibrar o orçamento.";
+        }
+        return insight;
+    }, [stats, savingRate]);
+
     const isLoading = statsLoading || txLoading;
 
     if (isLoading) {
@@ -177,12 +213,36 @@ export function ReportsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2">
                         <BarChart3 className="w-6 h-6 text-primary" /> Relatórios & Análises
                     </h1>
                     <p className="text-sm text-muted-foreground">Insights avançados sobre suas finanças</p>
+                </div>
+
+                {/* Global Filters */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => window.print()}
+                        className="h-10 px-3 bg-secondary/50 hover:bg-secondary rounded-lg transition-colors border border-border/50 hidden sm:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                    >
+                        <Printer className="w-4 h-4" />
+                        <span>Exportar PDF</span>
+                    </button>
+                    <Select value={dateRange} onValueChange={(val) => setDateRange(val as DateRangeType)}>
+                        <SelectTrigger className="w-[160px] sm:w-[180px] bg-background">
+                            <CalendarIcon className="w-4 h-4 mr-2" />
+                            <SelectValue placeholder="Período" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="this_month">Este Mês</SelectItem>
+                            <SelectItem value="last_month">Mês Passado</SelectItem>
+                            <SelectItem value="last_3_months">Últimos 3 Meses</SelectItem>
+                            <SelectItem value="this_year">Este Ano</SelectItem>
+                            <SelectItem value="all">Todo o Período</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
@@ -236,6 +296,22 @@ export function ReportsPage() {
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Lia AI Insights */}
+                    <motion.div className="glass rounded-xl p-5 border-border/50 relative overflow-hidden" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+                        <div className="flex items-start gap-4 relative z-10">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 p-[2px] shrink-0 shadow-lg shadow-primary/20">
+                                <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                                    <Sparkles className="w-6 h-6 text-primary" />
+                                </div>
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-lg mb-1 flex items-center gap-2">Lia <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider">AI Insight</span></h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">{liaInsights}</p>
+                            </div>
+                        </div>
+                    </motion.div>
 
                     {/* Cashflow Evolution (Composed Chart) */}
                     <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
@@ -416,6 +492,27 @@ export function ReportsPage() {
                                     <Area type="monotone" dataKey="income" name="Receitas" stroke="#22c55e" fill="url(#incG)" strokeWidth={2.5} />
                                     <Area type="monotone" dataKey="expense" name="Despesas" stroke="#ef4444" fill="url(#expG)" strokeWidth={2.5} />
                                 </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+
+                    {/* Cashflow Waterfall Chart */}
+                    <motion.div className="glass rounded-xl p-4 sm:p-6 border-border/50" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                        <h3 className="font-bold mb-1 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-primary" /> Diagrama de Fluxo de Caixa (Waterfall)</h3>
+                        <p className="text-xs text-muted-foreground mb-4">Entradas, saídas e saldo do período selecionado</p>
+                        <div className="h-64 sm:h-72 w-full min-w-0">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={waterfallData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" />
+                                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                                    <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={formatK} />
+                                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => formatCurrency(Math.abs(v))} />
+                                    <Bar dataKey="value" name="Valor" radius={[6, 6, 6, 6]}>
+                                        {waterfallData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </motion.div>

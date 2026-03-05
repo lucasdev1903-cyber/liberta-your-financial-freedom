@@ -12,7 +12,9 @@ export type TransactionWithCategory = Transaction & {
     } | null;
 };
 
-export function useTransactions(filters?: { month?: number; year?: number; type?: string }) {
+export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all';
+
+export function useTransactions(filters?: { month?: number; year?: number; type?: string; dateRange?: DateRange }) {
     const { user } = useAuth();
     const queryClient = useQueryClient();
     const { updateActivity } = useGamification();
@@ -28,7 +30,32 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
                 .eq('user_id', user.id)
                 .order('date', { ascending: false });
 
-            if (filters?.month !== undefined && filters?.year !== undefined) {
+            if (filters?.dateRange) {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+
+                let startDate: string;
+                let endDate: string;
+
+                if (filters.dateRange === 'this_month') {
+                    startDate = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+                    endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                } else if (filters.dateRange === 'last_month') {
+                    startDate = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
+                    endDate = new Date(currentYear, currentMonth, 0).toISOString().split('T')[0];
+                } else if (filters.dateRange === 'last_3_months') {
+                    startDate = new Date(currentYear, currentMonth - 2, 1).toISOString().split('T')[0];
+                    endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                } else if (filters.dateRange === 'this_year') {
+                    startDate = new Date(currentYear, 0, 1).toISOString().split('T')[0];
+                    endDate = new Date(currentYear, 11, 31).toISOString().split('T')[0];
+                } else { // all
+                    startDate = new Date(2000, 0, 1).toISOString().split('T')[0];
+                    endDate = new Date(2100, 0, 1).toISOString().split('T')[0];
+                }
+                q = q.gte('date', startDate).lte('date', endDate);
+            } else if (filters?.month !== undefined && filters?.year !== undefined) {
                 const startDate = new Date(filters.year, filters.month, 1).toISOString().split('T')[0];
                 const endDate = new Date(filters.year, filters.month + 1, 0).toISOString().split('T')[0];
                 q = q.gte('date', startDate).lte('date', endDate);
@@ -66,7 +93,8 @@ export function useTransactions(filters?: { month?: number; year?: number; type?
         mutationFn: async ({ id, ...updates }: TransactionUpdate & { id: string }) => {
             const { data, error } = await supabase
                 .from('transactions')
-                .update(updates as any)
+                // @ts-expect-error type inference is failing here
+                .update(updates)
                 .eq('id', id)
                 .select()
                 .single();
