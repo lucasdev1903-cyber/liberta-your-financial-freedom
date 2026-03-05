@@ -10,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function DebtsPage() {
     const { debts, isLoading, addDebt, deleteDebt } = useDebts();
     const { user } = useAuth();
+    const { toast } = useToast();
     const [strategy, setStrategy] = useState<'snowball' | 'avalanche'>('snowball');
     const [extraPayment, setExtraPayment] = useState<number>(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -70,10 +72,22 @@ export function DebtsPage() {
     }, [debts, strategy, extraPayment]);
 
     const handleAddDebt = async () => {
-        if (!newDebt.name || !newDebt.value) return;
-        await addDebt.mutateAsync(newDebt as Omit<Debt, 'id'>);
-        setIsDialogOpen(false);
-        setNewDebt({ name: '', type: 'credit_card', value: 0, interest_rate: 0, min_payment: 0 });
+        if (!newDebt.name || !newDebt.value) {
+            toast({ title: "Preencha o nome e o valor", variant: "destructive" });
+            return;
+        }
+        try {
+            await addDebt.mutateAsync(newDebt as Omit<Debt, 'id'>);
+            toast({ title: "Dívida adicionada com sucesso!" });
+            setIsDialogOpen(false);
+            setNewDebt({ name: '', type: 'credit_card', value: 0, interest_rate: 0, min_payment: 0 });
+        } catch (error: any) {
+            toast({
+                title: "Erro ao salvar",
+                description: error.message || "Não foi possível salvar a dívida.",
+                variant: "destructive"
+            });
+        }
     };
 
     const payoffMonths = simulationData.length > 0 ? simulationData[simulationData.length - 1].month : 0;
@@ -112,18 +126,27 @@ export function DebtsPage() {
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Nome da Dívida</label>
-                                <Input value={newDebt.name} onChange={e => setNewDebt({ ...newDebt, name: e.target.value })} placeholder="Ex: Cartão de Crédito" />
+                                <Input
+                                    value={newDebt.name}
+                                    onChange={e => setNewDebt({ ...newDebt, name: e.target.value })}
+                                    placeholder="Ex: Cartão de Crédito"
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Valor Total (R$)</label>
-                                    <Input type="number" value={newDebt.value} onChange={e => setNewDebt({ ...newDebt, value: Number(e.target.value) })} />
+                                    <Input
+                                        type="number"
+                                        value={newDebt.value || ""}
+                                        onChange={e => setNewDebt({ ...newDebt, value: Number(e.target.value) })}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Taxa de Juros (% ao ano)</label>
                                     <Input
                                         type="number"
                                         placeholder="0.00"
+                                        value={newDebt.interest_rate || ""}
                                         onChange={(e) => setNewDebt({ ...newDebt, interest_rate: parseFloat(e.target.value) || 0 })}
                                     />
                                 </div>
@@ -133,6 +156,7 @@ export function DebtsPage() {
                                 <Input
                                     type="number"
                                     placeholder="0.00"
+                                    value={newDebt.min_payment || ""}
                                     onChange={(e) => setNewDebt({ ...newDebt, min_payment: parseFloat(e.target.value) || 0 })}
                                 />
                             </div>

@@ -6,7 +6,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -82,25 +82,78 @@ export function BudgetsPage() {
                             <Plus className="w-4 h-4" /> Novo Orçamento
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="glass">
-                        <DialogHeader><DialogTitle>Definir Limite de Gastos</DialogTitle></DialogHeader>
-                        <form onSubmit={handleAdd} className="space-y-4 pt-4">
+                    <DialogContent className="sm:max-w-[450px] border-border/50 bg-card/95 backdrop-blur-xl p-0 overflow-hidden">
+                        <div className="p-6 pb-0">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                    <PieChartIcon className="w-5 h-5 text-primary" />
+                                    Definir Limite de Gastos
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Crie um limite mensal para uma categoria e monitore seus gastos automaticamente.
+                                </DialogDescription>
+                            </DialogHeader>
+                        </div>
+
+                        <form onSubmit={handleAdd} className="p-6 space-y-5">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-muted-foreground">Categoria</label>
+                                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    1. Escolha a Categoria
+                                </label>
                                 <Select name="category_id">
-                                    <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-                                    <SelectContent>
+                                    <SelectTrigger className="h-12 bg-secondary/20 border-border/50 transition-all hover:bg-secondary/30">
+                                        <SelectValue placeholder="Selecione uma categoria..." />
+                                    </SelectTrigger>
+                                    <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl">
                                         {availableCategories.map((c: any) => (
-                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                            <SelectItem key={c.id} value={c.id} className="focus:bg-primary/10 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div
+                                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm"
+                                                        style={{ backgroundColor: c.color || '#primary' }}
+                                                    >
+                                                        <span className="text-lg">💰</span>
+                                                    </div>
+                                                    <span className="font-medium">{c.name}</span>
+                                                </div>
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
+
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-muted-foreground">Limite Mensal (R$)</label>
-                                <Input name="amount_limit" type="number" step="0.01" placeholder="500,00" required />
+                                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    2. Quanto deseja gastar por mês?
+                                </label>
+                                <div className="relative group">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold transition-colors group-focus-within:text-primary">R$</span>
+                                    <Input
+                                        name="amount_limit"
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="0,00"
+                                        required
+                                        className="pl-11 h-12 bg-secondary/20 border-border/50 text-lg font-bold transition-all focus:ring-2 focus:ring-primary/20 hover:bg-secondary/30"
+                                    />
+                                </div>
+                                <p className="text-[10px] text-muted-foreground italic">
+                                    Dica: Seja realista com seus limites para manter o controle.
+                                </p>
                             </div>
-                            <Button type="submit" variant="hero" className="w-full">Salvar Orçamento</Button>
+
+                            <div className="pt-2">
+                                <Button type="submit" variant="hero" className="w-full h-12 text-base shadow-glow-sm" disabled={addBudget.isPending}>
+                                    {addBudget.isPending ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            Criando...
+                                        </>
+                                    ) : (
+                                        'Ativar Orçamento'
+                                    )}
+                                </Button>
+                            </div>
                         </form>
                     </DialogContent>
                 </Dialog>
