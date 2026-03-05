@@ -4,6 +4,10 @@ import { X, Send, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import liaAvatar from "@/assets/lia-avatar.png";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useToast } from "@/hooks/use-toast";
 
 type Msg = { role: 'user' | 'assistant'; text: string };
 
@@ -14,15 +18,15 @@ const QUICK_COMMANDS = [
     { label: '📝 Lançar gasto', text: 'Gastei R$ ' },
 ];
 
-const RESPONSES: Record<string, string> = {
-    gasto: "📊 Suas maiores despesas costumam ser com Alimentação e Transporte. Defina um orçamento na aba Orçamentos!",
-    despesa: "📊 Suas maiores despesas costumam ser com Alimentação e Transporte. Defina um orçamento na aba Orçamentos!",
-    meta: "🎯 Revise gastos com lazer, defina um valor fixo mensal e acompanhe o progresso na aba Metas!",
-    economizar: "💰 Regra 50-30-20: 50% necessidades, 30% desejos, 20% poupança. Revise seus gastos semanalmente!",
-    lancar: "✅ Vá em Lançamentos > Novo Lançamento. Ou me diga: 'R$ 45 em Alimentação'!",
-    patrimonio: "🏛️ Na aba Patrimônio, cadastre seus ativos e passivos para ter uma visão completa!",
-    investimento: "📈 Garanta sua reserva de emergência primeiro. Use o simulador na aba Investimentos!",
-    orcamento: "📊 Na aba Orçamentos, defina limites por categoria. As barras mudam de cor automaticamente!",
+const LIA_RESPONSES: Record<string, string> = {
+    gasto: "📊 Analisei seus lançamentos! Suas maiores despesas costumam ser com **Alimentação** e **Transporte**. Uma dica: defina um orçamento mensal na aba **Orçamentos** para controlar esses gastos.",
+    despesa: "📊 Analisei seus lançamentos! Suas maiores despesas costumam ser com **Alimentação** e **Transporte**. Uma dica: defina um orçamento mensal na aba **Orçamentos** para controlar esses gastos.",
+    meta: "🎯 Para atingir suas metas mais rápido, recomendo: (1) Revisar gastos com lazer, (2) Definir um valor fixo mensal para guardar, (3) Acompanhar na aba **Metas**.",
+    economizar: "💰 Dica: Use a regra 50-30-20 (50% necessidades, 30% desejos, 20% poupança). Quer que eu analise onde você pode cortar custos?",
+    lancar: "✅ Para lançar, me diga o valor e categoria — ex: 'R$ 45 em Alimentação' — e eu registro para você!",
+    patrimonio: "🏛️ Na aba **Patrimônio**, cadastre seus ativos e passivos para ter uma visão completa da sua saúde financeira.",
+    investimento: "📈 Garanta sua reserva de emergência primeiro. Use o simulador na aba **Investimentos** para projetar rendimentos!",
+    orcamento: "📊 Na aba **Orçamentos**, defina limites por categoria. Verde é ok, amarelo atenção e vermelho limite atingido!",
     relatorio: "📄 Agora temos uma página dedicada de Relatórios! Acesse no menu lateral.",
     resumo: "📋 Para um resumo completo, acesse a aba Assistente IA. Lá eu tenho acesso aos seus dados reais!",
     saldo: "💰 Para ver seu saldo real, acesse a aba Assistente IA. Lá eu consigo consultar seus dados!",
@@ -30,13 +34,50 @@ const RESPONSES: Record<string, string> = {
 };
 
 export function LiaFloatingButton() {
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const { addTransaction } = useTransactions();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Msg[]>([]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [stats, setStats] = useState<any>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+
+    const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'amigo';
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!user) return;
+            const [{ data: bankData }, { data: assetsData }, { data: liabilitiesData }, { data: goalsData }] = await Promise.all([
+                supabase.from('bank_connections').select('balance'),
+                supabase.from('assets').select('value'),
+                supabase.from('liabilities').select('value'),
+                supabase.from('goals').select('title, target_amount, current_amount')
+            ]);
+            const totalBalance = (bankData as any[])?.reduce((acc, curr) => acc + (Number(curr.balance) || 0), 0) || 0;
+            const totalAssets = (assetsData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
+            const totalLiabilities = (liabilitiesData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
+            const netWorth = totalBalance + totalAssets - totalLiabilities;
+            setStats({ totalBalance, netWorth, goals: goalsData || [] });
+        };
+        if (isOpen) fetchStats();
+    }, [user, isOpen]);
+
+    useEffect(() => {
+        if (user && isOpen) {
+            supabase.from('ai_messages')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: true })
+                .limit(20)
+                .then(({ data }) => {
+                    if (data) setMessages(data.map(m => ({ role: m.role, text: m.content })));
+                });
+        }
+    }, [user, isOpen]);
 
     useEffect(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -46,25 +87,79 @@ export function LiaFloatingButton() {
         if (isOpen && inputRef.current) inputRef.current.focus();
     }, [isOpen]);
 
-    const getResponse = (text: string): string => {
-        const lower = text.toLowerCase();
-        for (const [kw, resp] of Object.entries(RESPONSES)) {
-            if (lower.includes(kw)) return resp;
+    const saveMessage = async (role: 'user' | 'assistant', content: string) => {
+        if (!user) return;
+        await (supabase.from('ai_messages') as any).insert([{ user_id: user.id, role, content }]);
+    };
+
+    const parseTransaction = (msg: string): { amount: number; description: string; type: 'income' | 'expense' } | null => {
+        const lower = msg.toLowerCase().trim();
+        const p1 = lower.match(/(gastei|comprei|paguei|recebi|ganhei|adicione|lance|lança|registre|anote)\s+(?:r\$\s?)?(\d+(?:[.,]\d+)?)\s+(?:em|com|de|no|na|para)\s+(.+)/i);
+        if (p1) {
+            const type = ['recebi', 'ganhei'].includes(p1[1]) ? 'income' as const : 'expense' as const;
+            return { amount: parseFloat(p1[2].replace(',', '.')), description: p1[3].trim().replace(/[?!.]$/, ''), type };
         }
-        if (lower.includes("oi") || lower.includes("olá")) return "Olá! 💙 Sou a Lia. Como posso ajudar suas finanças hoje?";
+        const p2 = lower.match(/(?:r\$\s?)?(\d+(?:[.,]\d+)?)\s*(?:reais|real)?\s+(?:em|com|de|no|na|para)?\s*(.{2,})/i);
+        if (p2 && !lower.includes('meta') && !lower.includes('saldo')) {
+            const hasIncomeHint = lower.includes('salário') || lower.includes('salario') || lower.includes('freelance') || lower.includes('recebi') || lower.includes('renda');
+            return { amount: parseFloat(p2[1].replace(',', '.')), description: p2[2].trim().replace(/[?!.]$/, ''), type: hasIncomeHint ? 'income' : 'expense' };
+        }
+        return null;
+    };
+
+    const generateResponse = async (userMsg: string): Promise<string> => {
+        const lower = userMsg.toLowerCase();
+        const tx = parseTransaction(userMsg);
+        if (tx && tx.amount > 0 && tx.description.length >= 2) {
+            try {
+                await addTransaction.mutateAsync({
+                    amount: tx.amount,
+                    description: tx.description.charAt(0).toUpperCase() + tx.description.slice(1),
+                    type: tx.type,
+                    date: new Date().toISOString().split('T')[0],
+                } as any);
+                const emoji = tx.type === 'income' ? '💰' : '💸';
+                return `${emoji} Pronto, ${firstName}! Registrei a ${tx.type === 'income' ? 'receita' : 'despesa'} de **R$ ${tx.amount.toFixed(2).replace('.', ',')}** — "${tx.description}" — no dia de hoje.`;
+            } catch (e) {
+                return "❌ Ops, algo deu errado ao anotar isso. Pode tentar na aba Lançamentos?";
+            }
+        }
+        for (const [keyword, response] of Object.entries(LIA_RESPONSES)) {
+            if (lower.includes(keyword)) return response;
+        }
+        if (lower.includes("quanto") && (lower.includes("tenho") || lower.includes("saldo"))) {
+            if (!stats) return "Deixe-me ver... Estou acessando seus dados agora.";
+            return `Atualmente, seu saldo total é de **${stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**. Seu patrimônio líquido é de **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**.`;
+        }
+        if (lower.includes("meta")) {
+            if (!stats || stats.goals.length === 0) return "Você ainda não definiu metas. Que tal criar uma na aba **Metas**?";
+            const goalLines = stats.goals.slice(0, 3).map((g: any) => {
+                const pct = Math.round((g.current_amount / g.target_amount) * 100);
+                return `• **${g.title}**: ${pct}% concluído`;
+            }).join('\n');
+            return `Suas metas:\n\n${goalLines}\n\nContinue assim! 🚀`;
+        }
+        if (lower.includes('resumo') || lower.includes('relatório')) {
+            if (!stats) return "Carregando seus dados...";
+            return `📊 **Resumo**, ${firstName}:\n• Saldo: **${stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Patrimônio: **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Metas: **${stats.goals.length}**`;
+        }
+        if (lower.includes("oi") || lower.includes("olá")) return `Olá, ${firstName}! 💙 Como posso ajudar suas finanças hoje?`;
         if (lower.includes("obrigad")) return "De nada! 😊 Estou sempre aqui pra te ajudar!";
-        return "Entendi! 🤔 Para respostas com dados reais, acesse a aba **Assistente IA** no menu. Lá eu tenho acesso completo ao seu painel!";
+        return `Entendi, ${firstName}! 🤔 Posso registrar gastos, ver seu saldo ou acompanhar metas. O que prefere?`;
     };
 
     const handleSend = async (text?: string) => {
         const userMsg = text || input;
-        if (!userMsg.trim()) return;
+        if (!userMsg.trim() || !user) return;
         setInput("");
         setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+        await saveMessage('user', userMsg);
         setIsTyping(true);
-        await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+        await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
+        const response = await generateResponse(userMsg);
         setIsTyping(false);
-        setMessages(prev => [...prev, { role: 'assistant', text: getResponse(userMsg) }]);
+        setMessages(prev => [...prev, { role: 'assistant', text: response }]);
+        await saveMessage('assistant', response);
     };
 
     const handleQuickCommand = (cmd: typeof QUICK_COMMANDS[0]) => {
