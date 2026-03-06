@@ -49,9 +49,9 @@
     --gradient-primary: linear-gradient(135deg, hsl(16, 100%, 60%), hsl(24, 100%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(210, 20%, 94%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsl(0, 0%, 98%));
-    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.1) 0%, transparent 60%);
-    --shadow-glow: 0 0 40px -10px hsl(16, 100%, 60%, 0.2);
-    --shadow-card: 0 8px 32px -8px rgba(0, 0, 0, 0.05);
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.15) 0%, transparent 60%);
+    --shadow-glow: 0 0 50px -10px hsl(16, 100%, 60%, 0.25);
+    --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
   }
 
   .dark {
@@ -96,9 +96,9 @@
     --gradient-primary: linear-gradient(135deg, hsl(16, 100%, 60%), hsl(24, 100%, 65%));
     --gradient-hero: linear-gradient(180deg, hsl(216, 50%, 9%) 0%, hsl(216, 50%, 5%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(216, 45%, 12%), hsl(216, 45%, 8%));
-    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.15) 0%, transparent 60%);
-    --shadow-glow: 0 0 40px -10px hsl(16, 100%, 60%, 0.3);
-    --shadow-card: 0 8px 32px -8px hsl(216, 50%, 3%, 0.5);
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(16, 100%, 60%, 0.2) 0%, transparent 60%);
+    --shadow-glow: 0 0 50px -10px hsl(16, 100%, 60%, 0.4);
+    --shadow-card: 0 10px 40px -10px hsl(216, 50%, 2%, 0.6);
   }
 }
 
@@ -189,11 +189,11 @@
   }
 
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-card transition-all duration-500 hover:border-primary/30 hover:shadow-glow relative;
+    @apply bg-card/70 backdrop-blur-2xl border border-border/40 shadow-card transition-all duration-500 hover:border-primary/40 hover:shadow-glow relative;
   }
 
   .glass::after {
-    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.03] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-[inherit];
+    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.04] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-[inherit];
   }
 
   .glass:hover::after {
@@ -201,11 +201,11 @@
   }
 
   .glass-strong {
-    @apply bg-card/80 backdrop-blur-2xl border border-border/60 transition-all duration-500 hover:border-primary/40 hover:shadow-glow relative;
+    @apply bg-card/85 backdrop-blur-[32px] border border-border/50 shadow-card transition-all duration-500 hover:border-primary/50 hover:shadow-glow relative;
   }
 
   .glass-strong::after {
-    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.05] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-[inherit];
+    @apply content-[''] absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.06] to-white/0 opacity-0 transition-opacity duration-500 pointer-events-none rounded-[inherit];
   }
 
   .glass-strong:hover::after {
@@ -370,23 +370,23 @@
 
   /* Slower Float */
   .float-slow {
-    animation: floatSlow 6s ease-in-out infinite;
+    animation: floatSlow 8s ease-in-out infinite;
   }
 
   @keyframes floatSlow {
 
     0%,
     100% {
-      transform: translateY(0px) rotate(0deg);
+      transform: translateY(0px);
     }
 
     50% {
-      transform: translateY(-10px) rotate(1deg);
+      transform: translateY(-8px);
     }
   }
 
   /* Subtler Glass */
   .glass-subtle {
-    @apply bg-card/40 backdrop-blur-md border border-border/30;
+    @apply bg-card/50 backdrop-blur-xl border border-border/30;
   }
 }

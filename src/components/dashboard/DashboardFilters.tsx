@@ -35,7 +35,7 @@ export function DashboardFilters() {
 
     return (
         <div className="space-y-4 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass rounded-3xl p-2 border-border/50">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-strong rounded-[2rem] p-3 border-border/40">
                 {/* Mode Selector */}
                 <div className="flex p-1 bg-secondary/30 rounded-2xl w-full md:w-auto">
                     {[

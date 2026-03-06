@@ -18,6 +18,14 @@ export interface Liability {
     value: number;
 }
 
+export interface NetWorthHistory {
+    id: string;
+    total_assets: number;
+    total_liabilities: number;
+    net_worth: number;
+    snapshot_date: string;
+}
+
 export function useNetWorth() {
     const { user } = useAuth();
     const queryClient = useQueryClient();
@@ -34,11 +42,10 @@ export function useNetWorth() {
 
             // Enrich crypto assets with live prices using AwesomeAPI (BTC, ETH, etc)
             const enrichedData = await Promise.all(data.map(async (asset: Asset) => {
-                let currentPrice = 1; // Default multiplier for normal assets (BRL)
+                let currentPrice = 1;
 
                 try {
                     if (asset.type === 'crypto') {
-                        // Extract ticker (e.g., "BTC" from "Bitcoin (BTC)" or just "BTC")
                         const tickerMatch = asset.name.match(/\(([^)]+)\)/) || [null, asset.name.trim().toUpperCase()];
                         const ticker = tickerMatch[1].toUpperCase();
 
@@ -51,10 +58,7 @@ export function useNetWorth() {
                             }
                         }
                     } else if (asset.type === 'stock') {
-                        // For stocks (B3 mock/proxy), we would use Brapi or Yahoo Finance
-                        // Example using a free public endpoint or fallback if not found
-                        // Here we simulate a price for demonstration since free stock APIs without auth are rare
-                        currentPrice = 25.50; // Mock price for stocks
+                        currentPrice = 25.50; // Mock price
                     }
                 } catch (e) {
                     console.error("Failed to fetch price for", asset.name, e);
@@ -63,7 +67,7 @@ export function useNetWorth() {
                 return {
                     ...asset,
                     currentPrice,
-                    totalValue: asset.type === 'crypto' || asset.type === 'stock' ? asset.value * currentPrice : asset.value
+                    totalValue: (asset.type === 'crypto' || asset.type === 'stock') ? asset.value * currentPrice : asset.value
                 };
             }));
 
@@ -88,6 +92,22 @@ export function useNetWorth() {
         enabled: !!user,
         retry: false,
         staleTime: 1000 * 60 * 5,
+    });
+
+    const historyQuery = useQuery({
+        queryKey: ['net_worth_history', user?.id],
+        queryFn: async (): Promise<NetWorthHistory[]> => {
+            if (!user) return [];
+            const { data, error } = await supabase
+                .from('net_worth_history')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('snapshot_date', { ascending: true });
+
+            if (error) return [];
+            return data || [];
+        },
+        enabled: !!user,
     });
 
     const addAsset = useMutation({
@@ -142,16 +162,37 @@ export function useNetWorth() {
     const totalLiabilities = liabilitiesQuery.data?.reduce((sum, l) => sum + Number(l.value), 0) || 0;
     const netWorth = totalAssets - totalLiabilities;
 
+    const saveSnapshot = useMutation({
+        mutationFn: async () => {
+            const { data, error } = await supabase
+                .from('net_worth_history')
+                .insert({
+                    user_id: user?.id,
+                    total_assets: totalAssets,
+                    total_liabilities: totalLiabilities,
+                    net_worth: netWorth,
+                    snapshot_date: new Date().toISOString().split('T')[0]
+                })
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['net_worth_history'] }),
+    });
+
     return {
         assets: assetsQuery.data || [],
         liabilities: liabilitiesQuery.data || [],
+        history: historyQuery.data || [],
         totalAssets,
         totalLiabilities,
         netWorth,
-        isLoading: assetsQuery.isLoading || liabilitiesQuery.isLoading,
+        isLoading: assetsQuery.isLoading || liabilitiesQuery.isLoading || historyQuery.isLoading,
         addAsset,
         addLiability,
         deleteAsset,
         deleteLiability,
+        saveSnapshot
     };
 }

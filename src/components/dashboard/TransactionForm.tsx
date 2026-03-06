@@ -138,15 +138,15 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                             <FormItem>
                                 <FormLabel>Tipo</FormLabel>
                                 <FormControl>
-                                    <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/20 rounded-xl border border-border/50">
+                                    <div className="grid grid-cols-2 gap-2 p-1.5 bg-secondary/30 rounded-2xl border border-border/40 backdrop-blur-md">
                                         <button
                                             type="button"
                                             onClick={() => field.onChange('expense')}
                                             className={cn(
-                                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all duration-200",
+                                                "flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300",
                                                 field.value === 'expense'
-                                                    ? "bg-red-500 text-white shadow-md shadow-red-500/20"
-                                                    : "text-muted-foreground hover:text-foreground"
+                                                    ? "bg-red-500 text-white shadow-[0_8px_30px_-5px_rgba(239,68,68,0.4)] scale-[1.02]"
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                                             )}
                                         >
                                             <span>📉</span> Despesa
@@ -155,10 +155,10 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                                             type="button"
                                             onClick={() => field.onChange('income')}
                                             className={cn(
-                                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all duration-200",
+                                                "flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300",
                                                 field.value === 'income'
-                                                    ? "bg-green-500 text-white shadow-md shadow-green-500/20"
-                                                    : "text-muted-foreground hover:text-foreground"
+                                                    ? "bg-green-500 text-white shadow-[0_8px_30px_-5px_rgba(34,197,94,0.4)] scale-[1.02]"
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                                             )}
                                         >
                                             <span>📈</span> Receita
@@ -176,7 +176,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                             <FormItem>
                                 <FormLabel>O que você comprou/recebeu?</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Ex: Assinatura Netflix, Supermercado..." className="bg-secondary/20 border-border/50 h-11" {...field} />
+                                    <Input placeholder="Ex: Assinatura Netflix, Supermercado..." className="glass-subtle h-12 text-base transition-all duration-300 focus:bg-background/80" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -197,7 +197,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                                                 type="number"
                                                 step="0.01"
                                                 placeholder="0,00"
-                                                className="bg-secondary/20 border-border/50 h-11 pl-9"
+                                                className="glass-subtle h-12 pl-10 text-base transition-all duration-300 focus:bg-background/80"
                                                 {...field}
                                             />
                                         </div>
@@ -219,7 +219,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "w-full h-11 pl-3 text-left font-normal bg-secondary/20 border-border/50 hover:bg-secondary/30",
+                                                        "w-full h-12 pl-4 text-left font-normal glass-subtle hover:bg-secondary/40 transition-all duration-300",
                                                         !field.value && "text-muted-foreground"
                                                     )}
                                                 >
@@ -284,7 +284,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                                 </div>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="bg-secondary/20 border-border/50 h-11">
+                                        <SelectTrigger className="glass-subtle h-12 transition-all duration-300 focus:bg-background/80">
                                             <SelectValue placeholder="Selecione uma categoria" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -314,7 +314,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                             <FormItem>
                                 <FormLabel>Notas (Opcional)</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Alguma observação?" className="bg-secondary/20 border-border/50 h-11" {...field} />
+                                    <Input placeholder="Alguma observação?" className="glass-subtle h-12 transition-all duration-300 focus:bg-background/80" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -323,7 +323,7 @@ export function TransactionForm({ onSuccess, defaultType = 'expense' }: Transact
                 </div>
 
                 <div className="pt-4">
-                    <Button type="submit" variant="hero" className="w-full h-12 text-base shadow-glow-sm" disabled={isSubmitting}>
+                    <Button type="submit" variant="hero" className="w-full h-14 text-base font-bold shadow-glow hover:shadow-[0_0_40px_-5px_rgba(234,88,12,0.5)] transition-all duration-500 hover:scale-[1.02]" disabled={isSubmitting}>
                         {isSubmitting ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

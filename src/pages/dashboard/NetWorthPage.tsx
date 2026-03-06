@@ -16,12 +16,15 @@ import {
     ShieldCheck,
     Activity,
     Award,
-    Loader2
+    Loader2,
+    History,
+    Camera
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useMemo } from "react";
 import {
-    PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend
+    PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend,
+    AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from "recharts";
 import { useNetWorth, Asset, Liability } from "@/hooks/useNetWorth";
 import { Button } from "@/components/ui/button";
@@ -48,7 +51,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export function NetWorthPage() {
     const { toast } = useToast();
-    const { assets, liabilities, totalAssets, totalLiabilities, netWorth, isLoading, addAsset, addLiability, deleteAsset, deleteLiability } = useNetWorth();
+    const { assets, liabilities, history, totalAssets, totalLiabilities, netWorth, isLoading, addAsset, addLiability, deleteAsset, deleteLiability, saveSnapshot } = useNetWorth();
     const [isAssetDialogOpen, setIsAssetDialogOpen] = useState(false);
     const [isLiabilityDialogOpen, setIsLiabilityDialogOpen] = useState(false);
 
@@ -165,14 +168,89 @@ export function NetWorthPage() {
                     </h1>
                     <p className="text-muted-foreground">Acompanhe sua saúde financeira de longo prazo.</p>
                 </div>
-                <div className="glass p-5 rounded-3xl border-primary/20 bg-primary/5 min-w-[240px] shadow-glow-sm relative overflow-hidden group">
-                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black">Patrimônio Líquido</span>
-                    <p className="text-4xl font-black text-primary drop-shadow-glow mt-1">
-                        {formatCurrency(netWorth)}
-                    </p>
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="glass border-primary/20 hover:bg-primary/10 gap-2 h-10 px-4"
+                        onClick={() => {
+                            saveSnapshot.mutate(undefined, {
+                                onSuccess: () => toast({ title: "Snapshot salvo!", description: "Seu patrimônio atual foi registrado no histórico." }),
+                                onError: () => toast({ title: "Erro ao salvar", description: "Não foi possível registrar o snapshot.", variant: "destructive" })
+                            });
+                        }}
+                        disabled={saveSnapshot.isPending}
+                    >
+                        {saveSnapshot.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                        Salvar Snapshot
+                    </Button>
+                    <div className="glass p-5 rounded-3xl border-primary/20 bg-primary/5 min-w-[200px] shadow-glow-sm relative overflow-hidden group">
+                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black">Patrimônio Líquido</span>
+                        <p className="text-3xl font-black text-primary drop-shadow-glow mt-1">
+                            {formatCurrency(netWorth)}
+                        </p>
+                    </div>
                 </div>
             </header>
+
+            {/* EVOLUTION CHART */}
+            {history.length > 0 && (
+                <Card className="glass border-border/50 p-6 overflow-hidden relative group">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                <History className="w-5 h-5 text-primary" />
+                                Evolução Temporal
+                            </h3>
+                            <p className="text-xs text-muted-foreground">Histórico de crescimento do seu patrimônio físico e digital</p>
+                        </div>
+                    </div>
+
+                    <div className="h-[300px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={history}>
+                                <defs>
+                                    <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.3)" />
+                                <XAxis
+                                    dataKey="snapshot_date"
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(val) => new Date(val).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' })}
+                                />
+                                <YAxis
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(val) => `R$ ${(val / 1000).toFixed(0)}k`}
+                                />
+                                <RechartsTooltip
+                                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }}
+                                    formatter={(val: number) => [formatCurrency(val), "Patrimônio Líquido"]}
+                                    labelFormatter={(label) => new Date(label).toLocaleDateString('pt-BR', { dateStyle: 'long' })}
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="net_worth"
+                                    stroke="hsl(var(--primary))"
+                                    strokeWidth={3}
+                                    fillOpacity={1}
+                                    fill="url(#colorNetWorth)"
+                                    animationDuration={1500}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </Card>
+            )}
 
             {/* DISTRIBUTION & ALLOCATION */}
             <div className="grid lg:grid-cols-3 gap-6">

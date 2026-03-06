@@ -178,7 +178,7 @@ export function LiaFloatingButton() {
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-glow transition-all overflow-hidden",
-                    isOpen ? "bg-secondary text-foreground" : "border-2 border-primary/30 hover:scale-110"
+                    isOpen ? "bg-secondary text-foreground" : "border-2 border-primary/30 hover:scale-110 float-slow hover:shadow-[0_0_40px_rgba(234,88,12,0.6)]"
                 )}
                 whileTap={{ scale: 0.9 }}
             >
