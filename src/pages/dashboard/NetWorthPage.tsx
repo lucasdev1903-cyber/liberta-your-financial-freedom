@@ -275,7 +275,7 @@ export function NetWorthPage() {
                                     <Plus className="w-3 h-3" /> Adicionar Ativo
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="glass">
+                            <DialogContent className="sm:max-w-lg border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl">
                                 <DialogHeader>
                                     <DialogTitle>Novo Ativo</DialogTitle>
                                 </DialogHeader>
@@ -312,7 +312,7 @@ export function NetWorthPage() {
                                                 value={assetName}
                                                 onChange={(e) => setAssetName(e.target.value)}
                                                 placeholder="Ex: Conta Corrente, Apartamento..."
-                                                className="bg-secondary/20 border-border/50 h-11 pl-10"
+                                                className="bg-secondary/10 border-border/50 h-11 pl-10 focus:ring-1 focus:ring-primary/30"
                                                 required
                                             />
                                         </div>
@@ -324,7 +324,7 @@ export function NetWorthPage() {
                                                 <SelectTrigger className="bg-secondary/20 border-border/50 h-11">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="glass border-border/50">
+                                                <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl">
                                                     <SelectItem value="cash">Dinheiro / Conta</SelectItem>
                                                     <SelectItem value="investment">Investimentos</SelectItem>
                                                     <SelectItem value="property">Imóvel</SelectItem>
@@ -425,7 +425,7 @@ export function NetWorthPage() {
                                     <Plus className="w-3 h-3" /> Adicionar Passivo
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="glass">
+                            <DialogContent className="sm:max-w-lg border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl">
                                 <DialogHeader>
                                     <DialogTitle>Novo Passivo</DialogTitle>
                                 </DialogHeader>
@@ -462,7 +462,7 @@ export function NetWorthPage() {
                                                 value={libName}
                                                 onChange={(e) => setLibName(e.target.value)}
                                                 placeholder="Ex: Financiamento, Empréstimo..."
-                                                className="bg-secondary/20 border-border/50 h-11 pl-10"
+                                                className="bg-secondary/10 border-border/50 h-11 pl-10 focus:ring-1 focus:ring-primary/30"
                                                 required
                                             />
                                         </div>
@@ -474,7 +474,7 @@ export function NetWorthPage() {
                                                 <SelectTrigger className="bg-secondary/20 border-border/50 h-11">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="glass border-border/50">
+                                                <SelectContent className="border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl">
                                                     <SelectItem value="credit_card">Cartão de Crédito</SelectItem>
                                                     <SelectItem value="loan">Empréstimo</SelectItem>
                                                     <SelectItem value="mortgage">Financiamento</SelectItem>
