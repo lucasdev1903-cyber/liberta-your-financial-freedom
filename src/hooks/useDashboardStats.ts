@@ -14,17 +14,17 @@ interface DashboardStats {
     incomeCategoryBreakdown: { name: string; amount: number; color: string }[];
     cashFlowData: { date: string; balance: number }[];
     dre: {
-        grossRevenue: number;
-        taxesAndDeductions: number;
-        netRevenue: number;
-        fixedCosts: number;
-        variableCosts: number;
-        operatingExpenses: number;
-        ebitda: number;
-        financialResult: number;
+        totalIncome: number;
+        deductions: number;
         netIncome: number;
-        operatingMargin: number;
-        netMargin: number;
+        essentialExpenses: number;
+        lifestyleExpenses: number;
+        operatingBalance: number;
+        financialExpenses: number;
+        financialIncome: number;
+        savingsCapacity: number;
+        essentialCommitmentRate: number;
+        savingsRate: number;
     };
     goals: any[];
 }
@@ -199,17 +199,17 @@ export function useDashboardStats(options: {
                 ...values,
             }));
 
-            // --- DRE (Income Statement) Calculations ---
-            let grossRevenue = 0;
-            let taxesAndDeductions = 0;
-            let fixedCosts = 0;
-            let variableCosts = 0;
+            // --- DRE Pessoal (Demonstrativo de Resultados) Calculations ---
+            let dreTotalIncome = 0;
+            let deductions = 0;
+            let essentialExpenses = 0;
+            let lifestyleExpenses = 0;
             let financialExpenses = 0;
-            let financialIncome = 0;
+            let dreFinancialIncome = 0;
 
-            const deducoesKeywords = ['imposto', 'taxa', 'darf', 'simples', 'iss', 'irrf', 'inss', 'dedução', 'tributo', 'juros', 'tarifa', 'iof'];
-            const fixosKeywords = ['aluguel', 'condomínio', 'condominio', 'luz', 'energia', 'água', 'agua', 'internet', 'telefone', 'celular', 'assinatura', 'netflix', 'spotify', 'contador', 'mensalidade', 'seguro'];
-            const financeirosKeywords = ['juros', 'empréstimo', 'emprestimo', 'financiamento', 'tarifa', 'iof', 'multa', 'rendimento', 'dividendo', 'investimento', 'cdb', 'selic'];
+            const deducoesKeywords = ['imposto', 'taxa', 'darf', 'simples', 'iss', 'irrf', 'inss', 'dedução', 'tributo'];
+            const essenciaisKeywords = ['aluguel', 'condomínio', 'condominio', 'luz', 'energia', 'água', 'agua', 'internet', 'telefone', 'celular', 'mercado', 'supermercado', 'açougue', 'padaria', 'farmácia', 'farmacia', 'saúde', 'saude', 'médico', 'medico', 'escola', 'faculdade', 'educação', 'educacao', 'transporte', 'gasolina', 'combustível', 'combustivel', 'uber', 'ônibus', 'onibus'];
+            const financeirosKeywords = ['juros', 'empréstimo', 'emprestimo', 'financiamento', 'tarifa', 'iof', 'multa', 'rendimento', 'dividendo', 'investimento', 'cdb', 'selic', 'fii', 'ações', 'acoes'];
 
             transactions.forEach(t => {
                 const amount = Number(t.amount);
@@ -220,41 +220,39 @@ export function useDashboardStats(options: {
 
                 if (isIncome) {
                     if (financeirosKeywords.some(k => searchStr.includes(k))) {
-                        financialIncome += amount;
+                        dreFinancialIncome += amount;
                     } else {
-                        grossRevenue += amount;
+                        dreTotalIncome += amount;
                     }
                 } else {
-                    if (deducoesKeywords.some(k => searchStr.includes(k)) && !financeirosKeywords.some(k => searchStr.includes(k))) {
-                        taxesAndDeductions += amount;
+                    if (deducoesKeywords.some(k => searchStr.includes(k))) {
+                        deductions += amount;
                     } else if (financeirosKeywords.some(k => searchStr.includes(k))) {
                         financialExpenses += amount;
-                    } else if (fixosKeywords.some(k => searchStr.includes(k))) {
-                        fixedCosts += amount;
+                    } else if (essenciaisKeywords.some(k => searchStr.includes(k))) {
+                        essentialExpenses += amount;
                     } else {
-                        variableCosts += amount;
+                        lifestyleExpenses += amount; // Tudo que não é essencial, dedução ou financeiro, vira estilo de vida
                     }
                 }
             });
 
-            const netRevenue = grossRevenue - taxesAndDeductions;
-            const operatingExpenses = fixedCosts + variableCosts;
-            const ebitda = netRevenue - operatingExpenses; // Operating Result
-            const financialResult = financialIncome - financialExpenses;
-            const netIncome = ebitda + financialResult;
+            const netIncomeForDre = dreTotalIncome - deductions;
+            const operatingBalance = netIncomeForDre - (essentialExpenses + lifestyleExpenses);
+            const savingsCapacity = operatingBalance + dreFinancialIncome - financialExpenses;
 
             const dre = {
-                grossRevenue,
-                taxesAndDeductions,
-                netRevenue,
-                fixedCosts,
-                variableCosts,
-                operatingExpenses,
-                ebitda,
-                financialResult,
-                netIncome,
-                operatingMargin: netRevenue > 0 ? (ebitda / netRevenue) * 100 : 0,
-                netMargin: grossRevenue > 0 ? (netIncome / grossRevenue) * 100 : 0,
+                totalIncome: dreTotalIncome,
+                deductions,
+                netIncome: netIncomeForDre,
+                essentialExpenses,
+                lifestyleExpenses,
+                operatingBalance,
+                financialExpenses,
+                financialIncome: dreFinancialIncome,
+                savingsCapacity,
+                essentialCommitmentRate: netIncomeForDre > 0 ? (essentialExpenses / netIncomeForDre) * 100 : 0,
+                savingsRate: netIncomeForDre > 0 ? (savingsCapacity / netIncomeForDre) * 100 : 0,
             };
 
             // Cash flow data

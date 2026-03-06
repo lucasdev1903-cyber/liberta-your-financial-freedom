@@ -3,9 +3,8 @@ import { motion } from "framer-motion";
 import {
     BarChart3, TrendingUp, TrendingDown, PieChart as PieChartIcon,
     ArrowUpRight, ArrowDownRight, Activity, Download, FileText, Table as TableIcon, LineChart as LineChartIcon,
-    Calculator, Percent
+    Calculator, Percent, Building2, Coffee, Coins
 } from "lucide-react";
-import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactions } from "@/hooks/useTransactions";
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -367,10 +366,10 @@ export function ReportsPage() {
                 <TabsContent value="dre" className="space-y-6 mt-0">
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         {[
-                            { label: 'Margem Operacional', value: `${(stats?.dre?.operatingMargin || 0).toFixed(1)}% `, icon: Activity, color: 'text-primary' },
-                            { label: 'Margem Líquida', value: `${(stats?.dre?.netMargin || 0).toFixed(1)}% `, icon: Percent, color: 'text-green-500' },
-                            { label: 'EBITDA (Operacional)', value: formatCurrency(stats?.dre?.ebitda || 0), icon: Calculator, color: 'text-blue-500' },
-                            { label: 'Resultado Líquido', value: formatCurrency(stats?.dre?.netIncome || 0), icon: TrendingUp, color: (stats?.dre?.netIncome || 0) >= 0 ? 'text-green-500' : 'text-red-500' },
+                            { label: 'Despesas Essenciais', value: `${(stats?.dre?.essentialCommitmentRate || 0).toFixed(1)}%`, icon: Building2, color: 'text-orange-500' },
+                            { label: 'Taxa de Poupança Real', value: `${(stats?.dre?.savingsRate || 0).toFixed(1)}%`, icon: Percent, color: 'text-green-500' },
+                            { label: 'Saldo Operacional', value: formatCurrency(stats?.dre?.operatingBalance || 0), icon: Calculator, color: 'text-blue-500' },
+                            { label: 'Capacidade de Poupança', value: formatCurrency(stats?.dre?.savingsCapacity || 0), icon: TrendingUp, color: (stats?.dre?.savingsCapacity || 0) >= 0 ? 'text-green-500' : 'text-red-500' },
                         ].map((kpi, i) => (
                             <motion.div key={i} className="glass-strong rounded-2xl p-5 border-border/40" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
                                 <div className="flex items-center gap-3 mb-2">
@@ -383,56 +382,56 @@ export function ReportsPage() {
                     </div>
 
                     <motion.div className="glass-strong rounded-[2rem] p-6 sm:p-8 border-border/40" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                        <h3 className="font-bold mb-6 text-xl border-b border-border/40 pb-4">Demonstrativo de Resultados do Exercício (DRE)</h3>
+                        <h3 className="font-bold mb-6 text-xl border-b border-border/40 pb-4">Demonstrativo de Finanças Pessoais (DRE)</h3>
 
                         {stats && stats.dre ? (
                             <div className="space-y-1 text-sm sm:text-base">
-                                {/* Receita Bruta */}
+                                {/* Receitas */}
                                 <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold text-green-500">
-                                    <span>(=) Receita Bruta</span>
-                                    <span>{formatCurrency(stats.dre.grossRevenue)}</span>
+                                    <span>(+) Receitas Brutas</span>
+                                    <span>{formatCurrency(stats.dre.totalIncome)}</span>
                                 </div>
 
                                 {/* Deduções */}
                                 <div className="flex justify-between p-3 pl-8 text-muted-foreground">
                                     <span>(-) Impostos e Deduções</span>
-                                    <span className="text-red-400">{formatCurrency(stats.dre.taxesAndDeductions)}</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.deductions)}</span>
                                 </div>
 
                                 {/* Receita Líquida */}
                                 <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold mt-2">
                                     <span>(=) Receita Líquida</span>
-                                    <span>{formatCurrency(stats.dre.netRevenue)}</span>
+                                    <span>{formatCurrency(stats.dre.netIncome)}</span>
                                 </div>
 
-                                {/* Custos Operacionais */}
+                                {/* Despesas */}
                                 <div className="flex justify-between p-3 pl-8 text-muted-foreground">
-                                    <span>(-) Despesas Fixas</span>
-                                    <span className="text-red-400">{formatCurrency(stats.dre.fixedCosts)}</span>
+                                    <span className="flex items-center gap-2"><Building2 className="w-4 h-4" /> (-) Despesas Essenciais (Moradia, Saúde, etc)</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.essentialExpenses)}</span>
                                 </div>
                                 <div className="flex justify-between p-3 pl-8 text-muted-foreground">
-                                    <span>(-) Despesas Variáveis</span>
-                                    <span className="text-red-400">{formatCurrency(stats.dre.variableCosts)}</span>
+                                    <span className="flex items-center gap-2"><Coffee className="w-4 h-4" /> (-) Estilo de Vida (Lazer, Assinaturas, etc)</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.lifestyleExpenses)}</span>
                                 </div>
 
-                                {/* Resultado Operacional (EBITDA) */}
+                                {/* Saldo Operacional */}
                                 <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold mt-2 text-blue-500">
-                                    <span>(=) Resultado Operacional (EBITDA)</span>
-                                    <span>{formatCurrency(stats.dre.ebitda)}</span>
+                                    <span>(=) Saldo Operacional (O que sobra no mês)</span>
+                                    <span>{formatCurrency(stats.dre.operatingBalance)}</span>
                                 </div>
 
-                                {/* Resultado Financeiro */}
+                                {/* Despesas Financeiras */}
                                 <div className="flex justify-between p-3 pl-8 text-muted-foreground">
-                                    <span>(+/-) Resultado Financeiro</span>
-                                    <span className={stats.dre.financialResult >= 0 ? "text-green-400" : "text-red-400"}>
-                                        {formatCurrency(stats.dre.financialResult)}
+                                    <span className="flex items-center gap-2"><Coins className="w-4 h-4" /> (+/-) Resultado Financeiro (Juros, Dívidas ou Rendimentos)</span>
+                                    <span className={stats.dre.financialIncome - stats.dre.financialExpenses >= 0 ? "text-green-400" : "text-red-400"}>
+                                        {formatCurrency(stats.dre.financialIncome - stats.dre.financialExpenses)}
                                     </span>
                                 </div>
 
-                                {/* Resultado Líquido */}
-                                <div className={cn("flex justify-between p-4 rounded-xl font-black text-lg mt-4", stats.dre.netIncome >= 0 ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20")}>
-                                    <span>(=) Resultado Líquido</span>
-                                    <span>{formatCurrency(stats.dre.netIncome)}</span>
+                                {/* Capacidade de Poupança */}
+                                <div className={cn("flex justify-between p-4 rounded-xl font-black text-lg mt-4", stats.dre.savingsCapacity >= 0 ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20")}>
+                                    <span>(=) Capacidade de Poupança (Resultado Líquido)</span>
+                                    <span>{formatCurrency(stats.dre.savingsCapacity)}</span>
                                 </div>
                             </div>
                         ) : (

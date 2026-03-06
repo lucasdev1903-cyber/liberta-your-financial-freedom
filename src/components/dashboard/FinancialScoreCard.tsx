@@ -127,141 +127,142 @@ export function FinancialScoreCard() {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <motion.div
-                    className="glass-subtle rounded-xl p-6 border-border/50 flex flex-col shadow-glow-sm cursor-pointer relative overflow-hidden h-full group transition-all duration-300 hover:border-primary/20 hover:bg-primary/5"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -z-10" />
+        <>
+            <motion.div
+                onClick={() => setIsOpen(true)}
+                className="glass-subtle rounded-xl p-6 border-border/50 flex flex-col shadow-glow-sm cursor-pointer relative overflow-hidden h-full group transition-all duration-300 hover:border-primary/20 hover:bg-primary/5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -z-10" />
 
-                    <div className="w-full flex items-center justify-between mb-2">
-                        <h2 className="font-semibold text-lg flex items-center gap-2">
-                            <Activity className="w-5 h-5 text-primary" />
-                            Score Financeiro
-                        </h2>
-                        <Badge variant="outline" className="border-border/50" style={{ color: scoreCategory.color, backgroundColor: `${scoreCategory.color}10` }}>
-                            {scoreCategory.label}
-                        </Badge>
-                    </div>
+                <div className="w-full flex items-center justify-between mb-2">
+                    <h2 className="font-semibold text-lg flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-primary" />
+                        Score Financeiro
+                    </h2>
+                    <Badge variant="outline" className="border-border/50" style={{ color: scoreCategory.color, backgroundColor: `${scoreCategory.color}10` }}>
+                        {scoreCategory.label}
+                    </Badge>
+                </div>
 
-                    <div className="relative w-full h-32 flex justify-center items-end">
-                        <ResponsiveContainer width="100%" height="200%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    cx="50%"
-                                    cy="100%"
-                                    startAngle={180}
-                                    endAngle={0}
-                                    innerRadius={55}
-                                    outerRadius={72}
-                                    paddingAngle={0}
-                                    dataKey="value"
-                                    stroke="none"
-                                    cornerRadius={5}
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
-                            <motion.span
-                                className="text-3xl font-black mb-0.5"
-                                style={{ color: scoreCategory.color }}
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                <div className="relative w-full h-32 flex justify-center items-end">
+                    <ResponsiveContainer width="100%" height="200%">
+                        <PieChart>
+                            <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="100%"
+                                startAngle={180}
+                                endAngle={0}
+                                innerRadius={55}
+                                outerRadius={72}
+                                paddingAngle={0}
+                                dataKey="value"
+                                stroke="none"
+                                cornerRadius={5}
                             >
-                                {score}
-                            </motion.span>
-                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">/ 1000</span>
-                        </div>
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
+                        <motion.span
+                            className="text-3xl font-black mb-0.5"
+                            style={{ color: scoreCategory.color }}
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+                        >
+                            {score}
+                        </motion.span>
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">/ 1000</span>
                     </div>
+                </div>
 
-                    {/* Factor Breakdown */}
-                    <div className="mt-4 space-y-3">
-                        {factors.map((f, i) => (
-                            <div key={f.label}>
-                                <div className="flex items-center justify-between text-xs mb-1">
-                                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                                        <f.icon className="w-3 h-3" style={{ color: f.color }} />
-                                        {f.label}
-                                    </span>
-                                    <span className="font-bold">{f.value}/{f.max}</span>
-                                </div>
-                                <Progress value={(f.value / f.max) * 100} className="h-1" />
+                {/* Factor Breakdown */}
+                <div className="mt-4 space-y-3">
+                    {factors.map((f, i) => (
+                        <div key={f.label}>
+                            <div className="flex items-center justify-between text-xs mb-1">
+                                <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                                    <f.icon className="w-3 h-3" style={{ color: f.color }} />
+                                    {f.label}
+                                </span>
+                                <span className="font-bold">{f.value}/{f.max}</span>
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-center gap-2 text-[10px] text-primary font-bold uppercase tracking-tighter transition-opacity">
-                        Clique para Check-up Completo <Activity className="w-3 h-3" />
-                    </div>
-                </motion.div>
-            </DialogTrigger>
-
-            <DialogContent className="sm:max-w-[500px] glass border-border/50 bg-card/95 backdrop-blur-2xl">
-                <DialogHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                            <Activity className="w-6 h-6 text-primary" />
+                            <Progress value={(f.value / f.max) * 100} className="h-1" />
                         </div>
-                        <div>
-                            <DialogTitle className="text-2xl font-black">Check-up Financeiro</DialogTitle>
-                            <DialogDescription>Uma análise profunda da sua saúde financeira atual.</DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
-
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Taxa de Poupança</span>
-                        <p className={cn("text-2xl font-black mt-1", getMetricColor(savingsRate, 20, 0))}>
-                            {savingsRate.toFixed(1)}%
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-2">Ideial: acima de 20%</p>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Endividamento</span>
-                        <p className={cn("text-2xl font-black mt-1", getMetricColor(100 - debtRatio, 70, 50))}>
-                            {debtRatio.toFixed(1)}%
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-2">Dívida vs Ativos. Ideal: &lt; 30%</p>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Reserva de Emergência</span>
-                        <p className={cn("text-2xl font-black mt-1", getMetricColor(emergencyFundMonths, 6, 1))}>
-                            {emergencyFundMonths.toFixed(1)} <span className="text-xs">meses</span>
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-2">Cobertura de gastos. Ideal: 6+</p>
-                    </div>
-
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Índice de Liquidez</span>
-                        <p className={cn("text-2xl font-black mt-1", getMetricColor(liquidityRatio, 25, 10))}>
-                            {liquidityRatio.toFixed(1)}%
-                        </p>
-                        <p className="text-[10px] text-muted-foreground mt-2">Conversão em caixa. Ideal: 20%+</p>
-                    </div>
+                    ))}
                 </div>
 
-                <div className="mt-8 p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
-                    <h4 className="font-bold flex items-center gap-2">
-                        <Award className="w-5 h-5 text-primary" /> Diagnóstico da Lia
-                    </h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground italic">
-                        "{score > 800 ? "Parabéns! Sua estrutura financeira é extremamente sólida. Você tem capital disponível para focar agora na maximização dos rendimentos." :
-                            score > 500 ? "Você está no caminho certo, mas recomendo focar em aumentar sua liquidez e garantir que sua reserva de emergência cubra pelo menos 6 meses de gastos fixos." :
-                                "Cuidado! Sua exposição ao risco está elevada. Priorize a quitação de dívidas de juros altos e o corte de gastos supérfluos para equilibrar seu fluxo de caixa."}"
-                    </p>
+                <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-center gap-2 text-[10px] text-primary font-bold uppercase tracking-tighter transition-opacity">
+                    Clique para Check-up Completo <Activity className="w-3 h-3" />
                 </div>
-            </DialogContent>
-        </Dialog>
+            </motion.div>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent className="sm:max-w-[500px] glass border-border/50 bg-card/95 backdrop-blur-2xl">
+                    <DialogHeader>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <Activity className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-2xl font-black">Check-up Financeiro</DialogTitle>
+                                <DialogDescription>Uma análise profunda da sua saúde financeira atual.</DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Taxa de Poupança</span>
+                            <p className={cn("text-2xl font-black mt-1", getMetricColor(savingsRate, 20, 0))}>
+                                {savingsRate.toFixed(1)}%
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-2">Ideial: acima de 20%</p>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Endividamento</span>
+                            <p className={cn("text-2xl font-black mt-1", getMetricColor(100 - debtRatio, 70, 50))}>
+                                {debtRatio.toFixed(1)}%
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-2">Dívida vs Ativos. Ideal: &lt; 30%</p>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Reserva de Emergência</span>
+                            <p className={cn("text-2xl font-black mt-1", getMetricColor(emergencyFundMonths, 6, 1))}>
+                                {emergencyFundMonths.toFixed(1)} <span className="text-xs">meses</span>
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-2">Cobertura de gastos. Ideal: 6+</p>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Índice de Liquidez</span>
+                            <p className={cn("text-2xl font-black mt-1", getMetricColor(liquidityRatio, 25, 10))}>
+                                {liquidityRatio.toFixed(1)}%
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-2">Conversão em caixa. Ideal: 20%+</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
+                        <h4 className="font-bold flex items-center gap-2">
+                            <Award className="w-5 h-5 text-primary" /> Diagnóstico da Lia
+                        </h4>
+                        <p className="text-sm leading-relaxed text-muted-foreground italic">
+                            "{score > 800 ? "Parabéns! Sua estrutura financeira é extremamente sólida. Você tem capital disponível para focar agora na maximização dos rendimentos." :
+                                score > 500 ? "Você está no caminho certo, mas recomendo focar em aumentar sua liquidez e garantir que sua reserva de emergência cubra pelo menos 6 meses de gastos fixos." :
+                                    "Cuidado! Sua exposição ao risco está elevada. Priorize a quitação de dívidas de juros altos e o corte de gastos supérfluos para equilibrar seu fluxo de caixa."}"
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
