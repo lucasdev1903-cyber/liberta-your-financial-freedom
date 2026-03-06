@@ -13,10 +13,14 @@ import {
     Bitcoin,
     LineChart,
     PieChart as PieIcon,
-    ShieldCheck
+    ShieldCheck,
+    Activity,
+    Award
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
 import {
-    PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip
+    PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend
 } from "recharts";
 import { useNetWorth, Asset, Liability } from "@/hooks/useNetWorth";
 import { Button } from "@/components/ui/button";
@@ -48,10 +52,6 @@ export function NetWorthPage() {
         return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     };
 
-    if (isLoading) {
-        return <div className="p-8 text-center">Carregando patrimônio...</div>;
-    }
-
     const assetIcons: Record<string, any> = {
         cash: Wallet,
         investment: TrendingUp,
@@ -69,72 +69,171 @@ export function NetWorthPage() {
         other: CreditCard
     };
 
+    // Asset Allocation Data
+    const allocationData = useMemo(() => {
+        const groups: Record<string, number> = {};
+        assets.forEach(a => {
+            const type = a.type;
+            groups[type] = (groups[type] || 0) + (a.totalValue || a.value);
+        });
+
+        const typeLabels: Record<string, string> = {
+            cash: 'Liquidez',
+            investment: 'Investimentos',
+            property: 'Imóveis',
+            vehicle: 'Veículos',
+            crypto: 'Cripto',
+            stock: 'Ações',
+            other: 'Outros'
+        };
+
+        const colors: Record<string, string> = {
+            cash: '#22c55e',
+            investment: '#3b82f6',
+            property: '#f59e0b',
+            vehicle: '#ec4899',
+            stock: '#8b5cf6',
+            crypto: '#f97316',
+            other: '#94a3b8'
+        };
+
+        return Object.entries(groups).map(([type, value]) => ({
+            name: typeLabels[type] || type,
+            value,
+            color: colors[type] || '#ccc'
+        })).sort((a, b) => b.value - a.value);
+    }, [assets]);
+
+    // Liquidity breakdown
+    const liquidValue = useMemo(() => {
+        return assets
+            .filter(a => ['cash', 'crypto', 'stock', 'investment'].includes(a.type))
+            .reduce((sum, a) => sum + (a.totalValue || a.value), 0);
+    }, [assets]);
+
+    const fixedValue = totalAssets - liquidValue;
+
+    if (isLoading) {
+        return <div className="p-8 text-center">Carregando patrimônio...</div>;
+    }
+
     return (
         <div className="space-y-8 max-w-6xl mx-auto">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Patrimônio</Badge>
+                        <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-tighter">Fase 3: Inteligência</Badge>
+                    </div>
                     <h1 className="text-3xl font-bold flex items-center gap-3">
                         <Landmark className="w-8 h-8 text-primary" />
                         Consolidação de Patrimônio
                     </h1>
-                    <p className="text-muted-foreground mt-1">Acompanhe seu patrimônio líquido e evolução financeira.</p>
+                    <p className="text-muted-foreground">Acompanhe sua saúde financeira de longo prazo.</p>
                 </div>
-                <div className="glass p-4 rounded-2xl border-primary/20 bg-primary/5 min-w-[200px] shadow-glow-sm">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Patrimônio Líquido</span>
-                    <p className="text-3xl font-black text-primary drop-shadow-glow">
+                <div className="glass p-5 rounded-3xl border-primary/20 bg-primary/5 min-w-[240px] shadow-glow-sm relative overflow-hidden group">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black">Patrimônio Líquido</span>
+                    <p className="text-4xl font-black text-primary drop-shadow-glow mt-1">
                         {formatCurrency(netWorth)}
                     </p>
                 </div>
             </header>
 
-            {/* DISTRIBUTION CHART */}
-            <div className="grid lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-1 glass border-border/50 p-6 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-10"><PieIcon className="w-12 h-12" /></div>
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">Distribuição</h3>
-                    <div className="h-48 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={[
-                                        { name: 'Ativos', value: totalAssets },
-                                        { name: 'Passivos', value: totalLiabilities }
-                                    ]}
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    <Cell fill="hsl(var(--primary))" />
-                                    <Cell fill="#ef4444" />
-                                </Pie>
-                                <RechartsTooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
+            {/* DISTRIBUTION & ALLOCATION */}
+            <div className="grid lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 glass border-border/50 p-6 flex flex-col relative overflow-hidden min-h-[400px]">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-lg font-bold">Alocação de Ativos</h3>
+                            <p className="text-xs text-muted-foreground">Onde seu capital está distribuído</p>
+                        </div>
+                        <PieIcon className="w-5 h-5 text-muted-foreground opacity-30" />
                     </div>
-                    <div className="flex gap-6 mt-4 text-xs font-bold uppercase">
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-primary" /> Ativos</div>
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Passivos</div>
+
+                    <div className="flex-1 flex flex-col md:flex-row items-center gap-8">
+                        <div className="w-full h-[250px] md:w-1/2">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={allocationData}
+                                        innerRadius={70}
+                                        outerRadius={95}
+                                        paddingAngle={4}
+                                        dataKey="value"
+                                        stroke="none"
+                                        cornerRadius={8}
+                                    >
+                                        {allocationData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip
+                                        contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px' }}
+                                        formatter={(val: number) => formatCurrency(val)}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {allocationData.map((item) => (
+                                <div key={item.name} className="flex flex-col gap-1 p-3 rounded-2xl bg-secondary/20 border border-border/20">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                                        <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">{item.name}</span>
+                                    </div>
+                                    <span className="text-sm font-black">{formatCurrency(item.value)}</span>
+                                    <span className="text-[10px] text-primary">{totalAssets > 0 ? Math.round((item.value / totalAssets) * 100) : 0}% do total</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </Card>
 
-                <Card className="lg:col-span-2 glass border-border/50 p-8 flex flex-col justify-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-                        <TrendingUp className="w-32 h-32 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-black mb-4">Sua Saúde Financeira</h3>
-                    <p className="text-muted-foreground max-w-lg mb-8">
-                        Seu patrimônio líquido é a diferença real entre o que você possui e o que você deve.
-                        Manter uma proporção saudável acima de 70% é o ideal para a sua liberdade.
-                    </p>
-                    <div className="space-y-3">
-                        <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
-                            <span>Indíce de Liquidez</span>
-                            <span className="text-primary">{Math.round((netWorth / (totalAssets || 1)) * 100)}%</span>
+                <div className="flex flex-col gap-6">
+                    <Card className="glass border-border/50 p-6 flex flex-col justify-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-[0.05] pointer-events-none">
+                            <Activity className="w-16 h-16 text-primary" />
                         </div>
-                        <Progress value={Math.max(0, (netWorth / (totalAssets || 1)) * 100)} className="h-3 shadow-glow-sm" />
-                    </div>
-                </Card>
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Liquidez Imediata</h3>
+                        <div className="flex items-end justify-between mb-2">
+                            <span className="text-2xl font-black text-green-500">{formatCurrency(liquidValue)}</span>
+                            <span className="text-xs font-bold text-muted-foreground">{totalAssets > 0 ? Math.round((liquidValue / totalAssets) * 100) : 0}%</span>
+                        </div>
+                        <Progress value={totalAssets > 0 ? (liquidValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" innerClassName="bg-green-500 shadow-glow-sm" />
+                        <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
+                            Valor disponível em caixa, ações e cripto que podem ser convertidos rapidamente.
+                        </p>
+                    </Card>
+
+                    <Card className="glass border-border/50 p-6 flex flex-col justify-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-[0.05] pointer-events-none">
+                            <Home className="w-16 h-16 text-primary" />
+                        </div>
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Patrimônio Imobilizado</h3>
+                        <div className="flex items-end justify-between mb-2">
+                            <span className="text-2xl font-black text-blue-500">{formatCurrency(fixedValue)}</span>
+                            <span className="text-xs font-bold text-muted-foreground">{totalAssets > 0 ? Math.round((fixedValue / totalAssets) * 100) : 0}%</span>
+                        </div>
+                        <Progress value={totalAssets > 0 ? (fixedValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" innerClassName="bg-blue-500" />
+                        <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
+                            Bens de menor liquidez, como imóveis e veículos.
+                        </p>
+                    </Card>
+
+                    <Card className="glass border-red-500/20 bg-red-500/5 p-6 flex flex-col justify-center relative overflow-hidden">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-red-400 mb-4">Índice de Dívida</h3>
+                        <div className="flex items-end justify-between mb-2">
+                            <span className="text-2xl font-black text-red-500">{totalAssets > 0 ? Math.round((totalLiabilities / totalAssets) * 100) : 0}%</span>
+                            <ArrowDownRight className="w-5 h-5 text-red-400" />
+                        </div>
+                        <Progress value={totalAssets > 0 ? (totalLiabilities / totalAssets) * 100 : 0} className="h-2 bg-red-500/10" innerClassName="bg-red-500" />
+                        <p className="text-[10px] text-red-400/70 mt-3 leading-relaxed">
+                            {totalLiabilities > 0 ? "Foque em manter este índice abaixo de 30% para segurança." : "Excelente! Você não possui dívidas pendentes."}
+                        </p>
+                    </Card>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">

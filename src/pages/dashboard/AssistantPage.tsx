@@ -1,13 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { Bot, Send, Sparkles, User, Trash2, Zap, TrendingUp, Target, PiggyBank } from "lucide-react";
+import { Bot, Send, Sparkles, User, Trash2, Zap, TrendingUp, Target, PiggyBank, AlertCircle } from "lucide-react";
 import liaAvatar from "@/assets/lia-avatar.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useNetWorth } from "@/hooks/useNetWorth";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -40,43 +42,25 @@ export function AssistantPage() {
     const { user } = useAuth();
     const { toast } = useToast();
     const { addTransaction } = useTransactions();
+    const { data: dashboardStats } = useDashboardStats();
+    const { totalAssets, totalLiabilities, netWorth, assets } = useNetWorth();
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const [stats, setStats] = useState<any>(null);
     const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'amigo';
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            if (!user) return;
-
-            const [
-                { data: bankData },
-                { data: assetsData },
-                { data: liabilitiesData },
-                { data: goalsData }
-            ] = await Promise.all([
-                supabase.from('bank_connections').select('balance'),
-                supabase.from('assets').select('value'),
-                supabase.from('liabilities').select('value'),
-                supabase.from('goals').select('title, target_amount, current_amount')
-            ]);
-
-            const totalBalance = (bankData as any[])?.reduce((acc, curr) => acc + (Number(curr.balance) || 0), 0) || 0;
-            const totalAssets = (assetsData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
-            const totalLiabilities = (liabilitiesData as any[])?.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0) || 0;
-            const netWorth = totalBalance + totalAssets - totalLiabilities;
-
-            setStats({
-                totalBalance,
-                netWorth,
-                goals: goalsData || []
-            });
+    const stats = useMemo(() => {
+        if (!dashboardStats) return null;
+        return {
+            totalBalance: dashboardStats.balance,
+            netWorth,
+            totalIncome: dashboardStats.totalIncome,
+            totalExpenses: dashboardStats.totalExpenses,
+            savingsRate: dashboardStats.totalIncome > 0 ? ((dashboardStats.totalIncome - dashboardStats.totalExpenses) / dashboardStats.totalIncome) * 100 : 0
         };
-
-        fetchStats();
-    }, [user]);
+    }, [dashboardStats, netWorth]);
 
     useEffect(() => {
         if (user) {
@@ -126,7 +110,7 @@ export function AssistantPage() {
     const generateResponse = async (userMsg: string): Promise<string> => {
         const lower = userMsg.toLowerCase();
 
-        // 1. Try to parse a transaction intent
+        // 1. Transaction Parsing
         const tx = parseTransaction(userMsg);
         if (tx && tx.amount > 0 && tx.description.length >= 2) {
             try {
@@ -137,48 +121,50 @@ export function AssistantPage() {
                     date: new Date().toISOString().split('T')[0],
                 } as any);
                 const emoji = tx.type === 'income' ? '💰' : '💸';
-                const label = tx.type === 'income' ? 'receita' : 'despesa';
-                return `${emoji} Pronto, ${firstName}! Registrei a ${label} de **R$ ${tx.amount.toFixed(2).replace('.', ',')}** — "${tx.description.charAt(0).toUpperCase() + tx.description.slice(1)}" — no dia de hoje. Você pode conferir na aba **Lançamentos**.`;
+                return `${emoji} Pronto! Registrei a ${tx.type === 'income' ? 'receita' : 'despesa'} de **R$ ${tx.amount.toFixed(2).replace('.', ',')}** ("${tx.description}") no dia de hoje.`;
             } catch (e) {
-                return "❌ Ops, tentei anotar isso mas algo deu errado no sistema. Pode tentar fazer isso na aba Lançamentos?";
+                return "❌ Ops, algo deu errado ao registrar. Tente pela aba Lançamentos!";
             }
         }
 
-        // 2. Keyword-based responses
+        // 2. High-Level AI Insights (PRO)
+        if (lower.includes('analise') || lower.includes('análise') || lower.includes('ajuda')) {
+            if (!stats) return "Deixe-me carregar seus dados para uma análise precisa...";
+
+            if (stats.savingsRate < 10 && stats.totalIncome > 0) {
+                return `Analisando seu mês, ${firstName}, notei que sua **taxa de poupança está em ${stats.savingsRate.toFixed(1)}%**. O ideal é poupar pelo menos 20%. Que tal revisarmos seus maiores gastos em "Relatórios" para encontrar onde cortar?`;
+            }
+            if (totalLiabilities > totalAssets * 0.5) {
+                return `Atenção, ${firstName}: seu endividamento está alto (${((totalLiabilities / totalAssets) * 100).toFixed(0)}% do patrimônio). Priorize quitar dívidas com juros altos antes de novos investimentos.`;
+            }
+            return `Sua saúde financeira parece estável! Com um patrimônio de **R$ ${stats.netWorth.toLocaleString('pt-BR')}**, você está construindo uma base sólida. Qual o seu próximo objetivo?`;
+        }
+
+        // 3. Status Queries
+        if (lower.includes("saldo") || lower.includes("quanto") && lower.includes("tenho")) {
+            if (!stats) return "Buscando seus saldos...";
+            return `O seu saldo total atual é de **R$ ${stats.totalBalance.toLocaleString('pt-BR')}**. Seu patrimônio líquido consolidado (bens - dívidas) é de **R$ ${stats.netWorth.toLocaleString('pt-BR')}**.`;
+        }
+
+        // 4. Meta/Objetivos Query
+        if (lower.includes("meta") || lower.includes("objetivo")) {
+            if (!dashboardStats || !dashboardStats.goals || dashboardStats.goals.length === 0)
+                return "Você ainda não definiu metas financeiras! Que tal criar uma na aba **Metas**? Posso te ajudar a planejar!";
+
+            const goalLines = dashboardStats.goals.slice(0, 3).map((g: any) => {
+                const pct = Math.round((g.current_amount / g.target_amount) * 100);
+                return `• **${g.title}**: ${pct}% concluído (R$ ${Number(g.current_amount).toLocaleString('pt-BR')} / R$ ${Number(g.target_amount).toLocaleString('pt-BR')})`;
+            }).join('\n');
+            return `Aqui estão suas metas, ${firstName}:\n\n${goalLines}\n\nO que acha de aumentarmos o aporte mensal? 🚀`;
+        }
+
+        // 5. Keyword Responses
         for (const [keyword, response] of Object.entries(LIA_RESPONSES)) {
             if (lower.includes(keyword)) return response;
         }
 
-        // 3. Balance / Net Worth query
-        if (lower.includes("quanto") && (lower.includes("tenho") || lower.includes("saldo"))) {
-            if (!stats) return "Deixe-me ver... Estou acessando seus dados bancários agora. Pode perguntar novamente em um segundo?";
-            const balanceStr = stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            return `Atualmente, o saldo total somado das suas contas conectadas é de **${balanceStr}**. Além disso, considerando seus bens e dívidas, seu patrimônio líquido é de **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**.`;
-        }
-
-        // 4. Goal progress
-        if (lower.includes("meta")) {
-            if (!stats || stats.goals.length === 0) return "Você ainda não definiu nenhuma meta financeira. Que tal criar uma na aba **Metas**? Posso te ajudar a planejar!";
-            const goalLines = stats.goals.slice(0, 3).map((g: any) => {
-                const pct = Math.round((g.current_amount / g.target_amount) * 100);
-                return `• **${g.title}**: ${pct}% concluído (R$ ${Number(g.current_amount).toLocaleString('pt-BR')} / R$ ${Number(g.target_amount).toLocaleString('pt-BR')})`;
-            }).join('\n');
-            return `Aqui estão suas metas, ${firstName}:\n\n${goalLines}\n\nContinue assim! 🚀`;
-        }
-
-        // 5. Resumo mensal
-        if (lower.includes('resumo') || lower.includes('relatório') || lower.includes('relatorio')) {
-            if (!stats) return "Ainda estou carregando seus dados...";
-            return `📊 **Resumo do Mês**, ${firstName}:\n\n• Saldo das contas: **${stats.totalBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Patrimônio líquido: **${stats.netWorth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}**\n• Metas ativas: **${stats.goals.length}**\n\nQuer que eu detalhe algum ponto?`;
-        }
-
-        if (lower.includes("oi") || lower.includes("olá") || lower.includes("ola") || lower.includes("hey")) {
-            return `Olá, ${firstName}! 💙 Sou a Lia, sua assistente financeira inteligente. Posso:\n\n• 📝 **Registrar lançamentos** — ex: "Gastei R$ 45 em alimentação"\n• 📊 **Ver seu saldo** — ex: "Quanto eu tenho?"\n• 🎯 **Acompanhar metas** — ex: "Como estão minhas metas?"\n• 📋 **Gerar resumo** — ex: "Me dá um resumo"\n\nO que vamos fazer hoje?`;
-        }
-        if (lower.includes("obrigad")) {
-            return `De nada, ${firstName}! 😊 Estou sempre aqui para te ajudar. Minha missão é ver seu patrimônio crescer cada vez mais! 🔑`;
-        }
-        return `Entendi, ${firstName}! 🤔 Posso te ajudar de várias formas:\n\n• Diga algo como **"Gastei 50 em uber"** para eu registrar\n• Pergunte **"Quanto eu tenho?"** para ver seu saldo\n• Diga **"Resumo"** para uma visão geral\n\nO que prefere?`;
+        // Default
+        return `Entendi, ${firstName}! Posso te ajudar a registrar gastos ("Gastei 50 no mercado"), ver seu saldo ("Quanto eu tenho?") ou analisar suas finanças ("Faça uma análise"). O que prefere?`;
     };
 
     const handleSend = async (text?: string) => {
@@ -226,6 +212,22 @@ export function AssistantPage() {
             <div className="flex-1 glass rounded-2xl border-border/50 flex flex-col overflow-hidden relative">
                 {/* Chat Area */}
                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar">
+                    {stats && stats.savingsRate < 10 && stats.totalIncome > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center gap-3 mb-4"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
+                                <AlertCircle className="w-5 h-5 text-orange-500" />
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="text-xs font-bold uppercase text-orange-500">Dica da Lia</h4>
+                                <p className="text-xs text-muted-foreground mt-0.5">Sua taxa de poupança está em {stats.savingsRate.toFixed(1)}%. Tente economizar R$ {((0.2 - stats.savingsRate / 100) * stats.totalIncome).toFixed(0)} adicionais para atingir a meta ideal de 20%.</p>
+                            </div>
+                        </motion.div>
+                    )}
+
                     {messages.length === 0 && !isTyping && (
                         <div className="flex flex-col items-center justify-center h-full text-center">
                             <motion.div
