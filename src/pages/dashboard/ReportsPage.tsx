@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
     BarChart3, TrendingUp, TrendingDown, PieChart as PieChartIcon,
-    ArrowUpRight, ArrowDownRight, Activity, Download, FileText, Table as TableIcon, LineChart as LineChartIcon
+    ArrowUpRight, ArrowDownRight, Activity, Download, FileText, Table as TableIcon, LineChart as LineChartIcon,
+    Calculator, Percent
 } from "lucide-react";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -105,9 +106,10 @@ export function ReportsPage() {
 
             <Tabs defaultValue="overview" className="space-y-6">
                 <TabsList className="glass-subtle border-border/40 p-1.5 rounded-2xl">
-                    <TabsTrigger value="overview" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Visão Geral</TabsTrigger>
-                    <TabsTrigger value="categories" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Categorias</TabsTrigger>
-                    <TabsTrigger value="projections" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Evolução</TabsTrigger>
+                    <TabsTrigger value="overview" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Visão Geral</TabsTrigger>
+                    <TabsTrigger value="categories" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Categorias</TabsTrigger>
+                    <TabsTrigger value="projections" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Evolução</TabsTrigger>
+                    <TabsTrigger value="dre" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">DRE</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6 mt-0">
@@ -116,7 +118,7 @@ export function ReportsPage() {
                             { label: 'Receitas', value: formatCurrency(stats?.totalIncome || 0), change: stats?.incomeChange || 0, color: 'text-green-500', bg: 'bg-green-500/10', icon: TrendingUp },
                             { label: 'Despesas', value: formatCurrency(stats?.totalExpenses || 0), change: stats?.expenseChange || 0, color: 'text-red-500', bg: 'bg-red-500/10', icon: TrendingDown },
                             { label: 'Saldo', value: formatCurrency(stats?.balance || 0), change: null, color: (stats?.balance || 0) >= 0 ? 'text-green-500' : 'text-red-500', bg: 'bg-primary/10', icon: Activity },
-                            { label: 'Taxa de Poupança', value: `${savingRate}%`, change: null, color: savingRate >= 20 ? 'text-green-500' : savingRate >= 10 ? 'text-yellow-500' : 'text-red-500', bg: 'bg-yellow-500/10', icon: PieChartIcon },
+                            { label: 'Taxa de Poupança', value: `${savingRate}% `, change: null, color: savingRate >= 20 ? 'text-green-500' : savingRate >= 10 ? 'text-yellow-500' : 'text-red-500', bg: 'bg-yellow-500/10', icon: PieChartIcon },
                         ].map((card, i) => (
                             <motion.div
                                 key={card.label}
@@ -167,7 +169,7 @@ export function ReportsPage() {
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" vertical={false} />
                                         <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                                        <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)} k`} axisLine={false} tickLine={false} />
                                         <RechartsTooltip
                                             contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '16px', fontSize: '13px', padding: '12px' }}
                                             formatter={(v: number) => [formatCurrency(v), ""]}
@@ -192,7 +194,7 @@ export function ReportsPage() {
                                     <BarChart data={stats?.monthlyData || []} barGap={4}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" vertical={false} />
                                         <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                                        <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)} k`} axisLine={false} tickLine={false} />
                                         <RechartsTooltip
                                             contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '16px', fontSize: '13px', padding: '12px' }}
                                             formatter={(v: number) => [formatCurrency(v), ""]}
@@ -336,7 +338,7 @@ export function ReportsPage() {
                                         />
                                         <YAxis
                                             tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-                                            tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
+                                            tickFormatter={(v) => `R$${(v / 1000).toFixed(0)} k`}
                                             axisLine={false}
                                             tickLine={false}
                                         />
@@ -358,6 +360,83 @@ export function ReportsPage() {
                             </div>
                         ) : (
                             <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">Sem transações no período selecionado.</div>
+                        )}
+                    </motion.div>
+                </TabsContent>
+
+                <TabsContent value="dre" className="space-y-6 mt-0">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        {[
+                            { label: 'Margem Operacional', value: `${(stats?.dre?.operatingMargin || 0).toFixed(1)}% `, icon: Activity, color: 'text-primary' },
+                            { label: 'Margem Líquida', value: `${(stats?.dre?.netMargin || 0).toFixed(1)}% `, icon: Percent, color: 'text-green-500' },
+                            { label: 'EBITDA (Operacional)', value: formatCurrency(stats?.dre?.ebitda || 0), icon: Calculator, color: 'text-blue-500' },
+                            { label: 'Resultado Líquido', value: formatCurrency(stats?.dre?.netIncome || 0), icon: TrendingUp, color: (stats?.dre?.netIncome || 0) >= 0 ? 'text-green-500' : 'text-red-500' },
+                        ].map((kpi, i) => (
+                            <motion.div key={i} className="glass-strong rounded-2xl p-5 border-border/40" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <kpi.icon className={cn("w-5 h-5", kpi.color)} />
+                                    <span className="text-xs font-bold uppercase text-muted-foreground">{kpi.label}</span>
+                                </div>
+                                <p className={cn("text-2xl font-black", kpi.color)}>{kpi.value}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <motion.div className="glass-strong rounded-[2rem] p-6 sm:p-8 border-border/40" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                        <h3 className="font-bold mb-6 text-xl border-b border-border/40 pb-4">Demonstrativo de Resultados do Exercício (DRE)</h3>
+
+                        {stats && stats.dre ? (
+                            <div className="space-y-1 text-sm sm:text-base">
+                                {/* Receita Bruta */}
+                                <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold text-green-500">
+                                    <span>(=) Receita Bruta</span>
+                                    <span>{formatCurrency(stats.dre.grossRevenue)}</span>
+                                </div>
+
+                                {/* Deduções */}
+                                <div className="flex justify-between p-3 pl-8 text-muted-foreground">
+                                    <span>(-) Impostos e Deduções</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.taxesAndDeductions)}</span>
+                                </div>
+
+                                {/* Receita Líquida */}
+                                <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold mt-2">
+                                    <span>(=) Receita Líquida</span>
+                                    <span>{formatCurrency(stats.dre.netRevenue)}</span>
+                                </div>
+
+                                {/* Custos Operacionais */}
+                                <div className="flex justify-between p-3 pl-8 text-muted-foreground">
+                                    <span>(-) Despesas Fixas</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.fixedCosts)}</span>
+                                </div>
+                                <div className="flex justify-between p-3 pl-8 text-muted-foreground">
+                                    <span>(-) Despesas Variáveis</span>
+                                    <span className="text-red-400">{formatCurrency(stats.dre.variableCosts)}</span>
+                                </div>
+
+                                {/* Resultado Operacional (EBITDA) */}
+                                <div className="flex justify-between p-3 rounded-lg bg-secondary/10 font-bold mt-2 text-blue-500">
+                                    <span>(=) Resultado Operacional (EBITDA)</span>
+                                    <span>{formatCurrency(stats.dre.ebitda)}</span>
+                                </div>
+
+                                {/* Resultado Financeiro */}
+                                <div className="flex justify-between p-3 pl-8 text-muted-foreground">
+                                    <span>(+/-) Resultado Financeiro</span>
+                                    <span className={stats.dre.financialResult >= 0 ? "text-green-400" : "text-red-400"}>
+                                        {formatCurrency(stats.dre.financialResult)}
+                                    </span>
+                                </div>
+
+                                {/* Resultado Líquido */}
+                                <div className={cn("flex justify-between p-4 rounded-xl font-black text-lg mt-4", stats.dre.netIncome >= 0 ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20")}>
+                                    <span>(=) Resultado Líquido</span>
+                                    <span>{formatCurrency(stats.dre.netIncome)}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center text-muted-foreground py-8">Carregando dados estruturados...</div>
                         )}
                     </motion.div>
                 </TabsContent>

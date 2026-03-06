@@ -13,6 +13,19 @@ interface DashboardStats {
     categoryBreakdown: { name: string; amount: number; color: string }[];
     incomeCategoryBreakdown: { name: string; amount: number; color: string }[];
     cashFlowData: { date: string; balance: number }[];
+    dre: {
+        grossRevenue: number;
+        taxesAndDeductions: number;
+        netRevenue: number;
+        fixedCosts: number;
+        variableCosts: number;
+        operatingExpenses: number;
+        ebitda: number;
+        financialResult: number;
+        netIncome: number;
+        operatingMargin: number;
+        netMargin: number;
+    };
     goals: any[];
 }
 
@@ -186,6 +199,64 @@ export function useDashboardStats(options: {
                 ...values,
             }));
 
+            // --- DRE (Income Statement) Calculations ---
+            let grossRevenue = 0;
+            let taxesAndDeductions = 0;
+            let fixedCosts = 0;
+            let variableCosts = 0;
+            let financialExpenses = 0;
+            let financialIncome = 0;
+
+            const deducoesKeywords = ['imposto', 'taxa', 'darf', 'simples', 'iss', 'irrf', 'inss', 'dedução', 'tributo', 'juros', 'tarifa', 'iof'];
+            const fixosKeywords = ['aluguel', 'condomínio', 'condominio', 'luz', 'energia', 'água', 'agua', 'internet', 'telefone', 'celular', 'assinatura', 'netflix', 'spotify', 'contador', 'mensalidade', 'seguro'];
+            const financeirosKeywords = ['juros', 'empréstimo', 'emprestimo', 'financiamento', 'tarifa', 'iof', 'multa', 'rendimento', 'dividendo', 'investimento', 'cdb', 'selic'];
+
+            transactions.forEach(t => {
+                const amount = Number(t.amount);
+                const isIncome = t.type === 'income';
+                const catName = ((t.categories as any)?.name || '').toLowerCase();
+                const desc = (t.description || '').toLowerCase();
+                const searchStr = `${catName} ${desc}`;
+
+                if (isIncome) {
+                    if (financeirosKeywords.some(k => searchStr.includes(k))) {
+                        financialIncome += amount;
+                    } else {
+                        grossRevenue += amount;
+                    }
+                } else {
+                    if (deducoesKeywords.some(k => searchStr.includes(k)) && !financeirosKeywords.some(k => searchStr.includes(k))) {
+                        taxesAndDeductions += amount;
+                    } else if (financeirosKeywords.some(k => searchStr.includes(k))) {
+                        financialExpenses += amount;
+                    } else if (fixosKeywords.some(k => searchStr.includes(k))) {
+                        fixedCosts += amount;
+                    } else {
+                        variableCosts += amount;
+                    }
+                }
+            });
+
+            const netRevenue = grossRevenue - taxesAndDeductions;
+            const operatingExpenses = fixedCosts + variableCosts;
+            const ebitda = netRevenue - operatingExpenses; // Operating Result
+            const financialResult = financialIncome - financialExpenses;
+            const netIncome = ebitda + financialResult;
+
+            const dre = {
+                grossRevenue,
+                taxesAndDeductions,
+                netRevenue,
+                fixedCosts,
+                variableCosts,
+                operatingExpenses,
+                ebitda,
+                financialResult,
+                netIncome,
+                operatingMargin: netRevenue > 0 ? (ebitda / netRevenue) * 100 : 0,
+                netMargin: grossRevenue > 0 ? (netIncome / grossRevenue) * 100 : 0,
+            };
+
             // Cash flow data
             const sortedTx = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
             let runningBalance = 0;
@@ -216,6 +287,7 @@ export function useDashboardStats(options: {
                 categoryBreakdown,
                 incomeCategoryBreakdown,
                 cashFlowData,
+                dre,
                 goals
             };
         },
