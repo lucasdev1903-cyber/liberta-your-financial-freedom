@@ -204,7 +204,7 @@ export function FinancialScoreCard() {
             </motion.div>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[500px] glass border-border/50 bg-card/95 backdrop-blur-2xl">
+                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto glass border-border/50 bg-card/95 backdrop-blur-2xl">
                     <DialogHeader>
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
