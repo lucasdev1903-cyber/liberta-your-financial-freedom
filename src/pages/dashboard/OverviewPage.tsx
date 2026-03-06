@@ -173,8 +173,8 @@ export function OverviewPage() {
                 {statCards.map((stat, i) => (
                     <motion.div
                         key={stat.label}
-                        className="glass rounded-xl p-5 border-border/50 card-hover"
-                        initial={{ opacity: 0, y: 20 }}
+                        className="glass rounded-xl p-5 border-border/50"
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1, duration: 0.4 }}
                     >
@@ -198,19 +198,19 @@ export function OverviewPage() {
             <div className="flex flex-wrap gap-3">
                 <button
                     onClick={() => navigate('/dashboard/transactions')}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm font-semibold text-primary hover:bg-primary/20 active:scale-95 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-sm font-semibold text-primary hover:bg-primary/20 transition-all font-jak"
                 >
                     <Wallet className="w-4 h-4" /> Novo Lançamento
                 </button>
                 <button
                     onClick={() => navigate('/dashboard/goals')}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 transition-all font-jak"
                 >
                     <Target className="w-4 h-4" /> Metas
                 </button>
                 <button
                     onClick={() => navigate('/dashboard/assistant')}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/30 border border-border/50 text-sm font-semibold hover:bg-secondary/50 transition-all font-jak"
                 >
                     <Bot className="w-4 h-4" /> Falar com Lia
                 </button>
@@ -224,7 +224,7 @@ export function OverviewPage() {
 
                 {/* Chart area */}
                 <motion.div
-                    className="lg:col-span-2 glass-subtle rounded-xl p-6 border-border/50 card-hover shadow-sm"
+                    className="lg:col-span-2 glass-subtle rounded-xl p-6 border-border/50 shadow-sm"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}

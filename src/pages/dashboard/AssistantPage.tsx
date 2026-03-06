@@ -250,9 +250,9 @@ export function AssistantPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.1 }}
                                         onClick={() => handleSend(p.text)}
-                                        className="flex items-center gap-3 p-4 rounded-xl glass hover:border-primary/40 transition-all text-left text-sm group"
+                                        className="flex items-center gap-3 p-4 rounded-xl glass transition-all text-left text-sm"
                                     >
-                                        <p.icon className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                                        <p.icon className="w-4 h-4 text-primary shrink-0 transition-transform" />
                                         <span className="text-xs font-medium">{p.text}</span>
                                     </motion.button>
                                 ))}

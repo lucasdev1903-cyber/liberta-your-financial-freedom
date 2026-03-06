@@ -130,10 +130,9 @@ export function FinancialScoreCard() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <motion.div
-                    className="glass-subtle rounded-xl p-6 border-border/50 flex flex-col shadow-glow-sm cursor-pointer card-hover relative overflow-hidden h-full group"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
+                    className="glass-subtle rounded-xl p-6 border-border/50 flex flex-col shadow-glow-sm cursor-pointer relative overflow-hidden h-full group transition-all duration-300 hover:border-primary/20 hover:bg-primary/5"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                 >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -z-10" />
 
@@ -199,7 +198,7 @@ export function FinancialScoreCard() {
                         ))}
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-center gap-2 text-[10px] text-primary font-bold uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-center gap-2 text-[10px] text-primary font-bold uppercase tracking-tighter transition-opacity">
                         Clique para Check-up Completo <Activity className="w-3 h-3" />
                     </div>
                 </motion.div>

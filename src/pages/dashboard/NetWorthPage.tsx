@@ -201,7 +201,7 @@ export function NetWorthPage() {
                             <span className="text-2xl font-black text-green-500">{formatCurrency(liquidValue)}</span>
                             <span className="text-xs font-bold text-muted-foreground">{totalAssets > 0 ? Math.round((liquidValue / totalAssets) * 100) : 0}%</span>
                         </div>
-                        <Progress value={totalAssets > 0 ? (liquidValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" innerClassName="bg-green-500 shadow-glow-sm" />
+                        <Progress value={totalAssets > 0 ? (liquidValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" indicatorClassName="bg-green-500 shadow-glow-sm" />
                         <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
                             Valor disponível em caixa, ações e cripto que podem ser convertidos rapidamente.
                         </p>
@@ -216,7 +216,7 @@ export function NetWorthPage() {
                             <span className="text-2xl font-black text-blue-500">{formatCurrency(fixedValue)}</span>
                             <span className="text-xs font-bold text-muted-foreground">{totalAssets > 0 ? Math.round((fixedValue / totalAssets) * 100) : 0}%</span>
                         </div>
-                        <Progress value={totalAssets > 0 ? (fixedValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" innerClassName="bg-blue-500" />
+                        <Progress value={totalAssets > 0 ? (fixedValue / totalAssets) * 100 : 0} className="h-2 bg-secondary" indicatorClassName="bg-blue-500" />
                         <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
                             Bens de menor liquidez, como imóveis e veículos.
                         </p>
@@ -228,7 +228,7 @@ export function NetWorthPage() {
                             <span className="text-2xl font-black text-red-500">{totalAssets > 0 ? Math.round((totalLiabilities / totalAssets) * 100) : 0}%</span>
                             <ArrowDownRight className="w-5 h-5 text-red-400" />
                         </div>
-                        <Progress value={totalAssets > 0 ? (totalLiabilities / totalAssets) * 100 : 0} className="h-2 bg-red-500/10" innerClassName="bg-red-500" />
+                        <Progress value={totalAssets > 0 ? (totalLiabilities / totalAssets) * 100 : 0} className="h-2 bg-red-500/10" indicatorClassName="bg-red-500" />
                         <p className="text-[10px] text-red-400/70 mt-3 leading-relaxed">
                             {totalLiabilities > 0 ? "Foque em manter este índice abaixo de 30% para segurança." : "Excelente! Você não possui dívidas pendentes."}
                         </p>
@@ -303,10 +303,10 @@ export function NetWorthPage() {
                             return (
                                 <motion.div
                                     key={asset.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className="glass p-4 rounded-xl border-border/50 flex items-center justify-between group hover:border-green-500/30 transition-all"
+                                    className="glass p-4 rounded-xl border-border/50 flex items-center justify-between group hover:border-green-500/30 transition-shadow"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500">
@@ -400,10 +400,10 @@ export function NetWorthPage() {
                             return (
                                 <motion.div
                                     key={lib.id}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className="glass p-4 rounded-xl border-border/50 flex items-center justify-between group hover:border-red-500/30 transition-all"
+                                    className="glass p-4 rounded-xl border-border/50 flex items-center justify-between group hover:border-red-500/30 transition-shadow"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">

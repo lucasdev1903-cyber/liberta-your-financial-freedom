@@ -11,6 +11,7 @@ interface DashboardStats {
     expenseChange: number;
     monthlyData: { month: string; income: number; expense: number }[];
     categoryBreakdown: { name: string; amount: number; color: string }[];
+    goals: any[];
 }
 
 export type DateRange = 'this_month' | 'last_month' | 'last_3_months' | 'this_year' | 'all' | 'custom';
@@ -82,7 +83,7 @@ export function useDashboardStats(options: {
 
             const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1).toISOString().split('T')[0];
 
-            const [currentRes, prevRes, chartRes] = await Promise.all([
+            const [currentRes, prevRes, chartRes, goalsRes] = await Promise.all([
                 supabase
                     .from('transactions')
                     .select('amount, type, category_id, categories(name, color)')
@@ -100,12 +101,17 @@ export function useDashboardStats(options: {
                     .select('amount, type, date')
                     .eq('user_id', user.id)
                     .gte('date', sixMonthsAgo)
-                    .lte('date', endDate)
+                    .lte('date', endDate),
+                supabase
+                    .from('goals')
+                    .select('*')
+                    .eq('user_id', user.id)
             ]);
 
             const transactions = (currentRes.data || []) as any[];
             const prevTransactions = (prevRes.data || []) as any[];
             const chartTransactions = (chartRes.data || []) as any[];
+            const goals = (goalsRes.data || []) as any[];
 
             const totalIncome = transactions
                 .filter((t) => t.type === 'income')
@@ -179,6 +185,7 @@ export function useDashboardStats(options: {
                 expenseChange: Math.round(expenseChange),
                 monthlyData,
                 categoryBreakdown,
+                goals
             };
         },
         enabled: !!user,
