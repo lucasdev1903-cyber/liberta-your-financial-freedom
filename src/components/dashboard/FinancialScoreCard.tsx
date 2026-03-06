@@ -1,6 +1,15 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import {
+    Wallet,
+    Target,
+    Zap,
+    Award,
+    TrendingUp,
+    Activity,
+    AlertCircle
+} from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useNetWorth } from '@/hooks/useNetWorth';
 import { cn } from '@/lib/utils';
@@ -14,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { useState } from 'react';
 
 interface ScoreFactor {
     label: string;
