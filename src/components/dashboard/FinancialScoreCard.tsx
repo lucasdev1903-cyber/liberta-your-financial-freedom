@@ -204,62 +204,72 @@ export function FinancialScoreCard() {
             </motion.div>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto glass border-border/50 bg-card/95 backdrop-blur-2xl">
+                <DialogContent className="sm:max-w-[425px] border-border/50 bg-card/95 backdrop-blur-xl">
                     <DialogHeader>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                <Activity className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-2xl font-black">Check-up Financeiro</DialogTitle>
-                                <DialogDescription>Uma análise profunda da sua saúde financeira atual.</DialogDescription>
-                            </div>
-                        </div>
+                        <DialogTitle className="flex items-center gap-2 text-xl">
+                            <Activity className="w-5 h-5 text-primary" />
+                            Check-up Financeiro
+                        </DialogTitle>
+                        <DialogDescription>Análise da sua saúde financeira atual.</DialogDescription>
                     </DialogHeader>
 
-                    <div className="grid grid-cols-2 gap-4 mt-6">
-                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Taxa de Poupança</span>
-                            <p className={cn("text-2xl font-black mt-1", getMetricColor(savingsRate, 20, 0))}>
-                                {savingsRate.toFixed(1)}%
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-2">Ideial: acima de 20%</p>
+                    <div className="flex flex-col gap-4 py-2 mt-2">
+                        <div className="grid gap-3">
+                            {/* Taxa de Poupança */}
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/20 border border-border/50">
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-muted-foreground">Taxa de Poupança</span>
+                                    <p className="text-[10px] text-muted-foreground">Ideal: acima de 20%</p>
+                                </div>
+                                <span className={cn("text-lg font-black", getMetricColor(savingsRate, 20, 0))}>
+                                    {savingsRate.toFixed(1)}%
+                                </span>
+                            </div>
+
+                            {/* Endividamento */}
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/20 border border-border/50">
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-muted-foreground">Endividamento</span>
+                                    <p className="text-[10px] text-muted-foreground">Ideal: menor que 30%</p>
+                                </div>
+                                <span className={cn("text-lg font-black", getMetricColor(100 - debtRatio, 70, 50))}>
+                                    {debtRatio.toFixed(1)}%
+                                </span>
+                            </div>
+
+                            {/* Reserva de Emergência */}
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/20 border border-border/50">
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-muted-foreground">Reserva de Emergência</span>
+                                    <p className="text-[10px] text-muted-foreground">Ideal: 6+ meses</p>
+                                </div>
+                                <span className={cn("text-lg font-black", getMetricColor(emergencyFundMonths, 6, 1))}>
+                                    {emergencyFundMonths.toFixed(1)} <span className="text-xs font-normal">meses</span>
+                                </span>
+                            </div>
+
+                            {/* Índice de Liquidez */}
+                            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/20 border border-border/50">
+                                <div>
+                                    <span className="text-xs font-bold uppercase text-muted-foreground">Índice de Liquidez</span>
+                                    <p className="text-[10px] text-muted-foreground">Ideal: 20%+</p>
+                                </div>
+                                <span className={cn("text-lg font-black", getMetricColor(liquidityRatio, 25, 10))}>
+                                    {liquidityRatio.toFixed(1)}%
+                                </span>
+                            </div>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Endividamento</span>
-                            <p className={cn("text-2xl font-black mt-1", getMetricColor(100 - debtRatio, 70, 50))}>
-                                {debtRatio.toFixed(1)}%
+                        <div className="mt-2 p-4 rounded-xl bg-primary/10 border border-primary/20">
+                            <h4 className="text-sm font-bold flex items-center gap-2 mb-2">
+                                <Award className="w-4 h-4 text-primary" /> Diagnóstico da Lia
+                            </h4>
+                            <p className="text-xs leading-relaxed text-muted-foreground italic">
+                                "{score > 800 ? "Sua estrutura é sólida e permite maximizar rendimentos com segurança." :
+                                    score > 500 ? "Bom caminho! Foco em melhorar a liquidez e construir sua reserva de emergência completa." :
+                                        "Atenção imediata: Priorize quitar dívidas de juros altos e estabilizar o fluxo de caixa."}"
                             </p>
-                            <p className="text-[10px] text-muted-foreground mt-2">Dívida vs Ativos. Ideal: &lt; 30%</p>
                         </div>
-
-                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Reserva de Emergência</span>
-                            <p className={cn("text-2xl font-black mt-1", getMetricColor(emergencyFundMonths, 6, 1))}>
-                                {emergencyFundMonths.toFixed(1)} <span className="text-xs">meses</span>
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-2">Cobertura de gastos. Ideal: 6+</p>
-                        </div>
-
-                        <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Índice de Liquidez</span>
-                            <p className={cn("text-2xl font-black mt-1", getMetricColor(liquidityRatio, 25, 10))}>
-                                {liquidityRatio.toFixed(1)}%
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-2">Conversão em caixa. Ideal: 20%+</p>
-                        </div>
-                    </div>
-
-                    <div className="mt-8 p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
-                        <h4 className="font-bold flex items-center gap-2">
-                            <Award className="w-5 h-5 text-primary" /> Diagnóstico da Lia
-                        </h4>
-                        <p className="text-sm leading-relaxed text-muted-foreground italic">
-                            "{score > 800 ? "Parabéns! Sua estrutura financeira é extremamente sólida. Você tem capital disponível para focar agora na maximização dos rendimentos." :
-                                score > 500 ? "Você está no caminho certo, mas recomendo focar em aumentar sua liquidez e garantir que sua reserva de emergência cubra pelo menos 6 meses de gastos fixos." :
-                                    "Cuidado! Sua exposição ao risco está elevada. Priorize a quitação de dívidas de juros altos e o corte de gastos supérfluos para equilibrar seu fluxo de caixa."}"
-                        </p>
                     </div>
                 </DialogContent>
             </Dialog>
