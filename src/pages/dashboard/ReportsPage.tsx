@@ -5,6 +5,7 @@ import {
     ArrowUpRight, ArrowDownRight, Activity, Download, FileText, Table as TableIcon, LineChart as LineChartIcon,
     Calculator, Percent, Building2, Coffee, Coins
 } from "lucide-react";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactions } from "@/hooks/useTransactions";
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
