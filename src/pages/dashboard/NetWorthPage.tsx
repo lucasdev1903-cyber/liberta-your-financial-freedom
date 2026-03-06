@@ -15,7 +15,8 @@ import {
     PieChart as PieIcon,
     ShieldCheck,
     Activity,
-    Award
+    Award,
+    Loader2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useMemo } from "react";
@@ -34,6 +35,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
@@ -43,7 +45,6 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
 
 export function NetWorthPage() {
     const { toast } = useToast();
@@ -288,7 +289,7 @@ export function NetWorthPage() {
                                         });
                                         toast({
                                             title: "Ativo adicionado",
-                                            description: `${assetName} foi salvo com sucesso.`
+                                            description: `${assetName} foi salvo com sucesso.`,
                                         });
                                         setIsAssetDialogOpen(false);
                                         // Reset form
@@ -304,22 +305,26 @@ export function NetWorthPage() {
                                     }
                                 }}>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase text-muted-foreground">Nome do Ativo</label>
-                                        <Input
-                                            value={assetName}
-                                            onChange={(e) => setAssetName(e.target.value)}
-                                            placeholder="Ex: Conta Corrente, Apartamento..."
-                                            required
-                                        />
+                                        <Label>Nome do Ativo</Label>
+                                        <div className="relative">
+                                            <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
+                                            <Input
+                                                value={assetName}
+                                                onChange={(e) => setAssetName(e.target.value)}
+                                                placeholder="Ex: Conta Corrente, Apartamento..."
+                                                className="bg-secondary/20 border-border/50 h-11 pl-10"
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Tipo</label>
+                                            <Label>Tipo</Label>
                                             <Select value={assetType} onValueChange={setAssetType}>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="bg-secondary/20 border-border/50 h-11">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="glass border-border/50">
                                                     <SelectItem value="cash">Dinheiro / Conta</SelectItem>
                                                     <SelectItem value="investment">Investimentos</SelectItem>
                                                     <SelectItem value="property">Imóvel</SelectItem>
@@ -331,19 +336,22 @@ export function NetWorthPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor (R$ ou Qtde)</label>
-                                            <Input
-                                                value={assetValue}
-                                                onChange={(e) => setAssetValue(e.target.value)}
-                                                type="text"
-                                                placeholder="0,00"
-                                                required
-                                            />
+                                            <Label>Valor (R$ ou Qtde)</Label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm opacity-50">R$</span>
+                                                <Input
+                                                    value={assetValue}
+                                                    onChange={(e) => setAssetValue(e.target.value)}
+                                                    type="text"
+                                                    placeholder="0,00"
+                                                    className="bg-secondary/20 border-border/50 h-11 pl-9"
+                                                    required
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={addAsset.isPending}>
-                                        {addAsset.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                        Salvar Ativo
+                                    <Button type="submit" variant="hero" className="w-full h-12 shadow-glow-sm mt-2" disabled={addAsset.isPending}>
+                                        {addAsset.isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : "Salvar Ativo"}
                                     </Button>
                                 </form>
                             </DialogContent>
@@ -431,7 +439,7 @@ export function NetWorthPage() {
                                         });
                                         toast({
                                             title: "Passivo adicionado",
-                                            description: `${libName} foi salvo com sucesso.`
+                                            description: `${libName} foi salvo com sucesso.`,
                                         });
                                         setIsLiabilityDialogOpen(false);
                                         // Reset form
@@ -447,22 +455,26 @@ export function NetWorthPage() {
                                     }
                                 }}>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase text-muted-foreground">Nome do Passivo</label>
-                                        <Input
-                                            value={libName}
-                                            onChange={(e) => setLibName(e.target.value)}
-                                            placeholder="Ex: Financiamento, Empréstimo..."
-                                            required
-                                        />
+                                        <Label>Nome do Passivo</Label>
+                                        <div className="relative">
+                                            <ArrowDownRight className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
+                                            <Input
+                                                value={libName}
+                                                onChange={(e) => setLibName(e.target.value)}
+                                                placeholder="Ex: Financiamento, Empréstimo..."
+                                                className="bg-secondary/20 border-border/50 h-11 pl-10"
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Tipo</label>
+                                            <Label>Tipo</Label>
                                             <Select value={libType} onValueChange={setLibType}>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="bg-secondary/20 border-border/50 h-11">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="glass border-border/50">
                                                     <SelectItem value="credit_card">Cartão de Crédito</SelectItem>
                                                     <SelectItem value="loan">Empréstimo</SelectItem>
                                                     <SelectItem value="mortgage">Financiamento</SelectItem>
@@ -471,19 +483,22 @@ export function NetWorthPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor (R$)</label>
-                                            <Input
-                                                value={libValue}
-                                                onChange={(e) => setLibValue(e.target.value)}
-                                                type="text"
-                                                placeholder="0,00"
-                                                required
-                                            />
+                                            <Label>Valor (R$)</Label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm opacity-50">R$</span>
+                                                <Input
+                                                    value={libValue}
+                                                    onChange={(e) => setLibValue(e.target.value)}
+                                                    type="text"
+                                                    placeholder="0,00"
+                                                    className="bg-secondary/20 border-border/50 h-11 pl-9"
+                                                    required
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={addLiability.isPending}>
-                                        {addLiability.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                        Salvar Passivo
+                                    <Button type="submit" variant="destructive" className="w-full h-12 shadow-glow-sm mt-2 font-bold" disabled={addLiability.isPending}>
+                                        {addLiability.isPending ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : "Salvar Passivo"}
                                     </Button>
                                 </form>
                             </DialogContent>
