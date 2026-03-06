@@ -53,11 +53,11 @@ export default function Dashboard() {
     return fullName?.split(" ")[0] || "Usuário";
   };
 
-  const SidebarContent = () => (
+  const sidebarContent = (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-10 px-2" onClick={() => setMobileOpen(false)}>
-        <img src={logoWhite} alt="Liberta" className="h-10 hidden dark:block" />
-        <img src={logoColor} alt="Liberta" className="h-10 block dark:hidden" />
+      <Link to="/" className="flex items-center justify-center mb-10 px-2" onClick={() => setMobileOpen(false)}>
+        <img src={logoWhite} alt="Liberta" className="h-14 hidden dark:block transition-all" />
+        <img src={logoColor} alt="Liberta" className="h-14 block dark:hidden transition-all" />
       </Link>
 
       <nav className="flex-1 space-y-1">
@@ -137,7 +137,7 @@ export default function Dashboard() {
         "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-sidebar-border p-5 flex flex-col transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <SidebarContent />
+        {sidebarContent}
       </aside>
 
       {/* Main Content */}
