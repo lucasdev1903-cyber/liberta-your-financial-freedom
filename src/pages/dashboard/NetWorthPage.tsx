@@ -61,16 +61,25 @@ export function NetWorthPage() {
     const [libType, setLibType] = useState("other");
     const [libValue, setLibValue] = useState("");
 
-    // Helper to parse values "freely" (supports 230000, 230.000,00, 230,00 etc)
+    // Helper to parse values "freely"
     const parseValue = (val: string) => {
         if (!val) return 0;
-        // If it has a comma, it's Portuguese format. Replace dots (thousands) and then comma (decimal)
-        if (val.includes(',')) {
-            const clean = val.replace(/\./g, '').replace(',', '.');
-            return parseFloat(clean) || 0;
-        }
-        // If it was just 230000, parseFloat(val) is correct
-        return parseFloat(val) || 0;
+        // Standardize Portuguese (1.234,56) to Float (1234.56)
+        const cleanValue = val.replace(/\./g, "").replace(",", ".");
+        return parseFloat(cleanValue) || 0;
+    };
+
+    const maskCurrency = (val: string) => {
+        // Remove everything that's not a digit
+        const digitOnly = val.replace(/\D/g, "");
+        if (!digitOnly) return "";
+
+        // Format as BRL (without R$)
+        const valueAsNumber = parseInt(digitOnly) / 100;
+        return new Intl.NumberFormat("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(valueAsNumber);
     };
 
     const formatCurrency = (val: number) => {
@@ -336,12 +345,12 @@ export function NetWorthPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Valor (R$ ou Qtde)</Label>
+                                            <Label>Valor (R$)</Label>
                                             <div className="relative">
                                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm opacity-50">R$</span>
                                                 <Input
                                                     value={assetValue}
-                                                    onChange={(e) => setAssetValue(e.target.value)}
+                                                    onChange={(e) => setAssetValue(maskCurrency(e.target.value))}
                                                     type="text"
                                                     placeholder="0,00"
                                                     className="bg-secondary/20 border-border/50 h-11 pl-9"
@@ -488,7 +497,7 @@ export function NetWorthPage() {
                                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm opacity-50">R$</span>
                                                 <Input
                                                     value={libValue}
-                                                    onChange={(e) => setLibValue(e.target.value)}
+                                                    onChange={(e) => setLibValue(maskCurrency(e.target.value))}
                                                     type="text"
                                                     placeholder="0,00"
                                                     className="bg-secondary/20 border-border/50 h-11 pl-9"
