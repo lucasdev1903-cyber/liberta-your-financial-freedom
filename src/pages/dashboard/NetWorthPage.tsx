@@ -42,11 +42,23 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export function NetWorthPage() {
+    const { toast } = useToast();
     const { assets, liabilities, totalAssets, totalLiabilities, netWorth, isLoading, addAsset, addLiability } = useNetWorth();
     const [isAssetDialogOpen, setIsAssetDialogOpen] = useState(false);
     const [isLiabilityDialogOpen, setIsLiabilityDialogOpen] = useState(false);
+
+    // Form states
+    const [assetName, setAssetName] = useState("");
+    const [assetType, setAssetType] = useState("cash");
+    const [assetValue, setAssetValue] = useState("");
+
+    const [libName, setLibName] = useState("");
+    const [libType, setLibType] = useState("other");
+    const [libValue, setLibValue] = useState("");
 
     const formatCurrency = (val: number) => {
         return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -254,24 +266,44 @@ export function NetWorthPage() {
                                 <DialogHeader>
                                     <DialogTitle>Novo Ativo</DialogTitle>
                                 </DialogHeader>
-                                <form className="space-y-4 pt-4" onSubmit={(e) => {
+                                <form className="space-y-4 pt-4" onSubmit={async (e) => {
                                     e.preventDefault();
-                                    const formData = new FormData(e.currentTarget);
-                                    addAsset.mutate({
-                                        name: formData.get('name') as string,
-                                        type: formData.get('type') as any,
-                                        value: Number(formData.get('value'))
-                                    });
-                                    setIsAssetDialogOpen(false);
+                                    try {
+                                        await addAsset.mutateAsync({
+                                            name: assetName,
+                                            type: assetType as any,
+                                            value: Number(assetValue)
+                                        });
+                                        toast({
+                                            title: "Ativo adicionado",
+                                            description: `${assetName} foi salvo com sucesso.`
+                                        });
+                                        setIsAssetDialogOpen(false);
+                                        // Reset form
+                                        setAssetName("");
+                                        setAssetType("cash");
+                                        setAssetValue("");
+                                    } catch (err: any) {
+                                        toast({
+                                            title: "Erro ao salvar",
+                                            description: err.message || "Não foi possível salvar o ativo. Verifique se a tabela 'assets' existe.",
+                                            variant: "destructive"
+                                        });
+                                    }
                                 }}>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase text-muted-foreground">Nome do Ativo</label>
-                                        <Input name="name" placeholder="Ex: Conta Corrente, Apartamento..." required />
+                                        <Input
+                                            value={assetName}
+                                            onChange={(e) => setAssetName(e.target.value)}
+                                            placeholder="Ex: Conta Corrente, Apartamento..."
+                                            required
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold uppercase text-muted-foreground">Tipo</label>
-                                            <Select name="type" defaultValue="cash">
+                                            <Select value={assetType} onValueChange={setAssetType}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -287,11 +319,21 @@ export function NetWorthPage() {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor em R$ (ou Qtde para Cripto/Ações)</label>
-                                            <Input name="value" type="number" step="0.00000001" placeholder="0,00" required />
+                                            <label className="text-xs font-bold uppercase text-muted-foreground">Valor (R$ ou Qtde)</label>
+                                            <Input
+                                                value={assetValue}
+                                                onChange={(e) => setAssetValue(e.target.value)}
+                                                type="number"
+                                                step="0.00000001"
+                                                placeholder="0,00"
+                                                required
+                                            />
                                         </div>
                                     </div>
-                                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">Salvar Ativo</Button>
+                                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={addAsset.isPending}>
+                                        {addAsset.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                        Salvar Ativo
+                                    </Button>
                                 </form>
                             </DialogContent>
                         </Dialog>
@@ -354,24 +396,44 @@ export function NetWorthPage() {
                                 <DialogHeader>
                                     <DialogTitle>Novo Passivo</DialogTitle>
                                 </DialogHeader>
-                                <form className="space-y-4 pt-4" onSubmit={(e) => {
+                                <form className="space-y-4 pt-4" onSubmit={async (e) => {
                                     e.preventDefault();
-                                    const formData = new FormData(e.currentTarget);
-                                    addLiability.mutate({
-                                        name: formData.get('name') as string,
-                                        type: formData.get('type') as any,
-                                        value: Number(formData.get('value'))
-                                    });
-                                    setIsLiabilityDialogOpen(false);
+                                    try {
+                                        await addLiability.mutateAsync({
+                                            name: libName,
+                                            type: libType as any,
+                                            value: Number(libValue)
+                                        });
+                                        toast({
+                                            title: "Passivo adicionado",
+                                            description: `${libName} foi salvo com sucesso.`
+                                        });
+                                        setIsLiabilityDialogOpen(false);
+                                        // Reset form
+                                        setLibName("");
+                                        setLibType("other");
+                                        setLibValue("");
+                                    } catch (err: any) {
+                                        toast({
+                                            title: "Erro ao salvar",
+                                            description: err.message || "Não foi possível salvar o passivo.",
+                                            variant: "destructive"
+                                        });
+                                    }
                                 }}>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase text-muted-foreground">Nome do Passivo</label>
-                                        <Input name="name" placeholder="Ex: Financiamento, Empréstimo..." required />
+                                        <Input
+                                            value={libName}
+                                            onChange={(e) => setLibName(e.target.value)}
+                                            placeholder="Ex: Financiamento, Empréstimo..."
+                                            required
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold uppercase text-muted-foreground">Tipo</label>
-                                            <Select name="type" defaultValue="other">
+                                            <Select value={libType} onValueChange={setLibType}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -385,10 +447,20 @@ export function NetWorthPage() {
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold uppercase text-muted-foreground">Valor (R$)</label>
-                                            <Input name="value" type="number" step="0.01" placeholder="0,00" required />
+                                            <Input
+                                                value={libValue}
+                                                onChange={(e) => setLibValue(e.target.value)}
+                                                type="number"
+                                                step="0.01"
+                                                placeholder="0,00"
+                                                required
+                                            />
                                         </div>
                                     </div>
-                                    <Button type="submit" className="w-full bg-red-600 hover:bg-red-700">Salvar Passivo</Button>
+                                    <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={addLiability.isPending}>
+                                        {addLiability.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                        Salvar Passivo
+                                    </Button>
                                 </form>
                             </DialogContent>
                         </Dialog>
