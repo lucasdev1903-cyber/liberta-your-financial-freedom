@@ -4,8 +4,9 @@ import logoColor from "@/assets/logo_liberta_colorido.png";
 import { ModeToggle } from "@/components/mode-toggle";
 import { motion } from "framer-motion";
 import {
-  BarChart3, Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
-  Menu, X, Shield, SmartphoneNfc, Landmark, PieChart, CreditCard, Repeat, FileBarChart, Flame
+  Wallet, Target, TrendingUp, Bot, Settings, LogOut, Bell,
+  Menu, X, Shield, SmartphoneNfc, PieChart, Repeat, Flame,
+  LayoutDashboard, Building, CreditCard, BarChart2, CheckSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -23,34 +24,19 @@ const getGreeting = () => {
   return 'Boa noite';
 };
 
-const navGroups = [
-  {
-    label: "Visão Geral",
-    items: [
-      { icon: BarChart3, label: "Dashboard", href: "/dashboard" },
-      { icon: Landmark, label: "Patrimônio", href: "/dashboard/net-worth" },
-      { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant", badge: '✨' },
-    ]
-  },
-  {
-    label: "Gestão",
-    items: [
-      { icon: Wallet, label: "Lançamentos", href: "/dashboard/transactions" },
-      { icon: SmartphoneNfc, label: "Contas Bancárias", href: "/dashboard/connections" },
-      { icon: Target, label: "Metas", href: "/dashboard/goals" },
-      { icon: PieChart, label: "Orçamentos", href: "/dashboard/budgets" },
-      { icon: Flame, label: "Dívidas", href: "/dashboard/dividas" },
-      { icon: Repeat, label: "Recorrências", href: "/dashboard/recurring" },
-      { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
-    ]
-  },
-  {
-    label: "Ajustes e Relatórios",
-    items: [
-      { icon: FileBarChart, label: "Relatórios", href: "/dashboard/reports" },
-      { icon: CreditCard, label: "Assinatura", href: "/dashboard/subscription" },
-    ]
-  }
+const navItems = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: Building, label: "Patrimônio", href: "/dashboard/net-worth" },
+  { icon: Wallet, label: "Lançamentos", href: "/dashboard/transactions" },
+  { icon: SmartphoneNfc, label: "Contas Bancárias", href: "/dashboard/connections" },
+  { icon: Target, label: "Metas", href: "/dashboard/goals" },
+  { icon: PieChart, label: "Orçamentos", href: "/dashboard/budgets" },
+  { icon: Flame, label: "Dívidas", href: "/dashboard/dividas" },
+  { icon: Repeat, label: "Recorrências", href: "/dashboard/recurring" },
+  { icon: TrendingUp, label: "Investimentos", href: "/dashboard/investments" },
+  { icon: BarChart2, label: "Relatórios", href: "/dashboard/reports" },
+  { icon: Bot, label: "Assistente IA", href: "/dashboard/assistant", badge: '✨' },
+  { icon: CreditCard, label: "Assinatura", href: "/dashboard/subscription" },
 ];
 
 export default function Dashboard() {
@@ -76,100 +62,75 @@ export default function Dashboard() {
         <img src={logoColor} alt="Liberta" className="h-14 block dark:hidden transition-all" />
       </Link>
 
-      {/* Navegação Scrollável */}
-      <div className="flex-1 overflow-y-auto px-1 custom-scrollbar space-y-6 pb-6 w-full pr-1">
-        {navGroups.map((group, idx) => (
-          <div key={idx}>
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-3">
-              {group.label}
-            </h4>
-            <nav className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = location.pathname === item.href || (item.href !== "/dashboard" && location.pathname.startsWith(item.href));
-                return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative overflow-hidden",
-                      isActive
-                        ? "active bg-primary/10 text-primary"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                    )}
-                  >
-                    {isActive && (
-                      <motion.div layoutId="active-nav-indicator" className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-primary rounded-r-full shadow-glow-sm" />
-                    )}
-                    <item.icon className={cn("w-4 h-4 transition-transform group-hover:scale-110", isActive && "text-primary")} />
-                    <span className="transition-transform group-hover:translate-x-0.5">{item.label}</span>
-                    {(item as any).badge && (
-                      <span className="ml-auto text-[10px] font-bold bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">{(item as any).badge}</span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        ))}
+      {/* Navegação Seca e Lisa */}
+      <nav className="flex-1 space-y-1 mt-2">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.href || (item.href !== "/dashboard" && location.pathname.startsWith(item.href));
+          return (
+            <Link
+              key={item.href}
+              to={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+                isActive
+                  ? "active bg-primary/10 text-primary shadow-sm"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}
+            >
+              {isActive && (
+                <motion.div layoutId="active-nav-indicator" className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-primary rounded-r-full shadow-glow-sm" />
+              )}
+              <div className={cn("p-1.5 rounded-lg transition-colors duration-300", isActive ? "bg-primary text-white shadow-glow-sm" : "bg-transparent text-sidebar-foreground group-hover:bg-background/80")}>
+                <item.icon className="w-4 h-4 transition-transform group-hover:scale-110" />
+              </div>
+              <span className="transition-transform group-hover:translate-x-1">{item.label}</span>
+              {(item as any).badge && (
+                <span className="ml-auto text-[10px] font-bold bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">{(item as any).badge}</span>
+              )}
+            </Link>
+          );
+        })}
 
         {user?.user_metadata?.role === 'admin' && (
-          <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-3">Administração</h4>
-            <nav className="space-y-1">
-              <Link
-                to="/admin"
-                className="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-colors relative overflow-hidden"
-              >
+          <div className="pt-4 mt-4 border-t border-border/20">
+            <Link
+              to="/admin"
+              className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors relative overflow-hidden"
+            >
+              <div className="p-1.5 rounded-lg bg-transparent text-sidebar-foreground group-hover:bg-background/80 transition-colors duration-300">
                 <Shield className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
-                <span className="transition-transform group-hover:translate-x-0.5">Painel Admin</span>
-              </Link>
-            </nav>
+              </div>
+              <span className="transition-transform group-hover:translate-x-1">Painel Admin</span>
+            </Link>
           </div>
         )}
-      </div>
 
-      {/* Footer Fixo da Sidebar (Perfil e Ações) */}
-      <div className="shrink-0 pt-4 mt-auto border-t border-border/50">
         {isInstallable && (
-          <button
-            onClick={() => {
-              install();
-              setMobileOpen(false);
-            }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 mb-3 justify-center rounded-lg text-sm font-bold text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 transition-colors drop-shadow-glow shadow-glow-sm"
-          >
-            <SmartphoneNfc className="w-4 h-4" />
-            Instalar App
-          </button>
-        )}
-
-        {/* Bloco de Perfil do Usuário */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/30 border border-border/50 group hover:border-primary/20 transition-colors">
-          <Link to="/dashboard/settings" title="Perfil" className="shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary overflow-hidden hover:scale-105 active:scale-95 transition-transform shadow-glow-sm">
-              {user?.user_metadata?.avatar_url ? (
-                <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                getFirstName(user?.user_metadata?.full_name).charAt(0).toUpperCase()
-              )}
-            </div>
-          </Link>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold truncate leading-tight group-hover:text-primary transition-colors">{getFirstName(user?.user_metadata?.full_name)}</p>
-            <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+          <div className="pt-4 mt-4 border-t border-border/20">
+            <button
+              onClick={() => {
+                install();
+                setMobileOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 text-left transition-colors drop-shadow-glow shadow-glow-sm"
+            >
+              <div className="p-1.5 rounded-lg bg-orange-500 text-white shadow-glow-sm">
+                <SmartphoneNfc className="w-4 h-4" />
+              </div>
+              Instalar App
+            </button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSignOut}
-            className="shrink-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 h-8 w-8 transition-colors"
-            title="Sair"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+        )}
+      </nav>
+
+      <button
+        onClick={handleSignOut}
+        className="flex items-center gap-3 px-4 py-3 mt-auto mb-2 text-sm font-medium text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all duration-300 w-full group"
+      >
+        <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1 group-hover:scale-110" />
+        <span className="transition-transform group-hover:translate-x-1">Sair da Conta</span>
+      </button>
     </div>
   );
 
