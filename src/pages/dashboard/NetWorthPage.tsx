@@ -47,7 +47,7 @@ import { Loader2 } from "lucide-react";
 
 export function NetWorthPage() {
     const { toast } = useToast();
-    const { assets, liabilities, totalAssets, totalLiabilities, netWorth, isLoading, addAsset, addLiability } = useNetWorth();
+    const { assets, liabilities, totalAssets, totalLiabilities, netWorth, isLoading, addAsset, addLiability, deleteAsset, deleteLiability } = useNetWorth();
     const [isAssetDialogOpen, setIsAssetDialogOpen] = useState(false);
     const [isLiabilityDialogOpen, setIsLiabilityDialogOpen] = useState(false);
 
@@ -59,6 +59,18 @@ export function NetWorthPage() {
     const [libName, setLibName] = useState("");
     const [libType, setLibType] = useState("other");
     const [libValue, setLibValue] = useState("");
+
+    // Helper to parse values "freely" (supports 230000, 230.000,00, 230,00 etc)
+    const parseValue = (val: string) => {
+        if (!val) return 0;
+        // If it has a comma, it's Portuguese format. Replace dots (thousands) and then comma (decimal)
+        if (val.includes(',')) {
+            const clean = val.replace(/\./g, '').replace(',', '.');
+            return parseFloat(clean) || 0;
+        }
+        // If it was just 230000, parseFloat(val) is correct
+        return parseFloat(val) || 0;
+    };
 
     const formatCurrency = (val: number) => {
         return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -272,7 +284,7 @@ export function NetWorthPage() {
                                         await addAsset.mutateAsync({
                                             name: assetName,
                                             type: assetType as any,
-                                            value: Number(assetValue)
+                                            value: parseValue(assetValue)
                                         });
                                         toast({
                                             title: "Ativo adicionado",
@@ -323,8 +335,7 @@ export function NetWorthPage() {
                                             <Input
                                                 value={assetValue}
                                                 onChange={(e) => setAssetValue(e.target.value)}
-                                                type="number"
-                                                step="0.00000001"
+                                                type="text"
                                                 placeholder="0,00"
                                                 required
                                             />
@@ -366,7 +377,21 @@ export function NetWorthPage() {
                                             </p>
                                         </div>
                                     </div>
-                                    <p className="font-bold text-green-500">{formatCurrency(asset.totalValue || asset.value)}</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-green-500">{formatCurrency(asset.totalValue || asset.value)}</p>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => {
+                                                if (confirm(`Tem certeza que deseja excluir o ativo "${asset.name}"?`)) {
+                                                    deleteAsset.mutate(asset.id);
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </motion.div>
                             );
                         })}
@@ -402,7 +427,7 @@ export function NetWorthPage() {
                                         await addLiability.mutateAsync({
                                             name: libName,
                                             type: libType as any,
-                                            value: Number(libValue)
+                                            value: parseValue(libValue)
                                         });
                                         toast({
                                             title: "Passivo adicionado",
@@ -450,8 +475,7 @@ export function NetWorthPage() {
                                             <Input
                                                 value={libValue}
                                                 onChange={(e) => setLibValue(e.target.value)}
-                                                type="number"
-                                                step="0.01"
+                                                type="text"
                                                 placeholder="0,00"
                                                 required
                                             />
@@ -486,7 +510,21 @@ export function NetWorthPage() {
                                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{lib.type}</p>
                                         </div>
                                     </div>
-                                    <p className="font-bold text-red-500">{formatCurrency(lib.value)}</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-red-500">{formatCurrency(lib.value)}</p>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => {
+                                                if (confirm(`Tem certeza que deseja excluir o passivo "${lib.name}"?`)) {
+                                                    deleteLiability.mutate(lib.id);
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </motion.div>
                             );
                         })}

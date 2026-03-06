@@ -116,6 +116,28 @@ export function useNetWorth() {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['liabilities'] }),
     });
 
+    const deleteAsset = useMutation({
+        mutationFn: async (id: string) => {
+            const { error } = await supabase
+                .from('assets')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['assets'] }),
+    });
+
+    const deleteLiability = useMutation({
+        mutationFn: async (id: string) => {
+            const { error } = await supabase
+                .from('liabilities')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['liabilities'] }),
+    });
+
     const totalAssets = assetsQuery.data?.reduce((sum, a) => sum + Number(a.totalValue || a.value), 0) || 0;
     const totalLiabilities = liabilitiesQuery.data?.reduce((sum, l) => sum + Number(l.value), 0) || 0;
     const netWorth = totalAssets - totalLiabilities;
@@ -129,5 +151,7 @@ export function useNetWorth() {
         isLoading: assetsQuery.isLoading || liabilitiesQuery.isLoading,
         addAsset,
         addLiability,
+        deleteAsset,
+        deleteLiability,
     };
 }
