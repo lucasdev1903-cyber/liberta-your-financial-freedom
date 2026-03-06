@@ -11,6 +11,8 @@ interface DashboardStats {
     expenseChange: number;
     monthlyData: { month: string; income: number; expense: number }[];
     categoryBreakdown: { name: string; amount: number; color: string }[];
+    incomeCategoryBreakdown: { name: string; amount: number; color: string }[];
+    cashFlowData: { date: string; balance: number }[];
     goals: any[];
 }
 
@@ -132,22 +134,30 @@ export function useDashboardStats(options: {
             const incomeChange = prevIncome > 0 ? ((totalIncome - prevIncome) / prevIncome) * 100 : 0;
             const expenseChange = prevExpenses > 0 ? ((totalExpenses - prevExpenses) / prevExpenses) * 100 : 0;
 
-            // Category breakdown (expenses)
-            const categoryMap = new Map<string, { amount: number; color: string }>();
-            transactions
-                .filter((t) => t.type === 'expense')
-                .forEach((t) => {
-                    const cat = t.categories as unknown as { name: string; color: string } | null;
-                    const name = cat?.name || 'Sem categoria';
-                    const color = cat?.color || '#78716c';
-                    const existing = categoryMap.get(name);
-                    categoryMap.set(name, {
-                        amount: (existing?.amount || 0) + Number(t.amount),
-                        color,
-                    });
-                });
+            // Category breakdown (expenses & income)
+            const expenseCategoryMap = new Map<string, { amount: number; color: string }>();
+            const incomeCategoryMap = new Map<string, { amount: number; color: string }>();
 
-            const categoryBreakdown = Array.from(categoryMap.entries())
+            transactions.forEach((t) => {
+                const cat = t.categories as unknown as { name: string; color: string } | null;
+                const name = cat?.name || 'Sem categoria';
+                const color = cat?.color || (t.type === 'income' ? '#22c55e' : '#78716c');
+                const amount = Number(t.amount);
+
+                if (t.type === 'expense') {
+                    const existing = expenseCategoryMap.get(name);
+                    expenseCategoryMap.set(name, { amount: (existing?.amount || 0) + amount, color });
+                } else {
+                    const existing = incomeCategoryMap.get(name);
+                    incomeCategoryMap.set(name, { amount: (existing?.amount || 0) + amount, color });
+                }
+            });
+
+            const categoryBreakdown = Array.from(expenseCategoryMap.entries())
+                .map(([name, { amount, color }]) => ({ name, amount, color }))
+                .sort((a, b) => b.amount - a.amount);
+
+            const incomeCategoryBreakdown = Array.from(incomeCategoryMap.entries())
                 .map(([name, { amount, color }]) => ({ name, amount, color }))
                 .sort((a, b) => b.amount - a.amount);
 
@@ -176,6 +186,25 @@ export function useDashboardStats(options: {
                 ...values,
             }));
 
+            // Cash flow data
+            const sortedTx = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            let runningBalance = 0;
+            const cashFlowMap = new Map<string, number>();
+
+            sortedTx.forEach(t => {
+                const amount = Number(t.amount);
+                if (t.type === 'income') runningBalance += amount;
+                else runningBalance -= amount;
+
+                // Keep the last running balance of each day
+                cashFlowMap.set(t.date, runningBalance);
+            });
+
+            const cashFlowData = Array.from(cashFlowMap.entries()).map(([date, balance]) => ({
+                date,
+                balance
+            }));
+
             return {
                 totalIncome,
                 totalExpenses,
@@ -185,6 +214,8 @@ export function useDashboardStats(options: {
                 expenseChange: Math.round(expenseChange),
                 monthlyData,
                 categoryBreakdown,
+                incomeCategoryBreakdown,
+                cashFlowData,
                 goals
             };
         },
