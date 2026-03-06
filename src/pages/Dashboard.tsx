@@ -63,7 +63,7 @@ export default function Dashboard() {
       </Link>
 
       {/* Navegação Seca e Lisa */}
-      <nav className="flex-1 space-y-1 mt-2">
+      <nav className="flex-1 space-y-0 mt-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href || (item.href !== "/dashboard" && location.pathname.startsWith(item.href));
           return (
@@ -72,7 +72,7 @@ export default function Dashboard() {
               to={item.href}
               onClick={() => setMobileOpen(false)}
               className={cn(
-                "sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+                "sidebar-link group flex items-center gap-3 px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
                 isActive
                   ? "active bg-primary/10 text-primary shadow-sm"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
@@ -93,10 +93,10 @@ export default function Dashboard() {
         })}
 
         {user?.user_metadata?.role === 'admin' && (
-          <div className="pt-4 mt-4 border-t border-border/20">
+          <div className="pt-2 mt-2 border-t border-border/20">
             <Link
               to="/admin"
-              className="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors relative overflow-hidden"
+              className="group flex items-center gap-3 px-3 py-1.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors relative overflow-hidden"
             >
               <div className="p-1.5 rounded-lg bg-transparent text-sidebar-foreground group-hover:bg-background/80 transition-colors duration-300">
                 <Shield className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
@@ -107,13 +107,13 @@ export default function Dashboard() {
         )}
 
         {isInstallable && (
-          <div className="pt-4 mt-4 border-t border-border/20">
+          <div className="pt-2 mt-2 border-t border-border/20">
             <button
               onClick={() => {
                 install();
                 setMobileOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 text-left transition-colors drop-shadow-glow shadow-glow-sm"
+              className="w-full flex items-center gap-3 px-3 py-1.5 rounded-xl text-sm font-bold text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 text-left transition-colors drop-shadow-glow shadow-glow-sm"
             >
               <div className="p-1.5 rounded-lg bg-orange-500 text-white shadow-glow-sm">
                 <SmartphoneNfc className="w-4 h-4" />
@@ -124,13 +124,15 @@ export default function Dashboard() {
         )}
       </nav>
 
-      <button
-        onClick={handleSignOut}
-        className="flex items-center gap-3 px-4 py-3 mt-auto mb-2 text-sm font-medium text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all duration-300 w-full group"
-      >
-        <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1 group-hover:scale-110" />
-        <span className="transition-transform group-hover:translate-x-1">Sair da Conta</span>
-      </button>
+      <div className="mt-auto mb-2 px-3 flex">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center justify-center p-2.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all duration-300 group shadow-sm bg-secondary/10 hover:shadow-md"
+          title="Sair da Conta"
+        >
+          <LogOut className="w-5 h-5 transition-transform group-hover:scale-110" />
+        </button>
+      </div>
     </div>
   );
 
